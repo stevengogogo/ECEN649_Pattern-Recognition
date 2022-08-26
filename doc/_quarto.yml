@@ -2,12 +2,13 @@ project:
   type: book
 
 book:
-  title: "Template for Quarto Book"
+  title: "ECEN639: Pattern Recognition"
   author: "Jane Doe"
   date: "8/25/2022"
   chapters:
     - index.qmd
     - intro.qmd
+    - note_lec2.qmd
     - summary.qmd
     - references.qmd
 
