@@ -1,5 +1,5 @@
 ---
-title: 'Lecture 2'
+title: 'Chapter 01'
 date: 2022/08/26
 author: 'Shao-Ting Chiu'
 ---
@@ -83,6 +83,44 @@ Bayesian method is complicated, especially the Bayesian inference.
 ## Prediction error
 
 
-
-
 ![Prediction error](img/ch2_error.png){#fig-error}
+
+- Quadratic loss    
+    - $\mathcal{l}(\psi(X),Y) = (Y-\psi(X))^2$
+- Absolute difference loss
+    - $\mathcal{l}(\psi(X),Y) = |Y-\psi(X)|$
+- Misclassification loss
+    - $\mathcal{l}(\psi(X),Y) = 1, 0 (Y\neq \psi(X), Y=\psi(X))$
+
+> When your target is a lable, you are taling about classification.
+
+## Supervised vs. Unsupervisied learning
+
+- $Y\in \{0,1,\cdots, c-1\}$
+- Variable $Y$ is called a *label* to emphasize that it has no numerica meaning.
+- Binary classification
+- Expection of a random variable is an event.
+
+### Categories
+
+1. Regerssion
+2. Unsupervised learning
+    - Error of the operation is not straightforward
+    - Ex: PCA and clustering
+3. Semi-supervised learning
+    - Target $Y$ is available for only a subpopulation of the feature vector $X$
+    - Some $X$ doesn't have $Y$
+    - See more explanation[^semi]
+4. Reinforcement learning
+    - decision are made in continuous interaction with an environment.
+    - The objective is to minimize a cost over the long run.
+    - **Dynamic programming**
+
+[^semi]: [Semi-Supervised Learning, Explained with Examples](https://www.altexsoft.com/blog/semi-supervised-learning/)
+
+## Basic mathematical setting
+
+$\begin{align}
+\epsilon[\psi] = E[I_{Y\neq \psi(X)}] &= 0\cdot P(S_A=0) + 1\cdot P(S_A=1)\\
+        &= P(S_A=1)
+\end{align}$
