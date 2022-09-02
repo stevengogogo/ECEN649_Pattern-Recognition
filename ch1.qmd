@@ -128,3 +128,4 @@ $\begin{align}
 ## Scissor effect
 
 ![Scissor Effect.](img/ch1_scissor.png)
+

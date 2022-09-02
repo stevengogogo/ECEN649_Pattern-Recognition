@@ -11,6 +11,7 @@ book:
     - index.qmd
     - intro.qmd
     - ch1.qmd
+    - ch2.qmd
     - hw/hw1.qmd
     - summary.qmd
     - ref.qmd

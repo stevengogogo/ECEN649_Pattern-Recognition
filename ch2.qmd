@@ -1,0 +1,17 @@
+---
+title: "Chapter 2: Optimal Classfication"
+author: "Shao-Ting Chiu"
+date: "2022-09-02"
+---
+
+## Classification without predictors
+
+$$
+\hat{Y}=
+\begin{cases}
+    0, & P(Y=0) \geq P(Y=1)\\ 
+    1, & P(Y=1) > P(Y=0)\\
+\end{cases}
+$$
+
+- $E[Y] = P(Y=1)$
