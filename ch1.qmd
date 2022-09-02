@@ -124,3 +124,7 @@ $\begin{align}
 \epsilon[\psi] = E[I_{Y\neq \psi(X)}] &= 0\cdot P(S_A=0) + 1\cdot P(S_A=1)\\
         &= P(S_A=1)
 \end{align}$
+
+## Scissor effect
+
+![Scissor Effect.](img/ch1_scissor.png)

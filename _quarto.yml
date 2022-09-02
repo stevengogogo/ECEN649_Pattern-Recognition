@@ -9,16 +9,15 @@ book:
     - index.qmd
     - intro.qmd
     - ch1.qmd
+    - hw/hw1.qmd
     - summary.qmd
-    - references.qmd
+    - ref.qmd
 
-bibliography: references.bib
+bibliography: ref.bib
 
 format:
   html:
     theme: cosmo
-  pdf:
-    documentclass: scrreprt
 
 
 

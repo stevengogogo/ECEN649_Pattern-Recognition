@@ -10,8 +10,22 @@ jobs:
     - uses: quarto-dev/quarto-actions/setup@v2
     - run: |
         quarto --version
-    - name: Render Quarto Project
+        quarto install tool tinytex
+    - name: Render STAT638 Website
       uses: quarto-dev/quarto-actions/render@v2
       with:
         to: html # If set, it will be equivalent to `quarto render --to html`
-        path: doc # By default, the current working dir is used i.e `quarto render .`
+        path: # By default, the current working dir is used i.e `quarto render .`
+    - name: Render Homework
+      run: |
+        mkdir _hw_pdf
+        quarto render hw/*.qmd --to pdf
+        mv hw/*.pdf _hw_pdf
+
+      
+    - name: Deploy at hw 🚀
+      uses: JamesIves/github-pages-deploy-action@4.1.5
+      with:
+        branch: hw # The branch the action should deploy to.
+        folder: _hw_pdf # The folder the action should deploy.
+        clean: true
