@@ -3,8 +3,10 @@ project:
 
 book:
   title: "ECEN639: Pattern Recognition"
-  author: "Jane Doe"
-  date: "8/25/2022"
+  author: "Shao-Ting Chiu"
+  date: today
+  repo-url: https://github.com/stevengogogo/ECEN649_Pattern-Recognition
+  favicon: img/favicon.png
   chapters:
     - index.qmd
     - intro.qmd
@@ -17,7 +19,7 @@ bibliography: ref.bib
 
 format:
   html:
-    theme: cosmo
-
-
+    theme: 
+      light: flatly
+      dark: darkly
 

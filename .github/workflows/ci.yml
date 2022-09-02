@@ -11,7 +11,7 @@ jobs:
     - run: |
         quarto --version
         quarto install tool tinytex
-    - name: Render STAT638 Website
+    - name: Render Website
       uses: quarto-dev/quarto-actions/render@v2
       with:
         to: html # If set, it will be equivalent to `quarto render --to html`
