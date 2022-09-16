@@ -1,5 +1,5 @@
 ---
-title: "Chapter 2: Optimal Classfication"
+title: "Chapter 2: Optimal Classification"
 author: "Shao-Ting Chiu"
 date: "2022-09-02"
 ---
@@ -15,3 +15,26 @@ $$
 $$
 
 - $E[Y] = P(Y=1)$
+
+
+## Classification error
+
+$$\epsilon[\psi] = p(\psi(X)\neq Y) = p(\{(x,y)|\psi(x)\neq y\})$$
+
+The classification error is determined by **the feature-label distribution** $P_{X,Y}$
+
+## Class-specific errors
+
+
+## Bayes Classifier
+
+$$\psi^{*} = \arg\min_{\psi\in\mathcal{C}} P(\psi(X) \neq Y) $$
+
+![](img/proof_bayesclas.png)
+
+
+## Feature transformation
+
+$$\epsilon^{*}(x,y) \geq \epsilon^{*}(X', y)\quad \text{with } X = t^{-1}(X')$$
+
+
