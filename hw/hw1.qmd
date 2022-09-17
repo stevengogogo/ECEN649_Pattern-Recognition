@@ -75,7 +75,7 @@ bibliography: ../ref.bib
 
 > Show that the Bayes error is given by
 >
-> $$\epsilon^{*} = 1 - E[\max_{i=0,1,\dots, c-1} \eta_{i}(X)]$$.
+> $$\epsilon^{*} = 1 - E[\max_{i=0,1,\dots, c-1} \eta_{i}(X)]$$
 
 
 ### (e)
@@ -83,21 +83,145 @@ bibliography: ../ref.bib
 > Show that the maximum Bayes error possible is $1-\frac{1}{c}$.
 
 
-### (e)
-
 ## Problem 2.7
 
 > Consider the following univariate Gaussian class-conditional densities:
 >
-> $$$$
-
-## Problem 2.9
-
-## Problem 2.17
+> $$p(x|Y=0) = \frac{1}{\sqrt{2\pi}}\exp(-\frac{(x-3)^2}{2})$$
+> $$p(x|Y=1)=\frac{1}{3\sqrt{2\pi}}\exp(-\frac{(x-4)^2}{18})$$
+> Assume that the classes are equally likely, i.e., $P(Y=0)=P(Y=1)=\frac{1}{2}$
 
 ### (a)
 
+> Draw the densities and determine the Bayes classifier graphically.
+
 ### (b)
+
+> Determine the Bayes classifier.
+
+### (c)
+
+> Determine the specificity and sensitivity of the Bayes classifier.
+>
+> Hint: use the standard Gaussian CDF $\psi(x)$
+
+### (d)
+
+> Determine the overall Bayes error.
+
+## Problem 2.9
+
+> Obtain the optimal decision boundary in the Gaussian model with $P(Y = 0) = P(Y = 1)$ and
+>
+> In each case draw the optimal decision boundary, along with the class means and class conditional density contours, indicating the 0- and 1-decision regions.
+
+### (a)
+
+> \begin{equation*}
+    \mu_0 =(0,0)^T, \mu_1=(2,0)^T, \Sigma_0 = 
+    \begin{pmatrix}
+        2 & 0 \\
+        0 & 1
+    \end{pmatrix},
+    \Sigma_1 = 
+    \begin{pmatrix}
+        2 & 0 \\
+        0 & 4
+    \end{pmatrix}
+> \end{equation*}
+
+
+### (b)
+
+> \begin{equation*}
+    \mu_0 =(0,0)^T, \mu_1=(2,0)^T, \Sigma_0 = 
+    \begin{pmatrix}
+        2 & 0 \\
+        0 & 1
+    \end{pmatrix},
+    \Sigma_1 = 
+    \begin{pmatrix}
+        4 & 0 \\
+        0 & 1
+    \end{pmatrix}
+> \end{equation*}
+
+
+### (c)
+
+> \begin{equation*}
+    \mu_0 =(0,0)^T, \mu_1=(0,0)^T, \Sigma_0 = 
+    \begin{pmatrix}
+        1 & 0 \\
+        0 & 1
+    \end{pmatrix},
+    \Sigma_1 = 
+    \begin{pmatrix}
+        2 & 0 \\
+        0 & 2
+    \end{pmatrix}
+> \end{equation*}
+
+
+### (d)
+
+> \begin{equation*}
+    \mu_0 =(0,0)^T, \mu_1=(0,0)^T, \Sigma_0 = 
+    \begin{pmatrix}
+        2 & 0 \\
+        0 & 1
+    \end{pmatrix},
+    \Sigma_1 = 
+    \begin{pmatrix}
+        1 & 0 \\
+        0 & 2
+    \end{pmatrix}
+> \end{equation*}
+
+
+
+---
+
+## Python Assignment: Problem 2.17
+
+> This problem concerns the Gaussian model for synthetic data generation in @braga2020fundamentals [Section A8.1].
+
+### (a)
+
+> Derive a general expression for the Bayes error for the homoskedastic case with $\mu_0 = (0,\dots,0), \mu_1=(1,\dots,1)$, and $P(Y=0)=P(Y=1)$. Your answer should be in terms of $k, \sigma^{2}_{1}, \dots, \sigma^{2}_{k}, l_1, \dots, l_k,$ and $\sigma_{1},\dots, \sigma_k$.
+> 
+> Hint: Use the fact that 
+>
+>\begin{equation}
+     \begin{bmatrix}
+        1 & \sigma & \cdots & \sigma\\ 
+        \sigma & 1 & \cdots & \sigma\\ 
+        \vdots & \vdots & \ddots & \vdots\\ 
+        \sigma & \sigma & \cdots & 1
+     \end{bmatrix}^{-1}_{l\times l} = \frac{1}{(1-\sigma)(1+(l-1)\sigma)}
+     \begin{bmatrix}
+        1+(l-2)\sigma & -\sigma \cdots -\sigma\\ 
+        -\sigma & 1+(l-2)\sigma & \cdots -\sigma\\ 
+        \vdots & \vdots  & \ddots & \vdots\\ 
+        -\sigma & -\sigma & \cdots & 1+(l-2)\sigma
+     \end{bmatrix}
+>\end{equation}
+
+### (b) 
+
+> Specialize the previous formula for equal-sized blocks $l_1 = \cdots = l_k = l$ with equal correlations $\sigma_1 = \cdots = \sigma_k = \sigma$, and constant variance $\sigma_{1}^{2} = \cdots, \sigma_{k}^{2} = \sigma^2$. Write the resulting formula in terms of $d,l,\sigma$ and $\sigma$.
+
+#### i.
+
+> Using the python function `norm.cdf` in the `scipy.stats` module, plot the Bayes error as a function of $\sigma\in [0.01,3 ]$ for $d=20, l=4$, and four different correlation values $\sigma=0,0.25,0.5,0.75$ (plot one curve for each value). Confirm that the Bayes error increasese monotonically with $\sigma$ from $0$ to $0.5$ for each value of $\sigma$, and that Bayes error for large $\sigma$ is uniformly larger than that for smaller $\sigma$. The latter fact shows that correlation between the features is detrimental to classfification.
+
+#### ii.
+
+> Plot the Bayes error as a function of $d=2,4,6,8,\dots, 40$, with fixed block size $l=4$ and variance $\sigma^2=1$ and $\sigma=0,0.25,0.5,0.75$ (plot one curve for each value). Confirm that the Bayes error decreases monotonically to $0$ with increasing dimensionality, with faster convergence for smaller correlation values.
+
+#### iii.
+
+> Plot the Bayes error as a function of the correlation $\sigma \in [0,1]$ for constant variance $\sigma^2 =2$ and fixed $d=20$ with varying block size $l=1,2,4,10$ (plot one curve for each value). Confirm that the Bayes error increases monotonically with increasing correlation. Notice that the rate of increase is particularly large near $\sigma=0$, which shows that the Bayes error is very sensitive to correlation in the near-independent region.
 
 ::: {.content-hidden when-format="html"}
 
