@@ -4,6 +4,10 @@ author: "Shao-Ting Chiu"
 date: "2022-09-02"
 ---
 
+## Stoachastic analysis
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/NzHs1eQg78s" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Classification without predictors
 
 $$
@@ -15,6 +19,13 @@ $$
 $$
 
 - $E[Y] = P(Y=1)$
+
+::: {.callout-important}
+### Posterior-probability function
+
+$$\eta(x) = E[Y|X=x] = P(Y=1|X=x), \quad x\in R^d$$
+
+:::
 
 
 ## Classification error

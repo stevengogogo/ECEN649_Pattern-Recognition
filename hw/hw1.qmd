@@ -7,6 +7,8 @@ bibliography: ../ref.bib
 
 ## Homework Description
 
+> Course: ECEN649, Fall2022
+> 
 > Problems (from Chapter 2 in the book):
 > 2.1 , 2.3 (a,b), 2.4, 2.7, 2.9, 2.17 (a,b)
 >
@@ -20,23 +22,141 @@ bibliography: ../ref.bib
 > 
 > Hint: Note that if $X$ has a discrete distribution, then integration becomes summation, $P(X=x_k)$, for $x_k\in D$, play the role of $p(x)$, and $P(X=x_k | Y=y)$, for $x_k \in D$, play the role of $p(x|Y=y)$, for $y=0,1$.
 
+
+### (2.3)
+
+> From @braga2020fundamentals [pp. 16]
+> \begin{align}
+    P(X\in E, Y=0) &= \int_E P(Y=0)p(x|Y=0)dx\\
+    P(X\in E, Y=1) &= \int_E P(Y=1)p(x|Y=1)dx\\
+> \end{align}
+
+Let $x_k = [x_1,\dots, x_d]$ be the feature vector of $X$ in set $D\in R^d$,
+
+\begin{align}
+    P(X\in D, Y=0) &= P(X=[x_1,\dots, x_d], Y=0)\\
+                   &= \sum_{X\in D} P(Y=0)P(X=[x_1,\dots, x_d] |Y=0)\\
+    P(X\in D, Y=1) &= P(X=[x_1,\dots, x_d], Y=1)\\
+                   &= \sum_{X\in D} P(Y=1)P(X=[x_1,\dots, x_d] |Y=1)\\
+\end{align}
+
+### (2.4)
+
+> From @braga2020fundamentals [pp.17]
+
+\begin{align}
+    P(Y=0|X=x_k) &= \frac{P(Y=0)p(X=x_k | Y=0)}{p(X=x_k)}\\
+                 &= \frac{P(Y=0)p(X=x_k |Y=0)}{P(Y=0)p(X=x_k |Y=0) + P(Y=1)p(X=x_k|Y=1)}\\
+\end{align}
+
+
+\begin{align}
+    P(Y=1|X=x_k) &= \frac{P(Y=1)p(X=x_k | Y=1)}{p(X=x_k)}\\
+                 &= \frac{P(Y=1)p(X=x_k |Y=1)}{P(Y=0)p(X=x_k |Y=0) + P(Y=1)p(X=x_k|Y=1)}\\
+\end{align}
+
+
+### (2.8)
+
+> From @braga2020fundamentals [pp. 18]
+
+$$\epsilon^{0}[\psi] = P(\psi(X)=1 | Y=0) = \sum_{\{x_k|\psi(x)=1\}} p(x_k|Y=0)$$
+
+$$\epsilon^{1}[\psi] = P(\psi(X)=0 | Y=1) = \sum_{\{x_k|\psi(x)=1\}} p(x_k|Y=1)$$
+
+### (2.9)
+
+> From @braga2020fundamentals [pp. 18]
+
+$$\epsilon[\psi] = \sum_{\{x|\psi(x)=1\}} P(Y=0)p(x_k | Y=0) + \sum_{\{x|\psi=0\}}P(Y= 1)p(x_k|Y=1)$$
+
+
+
+### (2.11)
+
+> From @braga2020fundamentals [pp. 19]
+
+
+$$\epsilon[\psi] = E[\epsilon[\psi|X=x_k]] = \sum_{x_{k}\in D} \epsilon[\psi|X=x_k]p(x_k)$$
+
+### (2.30)
+
+### (2.34)
+
+
+### (2.36)
+
 ## Problem 2.3
 
 > This problem seeks to characterize the case $\epsilon^{*}=0$.
 
-### (a)
+### (a) {#sec-23a}
 
 > Prove the "Zero-One Law" for perfect discrimination:
 > $$\epsilon^{*} = 0 \Leftrightarrow \eta(X) = 0 \text{ or } 1 \quad \text{with probability } 1.$$ {#eq-2-3-a}
 
 
+The optimal Bayes classifier is defined in @braga2020fundamentals [pp. 20]. That is 
+
+\begin{equation}
+    \psi^{*}(x) = \arg\max_{i} P(Y=i|X=x) = 
+    \begin{cases}
+        1, & \eta(x) > \frac{1}{2}\\ 
+        0, & \text{otherwise}
+    \end{cases}
+\end{equation}
+
+**Part 1: $\eta(X)=1$**
+
+$$\eta(X) = E[Y|X=x] = P(Y=1|X=x) = 1$$
+
+$$\because \eta(X)=1>\frac{1}{2} \therefore \psi^{*}(x) = 1$$
+
+
+\begin{align}
+    \epsilon^{*} &= \epsilon[\psi^{*}(X) | X=x]\\
+    &= I_{\psi^{*}(x) = 0}P(Y=1 | X=x) + I_{\psi^{*}(x) = 1} P(Y=0|X=x)\\ 
+    &= \underbrace{I_{\psi^{*}(x) = 0}}_{=0}\underbrace{\eta(X)}_{=1}+ \underbrace{I_{\psi^{*}(x) = 1}}_{=1} \underbrace{(1-\eta(X))}_{=0}\\ 
+    &= 0
+\end{align}
+
+**Part 2: $\eta(X)=0$**
+
+Similarly,
+
+$$\because \eta(X)=0 \leq \frac{1}{2} \therefore \psi^{*}(x) = 0$$
+
+\begin{align}
+    \epsilon^{*} &= \epsilon[\psi^{*}(X) | X=x]\\
+    &= I_{\psi^{*}(x) = 0}P(Y=1 | X=x) + I_{\psi^{*}(x) = 1} P(Y=0|X=x)\\ 
+    &= \underbrace{I_{\psi^{*}(x) = 0}}_{=1}\underbrace{\eta(X)}_{=0}+ \underbrace{I_{\psi^{*}(x) = 1}}_{=0} \underbrace{(1-\eta(X))}_{=1}\\ 
+    &= 0
+\end{align}
+
+In conclusion, both cases shows that $\epsilon^{*} = 0$.
+
 ### (b)
 
 > Show that
 > 
-> $$\epsilon^{*} = 0 \Leftrightarrow \text{ there is a function } f \text{ s.t. } Y=f(X) \text{with probability } 1$$
+> $$\epsilon^{*} = 0 \Leftrightarrow \text{ there is a function } f \text{ s.t. } Y=f(X) \text{ with probability } 1$$
 
+\begin{equation}
+    \eta(X) = Pr(Y=1 | X=x) =
+    \begin{cases}
+        1, & f(X)=1\\
+        0, & f(X)=0
+    \end{cases}
+\end{equation}
 
+The sceneraio is same as [Problem 3.7 (a)](#sec-23a).
+
+1. Given $\eta(X) = 1$
+    - $\epsilon^{*} = 0$
+1. Given $\eta(X) = 0$
+    - $\epsilon^{*} = 0$
+
+$\epsilon^{*} =0$ for both cases.
 
 ## Problem 2.4
 
@@ -51,14 +171,42 @@ bibliography: ../ref.bib
 
 > Given a classifier $\psi: R^d \rightarrow \{0,1,\dots, c-1\}$, show that its conditional error $P(\psi(X)\neq Y|X=x)$ is given by
 >
-> $$P(\psi(X)\neq Y|X=x) = 1-\sum^{c-1}_{i=1} I_{\psi(x)=i}\eta_{i}(x) = 1 - \eta_{\psi(x)}(x)$$
+> $$P(\psi(X)\neq Y|X=x) = 1-\sum^{c-1}_{i=1} I_{\psi(x)=i}\eta_{i}(x) = 1 - \eta_{\psi(x)}(x)$$ {#eq-2-4-a}
 
+Use the "Law of Total Probability" [@braga2020fundamentals, sec. A.53],
+
+$$P(\psi(X) =  Y| X=x) + P(\psi(X)\neq Y| X=x) = 1$$ {#eq-2-4-a-tot}
+
+$\therefore$ We can derive the probability of error via
+
+\begin{align}
+    P(\psi(X)\neq Y| X=x) &= 1 - P(\psi(X) =  Y| X=x)\\
+    &= 1 - \sum_{i=0}^{c-1}P(\psi(x)=i, Y=i | X=x)\\ 
+    &= 1 - \sum_{i=0}^{c-1}I_{\psi(x)=i}P(Y=i | X=x)\\ 
+    &= 1 - \sum_{i=0}^{c-1}I_{\psi(x)=i}\eta_i(x)
+\end{align}
+
+Combining together, @eq-2-4-a-tot implies @eq-2-4-a.
 
 ### (b)
 
 > Assuming that $X$ has a density, show that the classification error of $\psi$ is given by
 > 
-> $$\epsilon = 1 - \sum_{i=0}^{c-1} \int_{\{x|\psi(x)=i\}}\eta_i(x)p(x)dx$$.
+> $$\epsilon = 1 - \sum_{i=0}^{c-1} \int_{\{x|\psi(x)=i\}}\eta_i(x)p(x)dx.$$
+
+Let $\{x|\psi(x) = i\}$ be the set of $\psi(x) = i$ in $X$.
+
+Use the *multiplication rule* [@braga2020fundamentals, sec. A1.3]
+
+\begin{align}
+\epsilon &= E[\epsilon[\psi(x) | X=x]]\\ 
+&= 1 - \int_{R^d} P(\psi(X) = Y| X=x) p(x) dx\\ 
+&= 1 - \sum_{i=0}^{c-1} \int_{R^d} p(\psi(X)=i, Y=i| X=x) p(x) dx\\ 
+&= 1 - \sum_{i=0}^{c-1} \int_{R^d} \underbrace{p(\psi(X)=i| X=x)}_{=1 \text{ if } \{x|\psi(x) = i\}; 0, \text{ otherwise.}}p(Y=i|X=x) p(x) dx\\ 
+& = 1 - \sum_{i=0}^{c-1} \int_{\{x|\psi(x) = i\}} 1\cdot p(Y=i|X=x) p(x) dx\\ 
+& = 1 - \sum_{i=0}^{c-1} \int_{\{x|\psi(x) = i\}} p(Y=i|X=x) p(x) dx
+\end{align}
+
 
 
 
@@ -70,6 +218,9 @@ bibliography: ../ref.bib
 > $$\psi^{*}(x) = \arg\max_{i=0,1,\dots, c-1} \eta_{i}(x), \quad x\in R^d$$
 >
 > Hint: Start by considering the difference between conditional expected errors $P(\psi(X)\neq Y|X=x) - P(\psi^{*}(X)\neq Y|X=x)$.
+
+
+
 
 ### (d)
 
@@ -104,6 +255,12 @@ bibliography: ../ref.bib
 > Determine the specificity and sensitivity of the Bayes classifier.
 >
 > Hint: use the standard Gaussian CDF $\psi(x)$
+
+|Sensitivity|Specificity|
+|---|---|
+|$1-\epsilon^1[\psi]$|$1-\epsilon^0[\psi]$|
+: The definition of sensitivity and specificity from @braga2020fundamentals [pp. 18] {#tbl-spec-def}
+
 
 ### (d)
 
