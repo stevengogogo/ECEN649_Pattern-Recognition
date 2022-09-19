@@ -188,7 +188,7 @@ $\therefore$ We can derive the probability of error via
 
 Combining together, @eq-2-4-a-tot implies @eq-2-4-a.
 
-### (b)
+### (b) {#sec-2-4-b}
 
 > Assuming that $X$ has a density, show that the classification error of $\psi$ is given by
 > 
@@ -215,12 +215,53 @@ Use the *multiplication rule* [@braga2020fundamentals, sec. A1.3]
 
 > Prove that the Bayes classifier is given by
 >
-> $$\psi^{*}(x) = \arg\max_{i=0,1,\dots, c-1} \eta_{i}(x), \quad x\in R^d$$
+> $$\psi^{*}(x) = \arg\max_{i=0,1,\dots, c-1} \eta_{i}(x), \quad x\in R^d$$ {#eq-2-4-c-q}
 >
 > Hint: Start by considering the difference between conditional expected errors $P(\psi(X)\neq Y|X=x) - P(\psi^{*}(X)\neq Y|X=x)$.
 
+According to @braga2020fundamentals [pp. 20], a Bayes classifier ($\psi^{*}$) is defined as
 
+$$\psi^{*} = \arg\min_{\psi\in \mathcal{C}} P(\psi(X) \neq Y)$$
 
+over the set $\mathcal{C}$ of all classifiers. We need to show that the error of any $\psi\in \mathcal{C}$ has the conditional error rate:
+
+$$\epsilon[\psi | X=x] \geq \epsilon[\psi^{*} | X=x], \quad \text{ for all } x\in R^d$$ {#eq-2-4-c}
+
+From @eq-2-4-a, classifiers have the error rates:
+
+\begin{align}
+P(\psi^{*}(X)\neq |X=x) &= 1 - \sum_{i=1}^{c-1} I_{\psi^{*}(x)=i}\eta_i(x)\\
+P(\psi(X)\neq |X=x) &= 1 - \sum_{i=1}^{c-1} I_{\psi(x)=i}\eta_i(x)
+\end{align}
+
+Therefore, 
+
+\begin{align}
+    P(\psi(X)\neq Y|X=x) - P(\psi^{*}(X)\neq Y|X=x) &= (1 - \sum_{i=1}^{c-1} I_{\psi(x)=i}\eta_i(x)) - (1 - \sum_{i=1}^{c-1} I_{\psi^{*}(x)=i}\eta_i(x))\\
+    &= \sum_{i=1}^{c-1} (I_{\psi^{*}(x)=i} - I_{\psi(x)=i})\eta_i(x)
+\end{align}
+
+$\because$
+
+- $I_{\psi^{*}(x)=i^{*}} = 1$ when $i^{*}$ satisfies $\eta_{i^{*}}(x) = \max_{i=0,1,\dots,c-1}\eta(x) = \eta_{\max}(x)$
+- $I_{\psi(x)=i'}=1$ when $\psi(x) = i'$ for  $i'\in 0,1,\dots, c-1$ 
+
+$\therefore$ 
+
+**if $i^* \neq i'$**
+
+\begin{align}
+     P(\psi(X)\neq Y|X=x) - P(\psi^{*}(X)\neq Y|X=x) &= (1-0)\eta_{i^{*}}(x) + (0-1)\eta_{i'}(x)\\
+     &= \eta_{i^{*}}(x) - \eta_{i'}(x)\\ 
+     &= \eta_{\max}(x) - \eta_{i'}(x)\\ 
+     &\geq 0
+\end{align}
+
+**if $i^* = i'$**
+
+$$P(\psi(X)\neq Y|X=x) - P(\psi^{*}(X)\neq Y|X=x) = \eta_{i^{*}}(x) - \eta_{i'}(x)=0$$
+
+Therefore, there is no classifier $\psi\in \mathcal{C}$ can have conditional error rate lower than Bayes classifier [@eq-2-4-c-q].
 
 ### (d)
 
@@ -228,10 +269,38 @@ Use the *multiplication rule* [@braga2020fundamentals, sec. A1.3]
 >
 > $$\epsilon^{*} = 1 - E[\max_{i=0,1,\dots, c-1} \eta_{i}(X)]$$
 
+From [Problem 2.4.b](#sec-2-4-b),
+
+
+- Noted that, $\{x|\psi^{*}(x)=i\} = \emptyset \text{ if } i\neq i^{*}$
+
+\begin{align}
+    \epsilon[\psi^{*}] &= E[\epsilon[\psi^{*}(x)|X=x]]\\
+    &= 1 - \sum_{i=0}^{c-1} \int_{\{x|\psi^{*}(x)=i\}}\eta_i(x)p(x)dx\\
+    &= 1 - \int_{\{x|\psi^{*}(x)=i^*\}}\eta_{\max}(x)p(x)dx\\ 
+    &= 1 - E[\eta_{\max}(x)] 
+\end{align}
+
 
 ### (e)
 
 > Show that the maximum Bayes error possible is $1-\frac{1}{c}$.
+
+$$\max \epsilon[\psi^{*}] = 1 - \min E[\max_{i=0,1,\dots,c-1} \eta_i(X)]$$ {#eq-2-4-e-1}
+
+also,
+
+given
+
+$$\eta_1(x) = \eta_2(x) = \dots = \eta_{c-1}(x)$$
+
+$$\sum_{i=1}^{c-1} \eta_i(x) = 1$$
+
+we can get that 
+$$\min\max\eta(X) = \frac{1}{c}$$ {#eq-2-4-e-2}
+
+Combining @eq-2-4-e-1 and @eq-2-4-e-2 together, the maximum Bayes error is $1-\frac{1}{c}$
+
 
 
 ## Problem 2.7
