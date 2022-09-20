@@ -3,3 +3,4 @@ _book/
 .quarto/
 *_files/
 *.html
+*_freeze

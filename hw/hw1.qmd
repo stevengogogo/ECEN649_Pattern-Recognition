@@ -2,7 +2,15 @@
 title: Homework 1
 author: Shao-Ting Chiu (UIN:433002162)
 date: today
-bibliography: ../ref.bib   
+bibliography: ../ref.bib  
+format:
+    pdf:
+        code-line-numbers: true
+
+jupyter: python3  
+execute: 
+    echo: true
+    freeze: auto 
 ---
 
 ## Homework Description
@@ -15,6 +23,36 @@ bibliography: ../ref.bib
 > Note: the book is available electronically on the Evans library website.
 
 - Deadline: `Sept. 26th, 11:59 pm`
+
+
+## Computational Enviromnent Setup
+
+### Third-party libraries
+``` {python}
+%matplotlib inline
+import sys # system information
+import matplotlib # plotting
+import scipy as st # scientific computing
+import pandas as pd # data managing
+import numpy as np # numerical comuptation
+import matplotlib.pyplot as plt
+from scipy.stats import multivariate_normal
+from numpy.linalg import inv, det
+# Matplotlib setting
+plt.rcParams['text.usetex'] = True
+matplotlib.rcParams['figure.dpi']= 300
+```
+
+### Version
+``` {python}
+print(sys.version)
+print(matplotlib.__version__)
+print(st.__version__)
+print(np.__version__)
+print(pd.__version__)
+```
+
+---
 
 ## Problem 2.1
 
@@ -81,10 +119,22 @@ $$\epsilon[\psi] = E[\epsilon[\psi|X=x_k]] = \sum_{x_{k}\in D} \epsilon[\psi|X=x
 
 ### (2.30)
 
+> From @braga2020fundamentals [pp. 24].
+
+$$\epsilon^{*} = \sum_{x\in X} \left[ I_{\eta(X=x)\leq 1-\eta(X=x)}\eta(X=x) + I_{\eta(X=x) > 1 - \eta(X=x)(1-\eta(X=x))}\right] p(X=x)$$
+
 ### (2.34)
 
+> From @braga2020fundamentals [pp. 25].
+
+\begin{align}
+    \epsilon^{*} &= P(Y=0)\epsilon^{0}[\psi^*] + P(Y=1)\epsilon^1 [\psi^*]\\
+                 &= \sum_{\{x|P(Y=1)p(x|Y=1)>P(Y=0)p(x|Y=0)\}} P(Y=0)p(x|Y=0) + \sum_{\{x|P(Y=1)p(x|Y=1)\leq P(Y=0)p(x|Y=0)\}} P(Y=1)p(x|Y=1) 
+\end{align}
 
 ### (2.36)
+
+
 
 ## Problem 2.3
 
@@ -315,6 +365,8 @@ Combining @eq-2-4-e-1 and @eq-2-4-e-2 together, the maximum Bayes error is $1-\f
 
 > Draw the densities and determine the Bayes classifier graphically.
 
+
+
 ### (b)
 
 > Determine the Bayes classifier.
@@ -341,6 +393,129 @@ Combining @eq-2-4-e-1 and @eq-2-4-e-2 together, the maximum Bayes error is $1-\f
 >
 > In each case draw the optimal decision boundary, along with the class means and class conditional density contours, indicating the 0- and 1-decision regions.
 
+Since $\Sigma_0 \neq \Sigma_1$ happens in the following subproblems, these are *heteroskedastic cases*. As mentioned in @braga2020fundamentals [sec. 2.5.2]. The Bayes classifier is 
+
+\begin{equation}
+    \psi^{*}_{Q}(x) = 
+    \begin{cases}
+        1, x^T A x + b^T x + c > 0\\ 
+        0, \text{ otherwise }
+    \end{cases}
+\end{equation}
+
+where 
+
+\begin{align}
+    A &= \frac{1}{2}(\Sigma^{-1}_{0} - \Sigma^{-1}_{1})\\
+    b &= \Sigma^{-1}_{1} \mu_1 - \Sigma^{-1}_{0}\mu_0\\ 
+    c &= \frac{1}{2}(\mu^{T}_{0}\Sigma_{0}^{-1}\mu_0 - \mu_{1}^{T}\Sigma^{-1}_{1}\mu_1) + \frac{1}{2}\ln\frac{\det(\Sigma_0)}{\det(\Sigma_1)} + \ln \frac{P(Y=1)}{P(Y=0)}
+\end{align}
+
+
+The following is the Python implementation with NumPy[^numpy] [^plot].
+
+``` {python}
+def compose(U,D):
+    return U.transpose()@inv(D)@U
+
+def mA(sigma0, sigma1):
+    sigma0_inv = inv(sigma0)
+    sigma1_inv = inv(sigma1)
+    return 0.5*(sigma0_inv - sigma1_inv)
+
+def mb(sigma0, sigma1, mu0, mu1):
+    sigma0_inv = inv(sigma0)
+    sigma1_inv = inv(sigma1)
+    return sigma1_inv@mu1 - sigma0_inv@mu0
+
+def mc(sigma0, sigma1, mu0, mu1, Py):
+    return  0.5*(compose(mu0, sigma0) - compose(mu1, sigma1)) +\
+        0.5*np.log(det(sigma0)/det(sigma1)) +\
+            np.log(Py/(1-Py))
+
+def BayesBound(x, sigma0, sigma1, mu0, mu1, Py):
+    xax = x.transpose() @ mA(sigma0, sigma1)@x
+    bx = mb(sigma0, sigma1, mu0, mu1).transpose() @ x
+    c = mc(sigma0, sigma1, mu0, mu1, Py)
+    
+    return float(xax + bx + c)
+
+class GaussianBayesClassifier:
+    def __init__(self, sigma0, sigma1, mu0, mu1, Py):
+        self.sigma0 = sigma0
+        self.sigma1 = sigma1
+        self.mu0 = mu0
+        self.mu1 = mu1
+        self.Py = Py
+
+        # Inferred Matrix
+        self.mA = mA(sigma0, sigma1)
+        self.mb = mb(sigma0, sigma1, mu0, mu1)
+        self.mc = mc(sigma0, sigma1, mu0, mu1, Py)
+
+    def BayesBound(self, x):
+        return BayesBound(x, self.sigma0, self.sigma1, self.mu0, self.mu1, self.Py)
+
+    def psi(self, x):
+        """
+        Bayes classification
+        """
+        pred = 0
+        if self.BayesBound(x) > 0:
+            pred = 1
+        return pred
+    
+    def plot2D(self, psi_annotates=[[0.3,0.3], [0.7,0.7]]):
+        fig, ax = plt.subplots()
+
+        # Create girds
+        xlist = np.linspace(-3.5,3.5,30)
+        ylist = np.linspace(-3.5,3.5,30)
+        X, Y = np.meshgrid(xlist, ylist)
+        pos = np.dstack((X,Y))
+        
+        # Compute Bayes classification
+        Z = np.zeros(X.shape)
+        for i in range(0, Z.shape[0]):
+            for j in range(0, Z.shape[1]):
+                x = np.matrix([X[i,j], Y[i,j]]).T 
+                Z[i,j] = self.psi(x)
+        
+        # Compute Gaussia pdf
+        rv0 = multivariate_normal(np.array(self.mu0.T)[0], self.sigma0)
+        rv1 = multivariate_normal(np.array(self.mu1.T)[0], self.sigma1)
+        Z0 = rv0.pdf(pos)
+        Z1 = rv1.pdf(pos)
+
+        # Plot contours
+        cmap = plt.get_cmap('Set1', 2)
+        ax.contour(X,Y,Z, cmap=cmap, levels=[0.9])
+        ax.contour(X,Y,Z0, alpha=0.4)
+        ax.contour(X,Y,Z1, alpha=0.4)
+        ax.plot(self.mu0[0,0], self.mu0[1,0], marker="o", color="k",label="$\mu_0$")
+        ax.plot(self.mu1[0,0], self.mu1[1,0], marker="o", color="gray",label="$\mu_1$")
+        if psi_annotates==None:
+            psi_annotates = [[self.mu0[0,0], self.mu0[1,0]],[self.mu1[0,0], self.mu1[1,0]]]
+
+        # Annotate decisions
+        for ann in psi_annotates:
+            i = X[int(X.shape[0]*ann[0]), int(X.shape[1]*ann[1])]
+            j = Y[int(Y.shape[0]*ann[0]), int(Y.shape[1]*ann[1])]
+            x = np.matrix([i, j]).T 
+            if self.psi(x) > 0:
+                ax.annotate("$\psi^{*}(x) = 1$", (i, j))
+            else:
+                ax.annotate("$\psi^{*}(x) = 0$", (i, j))
+        
+        # legend and label settings
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
+        ax.legend()
+```
+
+[^numpy]: There is a well-written documentation for matrix operation: https://numpy.org/doc/stable/user/absolute_beginners.html#creating-matrices
+[^plot]: the contour plot for Gaussian process is referred to https://gist.github.com/gwgundersen/90dfa64ca29aa8c3833dbc6b03de44be.
+
 ### (a)
 
 > \begin{equation*}
@@ -355,6 +530,17 @@ Combining @eq-2-4-e-1 and @eq-2-4-e-2 together, the maximum Bayes error is $1-\f
         0 & 4
     \end{pmatrix}
 > \end{equation*}
+
+``` {python}
+#| label: fig-2-4-a
+#| fig-cap: "Bayes Classifier for 2D Gussian (a)"
+
+bc = GaussianBayesClassifier(np.matrix([[2,0],[0,1]]),\
+                             np.matrix([[2,0],[0,4]]),\
+                             np.matrix([0,0]).T,\
+                             np.matrix([2,0]).T, 0.5)
+bc.plot2D()
+```
 
 
 ### (b)
@@ -372,6 +558,16 @@ Combining @eq-2-4-e-1 and @eq-2-4-e-2 together, the maximum Bayes error is $1-\f
     \end{pmatrix}
 > \end{equation*}
 
+``` {python}
+#| label: fig-2-4-b
+#| fig-cap: "Bayes Classifier for 2D Gussian (b)"
+
+bc = GaussianBayesClassifier(np.matrix([[2,0],[0,1]]),\
+                             np.matrix([[4,0],[0,1]]),\
+                             np.matrix([0,0]).T,np.matrix([2,0]).T,\
+                             0.5)
+bc.plot2D()
+```
 
 ### (c)
 
@@ -388,6 +584,17 @@ Combining @eq-2-4-e-1 and @eq-2-4-e-2 together, the maximum Bayes error is $1-\f
     \end{pmatrix}
 > \end{equation*}
 
+``` {python}
+#| label: fig-2-4-c
+#| fig-cap: "Bayes Classifier for 2D Gussian (c)"
+
+bc = GaussianBayesClassifier(np.matrix([[1,0],[0,1]]),\
+                             np.matrix([[2,0],[0,2]]),\
+                             np.matrix([0,0]).T,\
+                             np.matrix([0,0]).T,\
+                             0.5)
+bc.plot2D(psi_annotates= [[0.4,0.3], [0.7,0.7]])
+```
 
 ### (d)
 
@@ -404,7 +611,17 @@ Combining @eq-2-4-e-1 and @eq-2-4-e-2 together, the maximum Bayes error is $1-\f
     \end{pmatrix}
 > \end{equation*}
 
+``` {python}
+#| label: fig-2-4-d
+#| fig-cap: "Bayes Classifier for 2D Gussian (d)"
 
+bc = GaussianBayesClassifier(np.matrix([[2,0],[0,1]]),\
+                             np.matrix([[1,0],[0,2]]),\
+                             np.matrix([0,0]).T,\
+                             np.matrix([0,0]).T,\
+                             0.5)
+bc.plot2D(psi_annotates= [[0.3,0.4], [0.6,0.7]])
+```
 
 ---
 
@@ -432,6 +649,8 @@ Combining @eq-2-4-e-1 and @eq-2-4-e-2 together, the maximum Bayes error is $1-\f
         -\sigma & -\sigma & \cdots & 1+(l-2)\sigma
      \end{bmatrix}
 >\end{equation}
+
+
 
 ### (b) 
 
