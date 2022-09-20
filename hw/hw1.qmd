@@ -469,8 +469,8 @@ class GaussianBayesClassifier:
         fig, ax = plt.subplots()
 
         # Create girds
-        xlist = np.linspace(-3.5,3.5,30)
-        ylist = np.linspace(-3.5,3.5,30)
+        xlist = np.linspace(-3.5,3.5,40)
+        ylist = np.linspace(-3.5,3.5,40)
         X, Y = np.meshgrid(xlist, ylist)
         pos = np.dstack((X,Y))
         
