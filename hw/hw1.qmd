@@ -35,10 +35,13 @@ import matplotlib # plotting
 import scipy as st # scientific computing
 import pandas as pd # data managing
 import numpy as np # numerical comuptation
+import scipy.optimize as opt
 import matplotlib.pyplot as plt
 from scipy.stats import multivariate_normal
-import scipy.optimize as opt
+from scipy.special import erf
 from numpy.linalg import inv, det
+from scipy.linalg import block_diag
+from scipy.stats import norm # for problem 2.17 (b)
 # Matplotlib setting
 plt.rcParams['text.usetex'] = True
 matplotlib.rcParams['figure.dpi']= 300
@@ -360,9 +363,28 @@ Combining @eq-2-4-e-1 and @eq-2-4-e-2 together, the maximum Bayes error is $1-\f
 
 > Consider the following univariate Gaussian class-conditional densities:
 >
-> $$p(x|Y=0) = \frac{1}{\sqrt{2\pi}}\exp(-\frac{(x-3)^2}{2})$$
-> $$p(x|Y=1)=\frac{1}{3\sqrt{2\pi}}\exp(-\frac{(x-4)^2}{18})$$
+> $$p(x|Y=0) = \frac{1}{\sqrt{2\pi}}\exp(-\frac{(x-3)^2}{2})$$ {#eq-27-q1}
+> $$p(x|Y=1)=\frac{1}{3\sqrt{2\pi}}\exp(-\frac{(x-4)^2}{18})$$ {#eq-27-q2}
 > Assume that the classes are equally likely, i.e., $P(Y=0)=P(Y=1)=\frac{1}{2}$
+
+The PDF of Guasssian distribution is[^gauss-pdf]
+
+$$f(x) = \frac{1}{\sigma\sqrt{2\pi}}\exp(- \frac{(x-\mu)^2}{2\sigma^2})$$
+
+``` {python}
+#| label: tbl-2-7-gauss
+#| tbl-cap: Parameters of Gaussian PDFs.
+#| echo: false
+
+mu0 = 3
+mu1 = 4
+std0 = 1
+std1 = 3
+
+pd.DataFrame({"Parameters": ["$$\mu_0$$", "$$\mu_1$$", "$$\sigma_0$$", "$$\sigma_1$$"], "Values": [mu0, mu1, std0, std1]})
+```
+
+[^gauss-pdf]: Gaussian PDF. WolframAlpha. URL: https://mathworld.wolfram.com/GaussianFunction.html
 
 ### (a)
 
@@ -390,23 +412,24 @@ class Gauss:
         ps = [self.pdf(x) for x in xs]
         ax.plot(xs, ps, **args)
 
-def findroot(g0,g1, bound=[2.5,7.5]):
-    f = lambda x: g1.pdf(x) - g0.pdf(x)
-    return opt.brentq(f, *bound)
 
 g0 = Gauss(1,3,2)
 g1 = Gauss(3,4,18)
-dec_x = findroot(g0,g1)
+
+## Boundaries
+dec_x = [1.26, 4.49] # see problem 2.7 (b) for derivation
 
 ## Plotting
 fig, ax = plt.subplots()
 g0.plot(ax, color="black",label="$p(x|Y=0) = \\frac{1}{\\sqrt{2\\pi}}\\exp(-\\frac{(x-3)^2}{2})$")
 g1.plot(ax, color="gray",linestyle="--",label="$p(x|Y=1)=\\frac{1}{3\\sqrt{2\\pi}}\exp(-\\frac{(x-4)^2}{18})$")
-ax.axvline(x=dec_x, color='red', label="Bayes decision boundary")
+ax.axvline(x=dec_x[0], label="Bayes decision boundary")
+ax.axvline(x=dec_x[1])
 ax.set_xlabel("$x$")
 ax.set_ylabel("$PDF$")
-ax.annotate("$\psi^{*}(x)=1$ if $\\eta(x)\\approx$ " + str(round(dec_x,2)), (7.5,0.2))
-ax.annotate("$\psi^{*}(x)=0$", (-5,0.2))
+ax.annotate("$\psi^{*}(x)=1$", (7.5,0.2))
+ax.annotate("$\psi^{*}(x)=1$", (-5,0.2))
+ax.annotate("$\psi^{*}(x)=0$", (1.4,0.2))
 ax.legend(loc="upper right");
 ```
 
@@ -416,7 +439,65 @@ ax.legend(loc="upper right");
 
 > Determine the Bayes classifier.
 
+According to @braga2020fundamentals [pp. 22], the Bayes classifier can be defined by
 
+\begin{equation}
+    \psi^{*}(x) = 
+    \begin{cases}
+        1, & D^{*}(x) > k^*\\
+        0, & \text{otherwise}
+    \end{cases}
+\end{equation}
+
+where $D^*(x) = \ln \frac{p(x|Y=1)}{p(x|Y=0)}$, $k^* = \ln \frac{P(Y=0)}{P(Y=1)}$. Now, take @eq-27-q1 and @eq-27-q2 into the forumula.
+
+$$k^{*} = \ln \frac{1}{1} = 0$$
+
+\begin{align}
+    D^*(x) &= \ln \frac{p(x|Y=1)}{p(x|Y=0)}\\ 
+           &= \ln \frac{\frac{1}{\sqrt{2\pi}}\exp(-\frac{(x-3)^2}{2})}{\frac{1}{3\sqrt{2\pi}}\exp(-\frac{(x-4)^2}{18})}\\ 
+           &= \ln \left[ 3 \cdot \exp(-\frac{(x-3)^2}{2} + \frac{(x-4)^2}{18}) \right]\\ 
+           &= \ln 3 -\frac{(x-3)^2}{2} + \frac{(x-4)^2}{18}\\
+           &= \frac{-4}{9}x^2 + \frac{23}{9}x + (\ln(3) - \frac{65}{18})
+\end{align}
+
+Thus, the Bayes classifier for distinguishing @eq-27-q1 and @eq-27-q2 is 
+
+\begin{equation}
+    \psi^{*}(x) = 
+    \begin{cases}
+        1, & \frac{-4}{9}x^2 + \frac{23}{9}x + (\ln(3) - \frac{65}{18})> 0\\
+        0, & \text{otherwise}
+    \end{cases}
+\end{equation}
+
+with the boundaries
+
+\begin{equation}
+    x =
+    \begin{cases}
+        \frac{1}{8}(23-3\sqrt{1+16\ln(3)}) &\approx 1.26\\ 
+        \frac{1}{8}(23+3\sqrt{1+16\ln(3)}) &\approx 4.49
+    \end{cases} 
+\end{equation}
+
+Noted that there are two boundaries for $D^*(x) = 0$ becasue $D^*(x)$ is a second order equation of $x$.
+
+\begin{align}
+    \psi^{*}(x) &= 
+    \begin{cases}
+        1, & \left[ x- (\frac{1}{8}(23-3\sqrt{1+16\ln(3)}))\right]\left[ x-(\frac{1}{8}(23+3\sqrt{1+16\ln(3)}))\right]> 0\\
+        0, & \text{otherwise}
+    \end{cases}\\ 
+    &=\begin{cases}
+        1, x < (\frac{1}{8}(23-3\sqrt{1+16\ln(3)})) \lor x>(\frac{1}{8}(23+3\sqrt{1+16\ln(3)}))\\ 
+        0, \text{ otherwise } 
+    \end{cases}\\
+    &\approx \begin{cases}
+        1, x < 1.26 \lor x> 4.49\\ 
+        0, \text{ otherwise } 
+    \end{cases}
+\end{align}
 
 ### (c)
 
@@ -424,15 +505,91 @@ ax.legend(loc="upper right");
 >
 > Hint: use the standard Gaussian CDF $\psi(x)$
 
+Let left and right boundaries be $\frac{1}{8}(23-3\sqrt{1+16\ln(3)}) = b_1$ and $\frac{1}{8}(23+3\sqrt{1+16\ln(3)})= b_2$,
+
+
 |Sensitivity|Specificity|
 |---|---|
 |$1-\epsilon^1[\psi]$|$1-\epsilon^0[\psi]$|
 : The definition of sensitivity and specificity from @braga2020fundamentals [pp. 18] {#tbl-spec-def}
 
+The standard normal CDF is[^normal-wiki]. Use the definition of $\epsilon^{0}[\psi]$ and $\epsilon^{1}[\psi]$ in @braga2020fundamentals [pp. 18]
+
+$$F(x) = p(X<x) = \frac{1}{2}\left[ 1 + erf(\frac{x-\mu}{\sigma\sqrt{2}})\right]$$
+
+\begin{align}
+    \epsilon^{0}[\psi^{*}(x)] &= P(\psi(X) = 1 | Y=0)\\
+    &= \int_{\{x|\psi(x)= 1\}}p(x|Y=0)dx\\
+    &= \int_{-\infty}^{b_1} p(x|Y=0)dx + \int_{b_2}^{\infty} p(x|Y=0)dx\\
+    &= F_{X_0}(b_1) + 1 - F_{X_0}(b_2)\\ 
+    &= \frac{1}{2}[1+erf(\frac{b_1-\mu_0}{\sigma_0\sqrt{2}})] + 1 - \frac{1}{2}[1+erf(\frac{b_2-\mu_0}{\sigma_0\sqrt{2}})]\\ 
+    &= \underline{1 + \frac{1}{2}(erf(\frac{b_1-\mu_0}{\sigma_0\sqrt{2}}) - erf(\frac{b_2-\mu_0}{\sigma_0\sqrt{2}}))}
+\end{align}
+
+\begin{align}
+    \epsilon^{1}[\psi^{*}(x)] &= P(\psi(X) = 0 | Y=1)\\
+    &= \int_{\{x|\psi(x)= 0\}}p(x|Y=1)dx\\
+    &= \int_{b_1}^{b_2} p(x|Y=1)dx\\ 
+    &= F_{X_1}(b_2) - F_{X_1}(b1)\\ 
+    &= \underline{\frac{1}{2}\left[ erf(\frac{b_2 - \mu_1}{\sigma_1 \sqrt{2}}) - erf(\frac{b_1 - \mu_1}{\sigma_1 \sqrt{2}})  \right]}\\
+\end{align}
+
+The exact values of error estimation are shown in @tbl-errors (`epsilon_0` is $\epsilon_0$, and `epsilon_1` $\epsilon_1$). Specificity and sensitivity are calculated with their definitions shown in [@tbl-spec-def],
+
+
+
+``` {python}
+# Calculation of error statistics
+def nerf(b, mu, std):
+    return erf( (b - mu) / (std*np.sqrt(2)))
+
+b1 = (1/8)*(23-3*np.sqrt(1+16*np.log(3)))
+b2 = (1/8)*(23+3*np.sqrt(1+16*np.log(3)))
+e0 = 1 + 0.5*(nerf(b1,mu0, std0) - nerf(b2,mu0, std0))
+e1 = 0.5*(nerf(b2,mu1, std1) - nerf(b1, mu1, std1))
+
+sensi = 1 - e1
+spec = 1 - e0
+bayesError = 0.5*(e0+e1)
+```
+
+``` {python}
+#| label: tbl-errors
+#| tbl-cap: Exact values of type 0 and type 1 error rates.
+#| echo: false
+
+pd.DataFrame({"Error statistics": ["epsilon_0", "epsilon_1",\
+    "Sensitivity", "Specificity", "Overall Bayes error"],\
+    "Value": [e0, e1, sensi, spec, bayesError]})
+```
+
+[^normal-wiki]: Normal distribution. Wiki URL: https://en.wikipedia.org/wiki/Normal_distribution
 
 ### (d)
 
 > Determine the overall Bayes error.
+
+Use the derivation in @braga2020fundamentals [pp. 18],
+
+\begin{align}
+    \epsilon[\psi^{*}(X)] &= P(\psi(X) \neq Y)\\ 
+    &= P(\psi(X)=1, Y=0)  + P(\psi(X)=0, Y=1)\\ 
+    &= P(Y=0) P(\psi(X)=1 | Y=0)  + P(Y=1)P(\psi(X)=0 | Y=1)\\
+    &= P(Y=0)\epsilon^0 + P(Y=1)\epsilon^1\\
+    &= \underline{\frac{1}{2}(\epsilon^0 + \epsilon^1)}
+\end{align}
+
+The excat Bayes error is displayed in @tbl-bayes.
+
+``` {python}
+#| label: tbl-bayes
+#| tbl-cap: Exact values of Bayes error.
+#| echo: false
+
+bayesError = 0.5*(e0+e1)
+pd.DataFrame({"Error statistics": ["Overall Bayes error"], "Value": [bayesError]})
+```
+
 
 ## Problem 2.9
 
@@ -687,7 +844,7 @@ bc.plot2D(psi_annotates= [[0.3,0.4], [0.6,0.7]])
 
 ### (a)
 
-> Derive a general expression for the Bayes error for the homoskedastic case with $\mu_0 = (0,\dots,0), \mu_1=(1,\dots,1)$, and $P(Y=0)=P(Y=1)$. Your answer should be in terms of $k, \sigma^{2}_{1}, \dots, \sigma^{2}_{k}, l_1, \dots, l_k,$ and $\sigma_{1},\dots, \sigma_k$.
+> Derive a general expression for the Bayes error for the homoskedastic case with $\mu_0 = (0,\dots,0), \mu_1=(1,\dots,1)$, and $P(Y=0)=P(Y=1)$. Your answer should be in terms of $k, \sigma^{2}_{1}, \dots, \sigma^{2}_{k}, l_1, \dots, l_k,$ and $\rho_{1},\dots, \rho_k$.
 > 
 > Hint: Use the fact that 
 >
@@ -699,30 +856,197 @@ bc.plot2D(psi_annotates= [[0.3,0.4], [0.6,0.7]])
         \sigma & \sigma & \cdots & 1
      \end{bmatrix}^{-1}_{l\times l} = \frac{1}{(1-\sigma)(1+(l-1)\sigma)}
      \begin{bmatrix}
-        1+(l-2)\sigma & -\sigma \cdots -\sigma\\ 
-        -\sigma & 1+(l-2)\sigma & \cdots -\sigma\\ 
+        1+(l-2)\sigma & -\sigma \cdots & -\sigma\\ 
+        -\sigma & 1+(l-2)\sigma & \cdots &-\sigma\\ 
         \vdots & \vdots  & \ddots & \vdots\\ 
-        -\sigma & -\sigma & \cdots & 1+(l-2)\sigma
+        -\sigma & -\sigma & \cdots & 1+(l-2) & \sigma
      \end{bmatrix}
 >\end{equation}
 
+Use Equation 2.53 in @braga2020fundamentals [pp. 31]. Given $P(Y=0)=P(Y=1)=0.5$, then
 
+\begin{equation}
+    \epsilon_{L}^{*} = \Phi(- \frac{\delta}{2})
+\end{equation}
+
+where $\delta = \sqrt{(\mu_1 - \mu_0)^T \Sigma^{-1}(\mu_1 - \mu0)}$.
+
+\begin{equation}
+    \Sigma_{d\times d} = 
+    \begin{bmatrix}
+        \Sigma_{l_1 \times l_1}(\sigma^{2}_{1}, \rho_{1}) & 0 & \cdots & 0\\
+        0 & \Sigma_{l_2 \times l_2}(\sigma^{2}_{2}, \rho_{2}) & \cdots & 0\\ 
+        \vdots & \vdots & \ddots & \vdots\\ 
+        0 & 0 & \cdots & \Sigma_{l_k \times l_k}(\sigma^{2}_{k}, \rho_{k})
+    \end{bmatrix}
+\end{equation}
+
+where $l_1 + \cdots + l_k = d$.
+
+\begin{align}
+    \Sigma_{l_k \times l_k}(\sigma^{2}_{i}, \rho_{i}) &= \sigma^2_{i}
+    \begin{bmatrix}
+        1 & \rho_i & \cdots & \rho_i \\
+        \rho_i & 1 & \cdots & \rho_i \\
+        \vdots & \vdots & \ddots & \vdots\\ 
+        \rho_i & \rho_i & \cdots & 1
+    \end{bmatrix}\\ 
+    %
+    %
+    \Sigma^{-1}_{l_k \times l_k}(\sigma^{2}_{i}, \rho_{i}) &= \frac{1}{\sigma_{i}^{2}(1-\rho_i)(1+(l_k - 1)\rho_i)}
+    \begin{bmatrix}
+        1 + (l_k - 2)\sigma_i & -\sigma_i & \cdots & -\sigma_i\\ 
+        -\sigma_i & 1 + (l_k - 2)\sigma_i &  \cdots & -\sigma_i\\ 
+        \vdots & \vdots & \ddots & \vdots\\ 
+        -\sigma_i & -\sigma_i & \cdots & 1 + (l_k - 2)\sigma_i\\ 
+    \end{bmatrix}\\ 
+    &= 
+    \begin{bmatrix}
+        \frac{1 + (l_k - 2)\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)}& \frac{-\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)} & \cdots & \frac{-\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)}\\
+        \frac{-\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)} &  \frac{1 + (l_k - 2)\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)} & \cdots & \frac{-\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)}\\
+        \vdots & \vdots & \ddots & \vdots\\ 
+        \frac{-\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)} & \cdots & \frac{-\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)} & \frac{1 + (l_k - 2)\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)}\label{eq:inv}\\
+    \end{bmatrix}
+\end{align}
+
+Thus, the inverse of covariance matrix is
+
+\begin{equation}
+    \Sigma^{-1}_{d\times d} = 
+    \begin{bmatrix}
+        \Sigma^{-1}_{l_1 \times l_1}(\sigma^{2}_{1}, \rho_{1}) & 0 & \cdots & 0\\
+        0 & \Sigma^{-1}_{l_2 \times l_2}(\sigma^{2}_{2}, \rho_{2}) & \cdots & 0\\ 
+        \vdots & \vdots & \ddots & \vdots\\ 
+        0 & 0 & \cdots & \Sigma^{-1}_{l_k \times l_k}(\sigma^{2}_{k}, \rho_{k})
+    \end{bmatrix}
+\end{equation}
+
+Combining together,
+
+\begin{align}
+    \epsilon^{*}_{L} = \Phi(\frac{-1}{2}\delta) &= \frac{-1}{2}\sqrt{(\mu_1 - \mu_0)^T \Sigma^{-1}(\mu_1 - \mu_0)}\\ 
+    &= \frac{-1}{2}\sqrt{%
+        \underbrace{%
+    \begin{bmatrix}
+        1 & \cdots & 1
+    \end{bmatrix}
+    }_{1\times d}%
+    \underbrace{
+    \begin{bmatrix}
+        \Sigma^{-1}_{l_1 \times l_1}(\sigma^{2}_{1}, \rho_{1}) & 0 & \cdots & 0\\
+        0 & \Sigma^{-1}_{l_2 \times l_2}(\sigma^{2}_{2}, \rho_{2}) & \cdots & 0\\ 
+        \vdots & \vdots & \ddots & \vdots\\ 
+        0 & 0 & \cdots & \Sigma^{-1}_{l_k \times l_k}(\sigma^{2}_{k}, \rho_{k})
+    \end{bmatrix}
+    }_{d\times d}%
+    \underbrace{%
+    \begin{bmatrix}
+            1 \\ 
+            \vdots\\ 
+            1
+    \end{bmatrix}
+    }_{d \times 1}
+    }%
+\end{align}
 
 ### (b) 
 
-> Specialize the previous formula for equal-sized blocks $l_1 = \cdots = l_k = l$ with equal correlations $\sigma_1 = \cdots = \sigma_k = \sigma$, and constant variance $\sigma_{1}^{2} = \cdots, \sigma_{k}^{2} = \sigma^2$. Write the resulting formula in terms of $d,l,\sigma$ and $\sigma$.
+> Specialize the previous formula for equal-sized blocks $l_1 = \cdots = l_k = l$ with equal correlations $\rho_1 = \cdots = \rho_k = \rho$, and constant variance $\sigma_{1}^{2} = \cdots, \sigma_{k}^{2} = \sigma^2$. Write the resulting formula in terms of $d,l,\sigma$ and $\rho$.
 
 #### i.
 
-> Using the python function `norm.cdf` in the `scipy.stats` module, plot the Bayes error as a function of $\sigma\in [0.01,3 ]$ for $d=20, l=4$, and four different correlation values $\sigma=0,0.25,0.5,0.75$ (plot one curve for each value). Confirm that the Bayes error increasese monotonically with $\sigma$ from $0$ to $0.5$ for each value of $\sigma$, and that Bayes error for large $\sigma$ is uniformly larger than that for smaller $\sigma$. The latter fact shows that correlation between the features is detrimental to classfification.
+> Using the python function `norm.cdf` in the `scipy.stats` module, plot the Bayes error as a function of $\sigma\in [0.01,3 ]$ for $d=20, l=4$, and four different correlation values $\rho=0,0.25,0.5,0.75$ (plot one curve for each value). Confirm that the Bayes error increasese monotonically with $\sigma$ from $0$ to $0.5$ for each value of $\rho$, and that Bayes error for larger $\rho$ is uniformly larger than that for smaller $\rho$. The latter fact shows that correlation between the features is detrimental to classfification.
+
+``` {python}
+def get_VecM(length, val):
+    return np.ones((1, length)).T * val
+
+
+
+
+
+class GeneralMultiGaussian:
+    def __init__(self, d, l, sig, rho, Imu0=0, Imu1=1):
+        self.d = d
+        self.l = l
+        self.sig = sig
+        self.rho = rho
+        self.Imu0 = Imu0
+        self.Imu1 = Imu1
+        self.mu0 = get_VecM(d, Imu0)
+        self.mu1 = get_VecM(d, Imu1)
+        # cluster of covariance matrix
+        self.subCovInv = self.cluster_cov_inv() 
+        self.CovInv = self.cov_inv()
+
+    def cluster_cov_inv(self):
+        sig = self.sig
+        l = self.l
+        scale = 1/((sig**2)*(1-sig)*(1+(l-1)*sig))
+        diag_val = 1 + (l-2)*sig 
+        covInv = np.ones((l,l)) * (-1*sig)
+        covInv = np.matrix(covInv)
+        np.fill_diagonal(covInv, diag_val)
+        return scale*covInv
+
+    def cov_inv(self):
+        d = self.d; l = self.l
+        subMs = [self.subCovInv for i in range(0,int(d/l))]
+        return block_diag(*subMs)
+
+    def bayesError(self):
+        mu0 = self.mu0
+        mu1 = self.mu1
+        mud = mu1 - mu0
+        CovInv = self.CovInv
+
+        return -0.5 * np.sqrt(mud.T @ CovInv @ mud)
+
+
+
+sigs = np.linspace(0.01 ,3 , 10)
+d = 20
+l = 4
+rhos = [0, 0.25, 0.5, 0.75]
+
+
+gm = GeneralMultiGaussian(4, 2, sigs[0], rhos[0])
+
+print(gm.mu0)
+print(gm.mu1)
+print(gm.subCovInv)
+print(gm.CovInv)
+gm.bayesError()
+```
+``` {python}
+errorD = dict()
+for rho in rhos:
+    errorD[rho] = np.zeros(len(sigs))
+
+for rho in errorD.keys():
+    for (i, sig) in enumerate(sigs):
+        gm = GeneralMultiGaussian(d, l, sig, rho)
+        err = gm.bayesError()
+        errorD[rho][i] = err
+
+# Plotting
+fig, ax = plt.subplots()
+for rho in rhos:
+    ax.plot(sigs, errorD[rho], label="$\\rho={}$".format(rho))
+ax.set_xlabel("$\\sigma$")
+ax.set_ylabel("Bayes Error")
+ax.legend();
+```
+
+
 
 #### ii.
 
-> Plot the Bayes error as a function of $d=2,4,6,8,\dots, 40$, with fixed block size $l=4$ and variance $\sigma^2=1$ and $\sigma=0,0.25,0.5,0.75$ (plot one curve for each value). Confirm that the Bayes error decreases monotonically to $0$ with increasing dimensionality, with faster convergence for smaller correlation values.
+> Plot the Bayes error as a function of $d=2,4,6,8,\dots, 40$, with fixed block size $l=4$ and variance $\sigma^2=1$ and $\rho=0,0.25,0.5,0.75$ (plot one curve for each value). Confirm that the Bayes error decreases monotonically to $0$ with increasing dimensionality, with faster convergence for smaller correlation values.
 
 #### iii.
 
-> Plot the Bayes error as a function of the correlation $\sigma \in [0,1]$ for constant variance $\sigma^2 =2$ and fixed $d=20$ with varying block size $l=1,2,4,10$ (plot one curve for each value). Confirm that the Bayes error increases monotonically with increasing correlation. Notice that the rate of increase is particularly large near $\sigma=0$, which shows that the Bayes error is very sensitive to correlation in the near-independent region.
+> Plot the Bayes error as a function of the correlation $\rho \in [0,1]$ for constant variance $\sigma^2 =2$ and fixed $d=20$ with varying block size $l=1,2,4,10$ (plot one curve for each value). Confirm that the Bayes error increases monotonically with increasing correlation. Notice that the rate of increase is particularly large near $\rho=0$, which shows that the Bayes error is very sensitive to correlation in the near-independent region.
 
 ::: {.content-hidden when-format="html"}
 
