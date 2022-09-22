@@ -45,6 +45,7 @@ from scipy.stats import multivariate_normal
 # Matplotlib setting
 plt.rcParams['text.usetex'] = True
 matplotlib.rcParams['figure.dpi']= 300
+RES_GRID = 40
 ```
 
 ### Version
@@ -683,8 +684,8 @@ class GaussianBayesClassifier:
         fig, ax = plt.subplots()
 
         # Create girds
-        xlist = np.linspace(-3.5,3.5,200)
-        ylist = np.linspace(-3.5,3.5,200)
+        xlist = np.linspace(-3.5,3.5,RES_GRID)
+        ylist = np.linspace(-3.5,3.5,RES_GRID)
         X, Y = np.meshgrid(xlist, ylist)
         pos = np.dstack((X,Y))
         
