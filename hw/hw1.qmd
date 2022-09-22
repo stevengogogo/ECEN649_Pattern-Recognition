@@ -37,11 +37,11 @@ import pandas as pd # data managing
 import numpy as np # numerical comuptation
 import scipy.optimize as opt
 import matplotlib.pyplot as plt
-from scipy.stats import multivariate_normal
 from scipy.special import erf
 from numpy.linalg import inv, det
 from scipy.linalg import block_diag
 from scipy.stats import norm # for problem 2.17 (b)
+from scipy.stats import multivariate_normal
 # Matplotlib setting
 plt.rcParams['text.usetex'] = True
 matplotlib.rcParams['figure.dpi']= 300
@@ -895,17 +895,17 @@ where $l_1 + \cdots + l_k = d$.
     %
     \Sigma^{-1}_{l_k \times l_k}(\sigma^{2}_{i}, \rho_{i}) &= \frac{1}{\sigma_{i}^{2}(1-\rho_i)(1+(l_k - 1)\rho_i)}
     \begin{bmatrix}
-        1 + (l_k - 2)\sigma_i & -\sigma_i & \cdots & -\sigma_i\\ 
-        -\sigma_i & 1 + (l_k - 2)\sigma_i &  \cdots & -\sigma_i\\ 
+        1 + (l_k - 2)\rho_i & -\rho_i & \cdots & -\rho_i\\ 
+        -\rho_i & 1 + (l_k - 2)\rho_i &  \cdots & -\rho_i\\ 
         \vdots & \vdots & \ddots & \vdots\\ 
-        -\sigma_i & -\sigma_i & \cdots & 1 + (l_k - 2)\sigma_i\\ 
+        -\rho_i & -\rho_i & \cdots & 1 + (l_k - 2)\rho_i\\ 
     \end{bmatrix}\\ 
     &= 
     \begin{bmatrix}
-        \frac{1 + (l_k - 2)\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)}& \frac{-\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)} & \cdots & \frac{-\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)}\\
-        \frac{-\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)} &  \frac{1 + (l_k - 2)\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)} & \cdots & \frac{-\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)}\\
+        \frac{1 + (l_k - 2)\rho_i}{\sigma_{i}^{2}(1-\rho_i)(1+(l_k - 1)\rho_i)}& \frac{-\rho_i}{\sigma_{i}^{2}(1-\rho_i)(1+(l_k - 1)\rho_i)} & \cdots & \frac{-\rho_i}{\sigma_{i}^{2}(1-\rho_i)(1+(l_k - 1)\rho_i)}\\
+        \frac{-\rho_i}{\sigma_{i}^{2}(1-\rho_i)(1+(l_k - 1)\rho_i)} &  \frac{1 + (l_k - 2)\rho_i}{\sigma_{i}^{2}(1-\rho_i)(1+(l_k - 1)\rho_i)} & \cdots & \frac{-\rho_i}{\sigma_{i}^{2}(1-\rho_i)(1+(l_k - 1)\rho_i)}\\
         \vdots & \vdots & \ddots & \vdots\\ 
-        \frac{-\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)} & \cdots & \frac{-\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)} & \frac{1 + (l_k - 2)\sigma_i}{\sigma_{i}^{2}(1-\sigma_i)(1+(l_k - 1)\sigma_i)}\label{eq:inv}\\
+        \frac{-\rho_i}{\sigma_{i}^{2}(1-\rho_i)(1+(l_k - 1)\rho_i)} & \cdots & \frac{-\rho_i}{\sigma_{i}^{2}(1-\rho_i)(1+(l_k - 1)\rho_i)} & \frac{1 + (l_k - 2)\rho_i}{\sigma_{i}^{2}(1-\rho_i)(1+(l_k - 1)\rho_i)}\label{eq:inv}\\
     \end{bmatrix}
 \end{align}
 
@@ -924,8 +924,8 @@ Thus, the inverse of covariance matrix is
 Combining together,
 
 \begin{align}
-    \epsilon^{*}_{L} = \Phi(\frac{-1}{2}\delta) &= \frac{-1}{2}\sqrt{(\mu_1 - \mu_0)^T \Sigma^{-1}(\mu_1 - \mu_0)}\\ 
-    &= \frac{-1}{2}\sqrt{%
+    \epsilon^{*}_{L} = \Phi(\frac{-1}{2}\delta) &= \Phi\left(\frac{-1}{2}\sqrt{(\mu_1 - \mu_0)^T \Sigma^{-1}(\mu_1 - \mu_0)}\right)\\ 
+    &= \Phi\left(\frac{-1}{2}\sqrt{%
         \underbrace{%
     \begin{bmatrix}
         1 & \cdots & 1
@@ -946,7 +946,7 @@ Combining together,
             1
     \end{bmatrix}
     }_{d \times 1}
-    }%
+    }\right)%
 \end{align}
 
 ### (b) 
@@ -955,15 +955,17 @@ Combining together,
 
 #### i.
 
-> Using the python function `norm.cdf` in the `scipy.stats` module, plot the Bayes error as a function of $\sigma\in [0.01,3 ]$ for $d=20, l=4$, and four different correlation values $\rho=0,0.25,0.5,0.75$ (plot one curve for each value). Confirm that the Bayes error increasese monotonically with $\sigma$ from $0$ to $0.5$ for each value of $\rho$, and that Bayes error for larger $\rho$ is uniformly larger than that for smaller $\rho$. The latter fact shows that correlation between the features is detrimental to classfification.
+> Using the python function `norm.cdf` in the `scipy.stats` module, plot the Bayes error as a function of $\sigma\in [0.01,3 ]$ for $d=20, l=4$, and four different correlation values $\rho=0,0.25,0.5,0.75$ (plot one curve for each value). Confirm that the Bayes error increasese monotonically with $\sigma$ from $0$ to $0.5$ for each value of $\rho$, and that Bayes error for larger $\rho$ is uniformly larger than that for smaller $\rho$. The latter fact shows that correlation between the features is detrimental to classification.
+
+As shown in @fig-error-multi-gauss, the correlation does have the detrimental effect on classification, and monotoniously increases Bayes error.
 
 ``` {python}
+#| label: fig-error-multi-gauss
+#| fig-cap: The relation of Bayes error with standard deviation and covariance.
+
+# Implementation
 def get_VecM(length, val):
     return np.ones((1, length)).T * val
-
-
-
-
 
 class GeneralMultiGaussian:
     def __init__(self, d, l, sig, rho, Imu0=0, Imu1=1):
@@ -982,43 +984,35 @@ class GeneralMultiGaussian:
     def cluster_cov_inv(self):
         sig = self.sig
         l = self.l
-        scale = 1/((sig**2)*(1-sig)*(1+(l-1)*sig))
-        diag_val = 1 + (l-2)*sig 
-        covInv = np.ones((l,l)) * (-1*sig)
+        rho = self.rho
+        scale = 1/((sig**2)*(1-rho)*(1+(l-1)*rho))
+        diag_val = 1 + (l-2)*rho
+        covInv = np.ones((l,l)) * (-1*rho)
         covInv = np.matrix(covInv)
         np.fill_diagonal(covInv, diag_val)
         return scale*covInv
 
     def cov_inv(self):
         d = self.d; l = self.l
-        subMs = [self.subCovInv for i in range(0,int(d/l))]
-        return block_diag(*subMs)
+        subMs = [self.subCovInv for i in range(0,int(d/l)+1)]
+        return block_diag(*subMs)[0:d, 0:d]
 
     def bayesError(self):
         mu0 = self.mu0
         mu1 = self.mu1
         mud = mu1 - mu0
         CovInv = self.CovInv
+        delta = -0.5 * np.sqrt(mud.T @ CovInv @ mud) 
+        return norm.cdf(delta)
 
-        return -0.5 * np.sqrt(mud.T @ CovInv @ mud)
 
-
-
-sigs = np.linspace(0.01 ,3 , 10)
+# Parameter Setting
+sigs = np.linspace(0.01 ,3 , 50)
 d = 20
 l = 4
 rhos = [0, 0.25, 0.5, 0.75]
 
-
-gm = GeneralMultiGaussian(4, 2, sigs[0], rhos[0])
-
-print(gm.mu0)
-print(gm.mu1)
-print(gm.subCovInv)
-print(gm.CovInv)
-gm.bayesError()
-```
-``` {python}
+# Measurement of Bayes errors
 errorD = dict()
 for rho in rhos:
     errorD[rho] = np.zeros(len(sigs))
@@ -1044,9 +1038,64 @@ ax.legend();
 
 > Plot the Bayes error as a function of $d=2,4,6,8,\dots, 40$, with fixed block size $l=4$ and variance $\sigma^2=1$ and $\rho=0,0.25,0.5,0.75$ (plot one curve for each value). Confirm that the Bayes error decreases monotonically to $0$ with increasing dimensionality, with faster convergence for smaller correlation values.
 
+``` {python}
+#| label: fig-bayes-d
+#| fig-cap: Bayes error as a function of dimension.
+
+ds = np.arange(4, 40, 4, dtype=int)
+l = 4
+sig = 1
+
+errorD2 = dict()
+for rho in rhos:
+    errorD2[rho] = np.zeros(len(ds))
+
+for rho in errorD2.keys():
+    for (i, d) in enumerate(ds):
+        gm = GeneralMultiGaussian(d, l, sig, rho)
+        err = gm.bayesError()
+        errorD2[rho][i] = err
+
+# Plotting
+fig, ax = plt.subplots()
+for rho in rhos:
+    ax.plot(ds, errorD2[rho], label="$\\rho={}$".format(rho))
+ax.set_xlabel("$d$")
+ax.set_ylabel("Bayes Error")
+ax.legend();
+```
+
 #### iii.
 
 > Plot the Bayes error as a function of the correlation $\rho \in [0,1]$ for constant variance $\sigma^2 =2$ and fixed $d=20$ with varying block size $l=1,2,4,10$ (plot one curve for each value). Confirm that the Bayes error increases monotonically with increasing correlation. Notice that the rate of increase is particularly large near $\rho=0$, which shows that the Bayes error is very sensitive to correlation in the near-independent region.
+
+``` {python}
+#| label: fig-bayes-d
+#| fig-cap: Bayes error as a function of dimension.
+
+d = 20
+ls = [1,2,4,10]
+sig = 2
+rhos = np.linspace(0.4,1,20)
+
+errorD3 = dict()
+for l in ls:
+    errorD2[l] = np.zeros(len(rhos))
+
+for l in errorD2.keys():
+    for (i, rho) in enumerate(rhos):
+        gm = GeneralMultiGaussian(d, l, sig, rho)
+        err = gm.bayesError()
+        errorD3[l][i] = err
+
+# Plotting
+fig, ax = plt.subplots()
+for l in ls:
+    ax.plot(ds, errorD3[l], label="$\\l={}$".format(l))
+ax.set_xlabel("$\\rho$")
+ax.set_ylabel("Bayes Error")
+ax.legend();
+```
 
 ::: {.content-hidden when-format="html"}
 
