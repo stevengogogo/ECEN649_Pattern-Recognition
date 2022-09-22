@@ -133,7 +133,8 @@ $$\epsilon^{*} = \sum_{x\in X} \left[ I_{\eta(X=x)\leq 1-\eta(X=x)}\eta(X=x) + I
 
 \begin{align}
     \epsilon^{*} &= P(Y=0)\epsilon^{0}[\psi^*] + P(Y=1)\epsilon^1 [\psi^*]\\
-                 &= \sum_{\{x|P(Y=1)p(x|Y=1)>P(Y=0)p(x|Y=0)\}} P(Y=0)p(x|Y=0) + \sum_{\{x|P(Y=1)p(x|Y=1)\leq P(Y=0)p(x|Y=0)\}} P(Y=1)p(x|Y=1) 
+                 &= \sum_{\{x|P(Y=1)p(x|Y=1)>P(Y=0)p(x|Y=0)\}} P(Y=0)p(x|Y=0) \\ 
+    &+ \sum_{\{x|P(Y=1)p(x|Y=1)\leq P(Y=0)p(x|Y=0)\}} P(Y=1)p(x|Y=1) 
 \end{align}
 
 ### (2.36)
@@ -682,8 +683,8 @@ class GaussianBayesClassifier:
         fig, ax = plt.subplots()
 
         # Create girds
-        xlist = np.linspace(-3.5,3.5,40)
-        ylist = np.linspace(-3.5,3.5,40)
+        xlist = np.linspace(-3.5,3.5,200)
+        ylist = np.linspace(-3.5,3.5,200)
         X, Y = np.meshgrid(xlist, ylist)
         pos = np.dstack((X,Y))
         
@@ -1038,14 +1039,18 @@ ax.legend();
 
 > Plot the Bayes error as a function of $d=2,4,6,8,\dots, 40$, with fixed block size $l=4$ and variance $\sigma^2=1$ and $\rho=0,0.25,0.5,0.75$ (plot one curve for each value). Confirm that the Bayes error decreases monotonically to $0$ with increasing dimensionality, with faster convergence for smaller correlation values.
 
+The plot is shown in @fig-bayes-d.
+
 ``` {python}
 #| label: fig-bayes-d
 #| fig-cap: Bayes error as a function of dimension.
 
+# Parameter setting
 ds = np.arange(4, 40, 4, dtype=int)
 l = 4
 sig = 1
 
+# Measure errors
 errorD2 = dict()
 for rho in rhos:
     errorD2[rho] = np.zeros(len(ds))
@@ -1069,20 +1074,24 @@ ax.legend();
 
 > Plot the Bayes error as a function of the correlation $\rho \in [0,1]$ for constant variance $\sigma^2 =2$ and fixed $d=20$ with varying block size $l=1,2,4,10$ (plot one curve for each value). Confirm that the Bayes error increases monotonically with increasing correlation. Notice that the rate of increase is particularly large near $\rho=0$, which shows that the Bayes error is very sensitive to correlation in the near-independent region.
 
-``` {python}
-#| label: fig-bayes-d
-#| fig-cap: Bayes error as a function of dimension.
+The plot is show in @fig-bayes-rhos.
 
+``` {python}
+#| label: fig-bayes-rhos
+#| fig-cap: Bayes error as a function of correlation.
+
+# Parameter setting
 d = 20
 ls = [1,2,4,10]
 sig = 2
-rhos = np.linspace(0.4,1,20)
+rhos = np.linspace(0.,0.99,40)
 
+# Measure errors
 errorD3 = dict()
 for l in ls:
-    errorD2[l] = np.zeros(len(rhos))
+    errorD3[l] = np.zeros(len(rhos))
 
-for l in errorD2.keys():
+for l in ls:
     for (i, rho) in enumerate(rhos):
         gm = GeneralMultiGaussian(d, l, sig, rho)
         err = gm.bayesError()
@@ -1091,7 +1100,7 @@ for l in errorD2.keys():
 # Plotting
 fig, ax = plt.subplots()
 for l in ls:
-    ax.plot(ds, errorD3[l], label="$\\l={}$".format(l))
+    ax.plot(rhos, errorD3[l], label="$\\l={}$".format(l))
 ax.set_xlabel("$\\rho$")
 ax.set_ylabel("Bayes Error")
 ax.legend();
