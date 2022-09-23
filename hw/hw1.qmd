@@ -78,9 +78,9 @@ Let $x_k = [x_1,\dots, x_d]$ be the feature vector of $X$ in set $D\in R^d$,
 
 \begin{align}
     P(X\in D, Y=0) &= P(X=[x_1,\dots, x_d], Y=0)\\
-                   &= \sum_{X\in D} P(Y=0)P(X=[x_1,\dots, x_d] |Y=0)\\
+                   &= \sum_{X_k\in D} P(Y=0)P(X=[x_1,\dots, x_d] |Y=0)\\
     P(X\in D, Y=1) &= P(X=[x_1,\dots, x_d], Y=1)\\
-                   &= \sum_{X\in D} P(Y=1)P(X=[x_1,\dots, x_d] |Y=1)\\
+                   &= \sum_{X_k\in D} P(Y=1)P(X=[x_1,\dots, x_d] |Y=1)\\
 \end{align}
 
 ### (2.4)
@@ -103,15 +103,15 @@ Let $x_k = [x_1,\dots, x_d]$ be the feature vector of $X$ in set $D\in R^d$,
 
 > From @braga2020fundamentals [pp. 18]
 
-$$\epsilon^{0}[\psi] = P(\psi(X)=1 | Y=0) = \sum_{\{x_k|\psi(x)=1\}} p(x_k|Y=0)$$
+$$\epsilon^{0}[\psi] = P(\psi(X)=1 | Y=0) = \sum_{\{x_k|\psi(x_k)=1\}} p(x_k|Y=0)$$
 
-$$\epsilon^{1}[\psi] = P(\psi(X)=0 | Y=1) = \sum_{\{x_k|\psi(x)=1\}} p(x_k|Y=1)$$
+$$\epsilon^{1}[\psi] = P(\psi(X)=0 | Y=1) = \sum_{\{x_k|\psi(x_k)=1\}} p(x_k|Y=1)$$
 
 ### (2.9)
 
 > From @braga2020fundamentals [pp. 18]
 
-$$\epsilon[\psi] = \sum_{\{x|\psi(x)=1\}} P(Y=0)p(x_k | Y=0) + \sum_{\{x|\psi=0\}}P(Y= 1)p(x_k|Y=1)$$
+$$\epsilon[\psi] = \sum_{\{x_k|\psi(x)=1\}} P(Y=0)p(x_k | Y=0) + \sum_{\{x_k|\psi=0\}}P(Y= 1)p(x_k|Y=1)$$
 
 
 
@@ -126,7 +126,7 @@ $$\epsilon[\psi] = E[\epsilon[\psi|X=x_k]] = \sum_{x_{k}\in D} \epsilon[\psi|X=x
 
 > From @braga2020fundamentals [pp. 24].
 
-$$\epsilon^{*} = \sum_{x\in X} \left[ I_{\eta(X=x)\leq 1-\eta(X=x)}\eta(X=x) + I_{\eta(X=x) > 1 - \eta(X=x)(1-\eta(X=x))}\right] p(X=x)$$
+$$\epsilon^{*} = \sum_{x_k\in X} \left[ I_{\eta(X=x_k)\leq 1-\eta(X=x_k)}\eta(X=x_k) + I_{\eta(X=x_k) > 1 - \eta(X=x_k)(1-\eta(X=x_k))}\right] p(X=x_k)$$
 
 ### (2.34)
 
@@ -134,15 +134,15 @@ $$\epsilon^{*} = \sum_{x\in X} \left[ I_{\eta(X=x)\leq 1-\eta(X=x)}\eta(X=x) + I
 
 \begin{align}
     \epsilon^{*} &= P(Y=0)\epsilon^{0}[\psi^*] + P(Y=1)\epsilon^1 [\psi^*]\\
-                 &= \sum_{\{x|P(Y=1)p(x|Y=1)>P(Y=0)p(x|Y=0)\}} P(Y=0)p(x|Y=0) \\ 
-    &+ \sum_{\{x|P(Y=1)p(x|Y=1)\leq P(Y=0)p(x|Y=0)\}} P(Y=1)p(x|Y=1) 
+                 &= \sum_{\{x_k|P(Y=1)p(x_k|Y=1)>P(Y=0)p(x_k|Y=0)\}} P(Y=0)p(x_k|Y=0) \\ 
+    &+ \sum_{\{x_k|P(Y=1)p(x_k|Y=1)\leq P(Y=0)p(x_k|Y=0)\}} P(Y=1)p(x_k|Y=1) 
 \end{align}
 
 ### (2.36)
 
 > From @braga2020fundamentals [pp. 25]
 
-$$E[\eta(X)] = \sum_{x\in R^d} P(Y=1|X=x)p(x) = P(Y=1)$$
+$$E[\eta(X)] = \sum_{x_k\in R^d} P(Y=1|X=x_k)p(x_k) = P(Y=1)$$
 
 ## Problem 2.3
 
@@ -174,7 +174,7 @@ $$\because \eta(X)=1>\frac{1}{2} \therefore \psi^{*}(x) = 1$$
 \begin{align}
     \epsilon^{*} &= \epsilon[\psi^{*}(X) | X=x]\\
     &= I_{\psi^{*}(x) = 0}P(Y=1 | X=x) + I_{\psi^{*}(x) = 1} P(Y=0|X=x)\\ 
-    &= \underbrace{I_{\psi^{*}(x) = 0}}_{=0}\underbrace{\eta(X)}_{=1}+ \underbrace{I_{\psi^{*}(x) = 1}}_{=1} \underbrace{(1-\eta(X))}_{=0}\\ 
+    &= \underbrace{I_{\psi^{*}(x) = 0}e}_{=0}\underbrace{\eta(X)}_{=1}+ \underbrace{I_{\psi^{*}(x) = 1}}_{=1} \underbrace{(1-\eta(X))}_{=0}\\ 
     &= 0
 \end{align}
 
@@ -911,6 +911,13 @@ where $l_1 + \cdots + l_k = d$.
     \end{bmatrix}
 \end{align}
 
+The element-wised summation of all terms in $\Sigma_{l_k \times l_k}(\sigma^{2}_{i}, \rho_{i})$ is 
+
+\begin{align}
+    sum(\Sigma_{l_k \times l_k}(\sigma^{2}_{k}, \rho_{k})) &= \frac{1}{\sigma_{i}^{2}(1-\rho_k)(1+(l_k - 1)\rho_k)}(- l_{k}^{2}\rho_k + l_k(1+(l_k-1)\rho_k))\\
+    & = \frac{l_k(1-\rho_k)}{\sigma_{k}^{2}(1-\rho_k)(1+(l_k - 1)\rho_k)}
+\end{align}
+
 Thus, the inverse of covariance matrix is
 
 \begin{equation}
@@ -948,7 +955,8 @@ Combining together,
             1
     \end{bmatrix}
     }_{d \times 1}
-    }\right)%
+    }\right)\\
+    &= \Phi\left( \sum_{i=1}^{k}\frac{l_i(1-\rho_i)}{\sigma_{i}^{2}(1-\rho_i)(1+(l_i - 1)\rho_i)} \right)
 \end{align}
 
 ### (b) 
