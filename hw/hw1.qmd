@@ -45,7 +45,7 @@ from scipy.stats import multivariate_normal
 # Matplotlib setting
 plt.rcParams['text.usetex'] = True
 matplotlib.rcParams['figure.dpi']= 300
-RES_GRID = 40
+RES_GRID = 150
 ```
 
 ### Version
