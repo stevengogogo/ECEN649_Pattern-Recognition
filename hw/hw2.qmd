@@ -41,17 +41,17 @@ execute:
 %matplotlib inline
 import sys # system information
 import matplotlib # plotting
-import scipy as st # scientific computing
+import scipy.stats as st # scientific computing
 import pandas as pd # data managing
 import numpy as np # numerical comuptation
+from numpy import linalg as LA
+import scipy as sp
 import scipy.optimize as opt
 import sympy as sp
 import matplotlib.pyplot as plt
-from scipy.special import erf
 from numpy.linalg import inv, det
-from scipy.linalg import block_diag
-from scipy.stats import norm # for problem 2.17 (b)
-from scipy.stats import multivariate_normal
+from numpy.random import multivariate_normal as mvn
+from numpy.random import binomial as binom
 # Matplotlib setting
 plt.rcParams['text.usetex'] = True
 matplotlib.rcParams['figure.dpi']= 300
@@ -62,7 +62,7 @@ RES_GRID = 90
 ``` {python}
 print(sys.version)
 print(matplotlib.__version__)
-print(st.__version__)
+print(sp.__version__)
 print(np.__version__)
 print(pd.__version__)
 ```
@@ -72,6 +72,87 @@ print(pd.__version__)
 ## Problem 3.6 (Python Assignment)
 
 > Using the synthetic data model in Section A8.1 for the homoskedastic case with $\mu_0 = (0,\dots,0)$, $\mu_1=(1,\dots,1)$, $P(Y=0)=P(Y=1)$, and $k=d$ (independent features), generate a large number (e.g., $M=1000$) of training data sets for each sample size $n=20$ to $n=100$, in steps of $10$, with $d=2,5,8$, and $\sigma=1$. Obtain an approximation of the expected classification error $E[\epsilon_n]$ of the nearest centroid classifier in each case by averaging $\epsilon_n$, computed using the exact formula (3.13), over the $M$ synthetic training data sets. Plot $E[\epsilon_n]$ as a function of the sample size, for $d=2,5,8$ (join the individual points with lines to obtain a smooth curve). Explain what you see.
+
+- The formula in @braga2020fundamentals [pp. 56, Eq. 3.13]
+    - $\epsilon_n = \frac{1}{2}\left(\Phi\left(\frac{a_{n}^{T}\hat{\mu}_0 +  b_n}{\|a_n\|}\right)  + \Phi\left(-\frac{a_{n}^{T}\hat{\mu}_1 + b_n}{\|a_n\|}\right) \right)$
+        - $\mu_0 = (0,\dots, 0)$
+            - $\hat{\mu}_0 = \frac{1}{N_0}\sum^{n}_{i=1}X_i I_{Y_i=0}$
+        - $\mu_1 = (1,\dots,1)$
+            - - $\hat{\mu}_1 = \frac{1}{N_1}\sum^{n}_{i=1}X_i I_{Y_i=1}$
+        - $a_n = \hat{\mu}_1 - \hat{\mu}_0$
+        - $b_n = \frac{(\hat{\mu}_1 - \hat{\mu}_0)(\hat{\mu}_1 + \hat{\mu}_0)}{2}$
+
+``` {python}
+
+""""
+Foundations of Pattern Recognition and Machine Learning
+Author: Ulisses Braga-Neto
+
+Generate Gaussian synthetic data
+"""
+def gen_class(n,m,k,l,s,r):
+    """
+    Generates Gaussian data with a blocked covariance matrix
+    
+    Arguments:
+        n (int):   sample size
+        m (array): mean vector
+        k (int):   number of blocks
+        l (array): size of each block
+        s (array): variance in each block
+        r (array): correlation in each block
+    Returns:
+        X: data matrix of size n x (l[0]+...+l[k-1]) 
+    """
+    
+    X = np.zeros([n,sum(l)])
+    t = 0
+    for i in range(k):
+        cov = s[i]*((1-r[i])*np.identity(l[i])+r[i]*np.ones([l[i],l[i]]))
+        X[:,t:t+l[i]] = mvn(m[t:t+l[i]],cov,n)
+        t = t + l[i]
+    return X
+
+def hat_mu(m):
+    return np.mean(m, axis=0)
+
+def get_an(m0,m1):
+    return hat_mu(m1) - hat_mu(m0)
+
+def get_bn(m0,m1):
+    hmu0 = hat_mu(m0)
+    hmu1 = hat_mu(m1)
+    return (hmu1 - hmu0)*(hmu1+hmu0).T/2
+
+def epsilon(m0, m1, p0=0.5):
+    p1 = 1-p0
+    hmu0 = hat_mu(m0)
+    hmu1 = hat_mu(m1)
+    an = get_an(m0, m1)
+    bn = get_bn(m0, m1)
+
+    epsilon0 = st.norm.cdf((an*hmu0.T + bn)/LA.norm(an))
+    epsilon1 = st.norm.cdf(-(an*hmu1.T+ bn)/LA.norm(an))
+
+    return p0*epsilon0 + p1*epsilon1
+
+
+
+M = 1000
+n,d,k  = 20,6,3   
+c = 0.5 
+l  = [3,2,1]
+m0,m1 = np.zeros(d),np.ones(d)
+s0,s1 = np.ones(k),2*np.ones(k)
+r  = 0.5*np.ones(k) 
+n0 = binom(n,1-c)
+X0 = gen_class(n0,m0,k,l,s0,r)
+n1 = n-n0
+X1 = gen_class(n1,m1,k,l,s1,r)
+np.mean(X1, axis=0)
+
+print(epsilon(np.matrix(X0), np.matrix(X1)))
+```
 
 
 ## Problem 4.2
@@ -176,7 +257,7 @@ print(pd.__version__)
 > Compare the optimal classifier to the QDA classifier in Example 4.3. Compute the error of the QDA classifier and compare to the Bayes error.
 
 
-## Problem 4.8
+## Problem 4.8 (Python Assignment)
 
 > Apply linear discriminant analysis to the stacking fault energy (SFE) dataset (see @braga2020fundamentals [sec. A8.4]), already mentioned in @braga2020fundamentals [ch. 1]. Categorize the SFE values into two classes, low (SFE $\leq 35$) and high (SFE $\geq 45$), excluding the middle values.
 

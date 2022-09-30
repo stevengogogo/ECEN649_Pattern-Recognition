@@ -1,0 +1,8 @@
+---
+title: "Chapter 3: Sampled-Based classification"
+author: "Shao-Ting Chiu"
+date: "2022-09-02"
+---
+
+
+## No free lunch theorem
