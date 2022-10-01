@@ -55,7 +55,6 @@ from numpy.random import binomial as binom
 # Matplotlib setting
 plt.rcParams['text.usetex'] = True
 matplotlib.rcParams['figure.dpi']= 300
-RES_GRID = 90
 ```
 
 ### Version
@@ -84,89 +83,69 @@ print(pd.__version__)
 
 ``` {python}
 
-""""
-Foundations of Pattern Recognition and Machine Learning
-Author: Ulisses Braga-Neto
-
-Generate Gaussian synthetic data
-"""
-def gen_class(n,m,k,l,s,r):
-    """
-    Generates Gaussian data with a blocked covariance matrix
-    
-    Arguments:
-        n (int):   sample size
-        m (array): mean vector
-        k (int):   number of blocks
-        l (array): size of each block
-        s (array): variance in each block
-        r (array): correlation in each block
-    Returns:
-        X: data matrix of size n x (l[0]+...+l[k-1]) 
-    """
-    
-    X = np.zeros([n,sum(l)])
-    t = 0
-    for i in range(k):
-        cov = s[i]*((1-r[i])*np.identity(l[i])+r[i]*np.ones([l[i],l[i]]))
-        X[:,t:t+l[i]] = mvn(m[t:t+l[i]],cov,n)
-        t = t + l[i]
-    return X
-
 def hat_mu(m):
     return np.mean(m, axis=0)
 
-def get_an(m0,m1):
-    return hat_mu(m1) - hat_mu(m0)
+def get_an(hm0,hm1):
+    return hm1 - hm0
 
-def get_bn(m0,m1):
-    hmu0 = hat_mu(m0)
-    hmu1 = hat_mu(m1)
-    return (hmu1 - hmu0)*(hmu1+hmu0).T/2
+def get_bn(hm0,hm1):
+    return (hm1 - hm0)*(hm1+hm0).T/2
 
 def epsilon(m0, m1, p0=0.5):
     p1 = 1-p0
     hmu0 = hat_mu(m0)
     hmu1 = hat_mu(m1)
-    an = get_an(m0, m1)
-    bn = get_bn(m0, m1)
-
+    an = get_an(hmu0, hmu1)
+    bn = get_bn(hmu0, hmu1)
     epsilon0 = st.norm.cdf((an*hmu0.T + bn)/LA.norm(an))
     epsilon1 = st.norm.cdf(-(an*hmu1.T+ bn)/LA.norm(an))
+    return (p0*epsilon0 + p1*epsilon1)[0][0]
 
-    return p0*epsilon0 + p1*epsilon1
+class GaussianDataGen:
+    def __init__(self, n, d, s=1, mu=0):
+        self.n = n
+        self.d = d
+        self.mu = np.ones(d) * mu
+        self.s = s
+        self.cov = self.get_cov()
+
+    def get_cov(self):
+        return np.identity(self.d) * self.s
+    
+    def sample(self):
+        return  np.matrix(np.random.multivariate_normal(self.mu, self.cov, self.n))
+
+def cal_eps(dg0, dg1, p0=0.5):
+    m0 = dg0.sample()
+    m1 = dg1.sample()
+    return epsilon(m0, m1, p0=0.5)
+cal_eps_func = np.vectorize(cal_eps)
+
+def exp_try_nd(n, d, s=1,M=1000):
+    gX0 = GaussianDataGen(n=n, d=d, s= s,mu=0)
+    gX1 = GaussianDataGen(n=n, d=d, s= s, mu=1)
+    eps = cal_eps_func([gX0 for i in range(0,M)], gX1)
+    return np.mean(eps)
+exp_try_nd_func = np.vectorize(exp_try_nd)
+
+M = 100
+ns = np.arange(20,110, 70)
+s = 1
+dres = {2:[],5:[],8:[]}
+
+"""
+for k in dres.keys():
+    dres[k] = exp_try_nd_func(ns,k,M)
 
 
-
-M = 1000
-n,d  = 20,6   
-k = d
-l  = np.ones(k, dtype=int)
-c = 0.5 
-m0,m1 = np.zeros(d),np.ones(d)
-s = np.ones(k)
-r  = np.ones(k) 
-n0 = binom(n,1-c)
-#X0 = gen_class(n0,m0,k,l,s0,r)
-#n1 = n-n0
-#X1 = gen_class(n1,m1,k,l,s1,r)
-# np.mean(X1, axis=0)
-
-#print(epsilon(np.matrix(X0), np.matrix(X1)))
-ns = np.arange(20,100, 10)
-ds = [2,5,8]
-res = {}
-for n in ns:
-    res[n] = {2:0, 5:0,  8:0}
-
-for n in ns:
-    for d in ds:
-        ens = np.zeros(M)
-        for i in range(0,M):
-            X0 = gen_class(n, m0, k, l, s, r)
-            X1 = gen_class(n, m1, k, l, s, r)
-            ens[i] =  epsilon(X0, X1)[0]
-        res[n][d] = np.mean(ens)
+fig, ax = plt.subplots()
+for k in dres.keys():
+    ax.plot(ns, dres[k], 'o',label="d={}".format(k))
+ax.set_xlabel("n")
+ax.set_ylabel("$E[\\epsilon_n]$")
+ax.legend();
+"""
 ```
 
 
