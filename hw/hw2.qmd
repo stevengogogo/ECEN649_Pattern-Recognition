@@ -139,19 +139,34 @@ def epsilon(m0, m1, p0=0.5):
 
 
 M = 1000
-n,d,k  = 20,6,3   
+n,d  = 20,6   
+k = d
+l  = np.ones(k, dtype=int)
 c = 0.5 
-l  = [3,2,1]
 m0,m1 = np.zeros(d),np.ones(d)
-s0,s1 = np.ones(k),2*np.ones(k)
-r  = 0.5*np.ones(k) 
+s = np.ones(k)
+r  = np.ones(k) 
 n0 = binom(n,1-c)
-X0 = gen_class(n0,m0,k,l,s0,r)
-n1 = n-n0
-X1 = gen_class(n1,m1,k,l,s1,r)
-np.mean(X1, axis=0)
+#X0 = gen_class(n0,m0,k,l,s0,r)
+#n1 = n-n0
+#X1 = gen_class(n1,m1,k,l,s1,r)
+# np.mean(X1, axis=0)
 
-print(epsilon(np.matrix(X0), np.matrix(X1)))
+#print(epsilon(np.matrix(X0), np.matrix(X1)))
+ns = np.arange(20,100, 10)
+ds = [2,5,8]
+res = {}
+for n in ns:
+    res[n] = {2:0, 5:0,  8:0}
+
+for n in ns:
+    for d in ds:
+        ens = np.zeros(M)
+        for i in range(0,M):
+            X0 = gen_class(n, m0, k, l, s, r)
+            X1 = gen_class(n, m1, k, l, s, r)
+            ens[i] =  epsilon(X0, X1)[0]
+        res[n][d] = np.mean(ens)
 ```
 
 
