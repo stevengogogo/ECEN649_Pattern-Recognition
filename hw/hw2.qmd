@@ -92,10 +92,8 @@ def get_an(hm0,hm1):
 def get_bn(hm0,hm1):
     return (hm1 - hm0)*(hm1+hm0).T/2
 
-def epsilon(m0, m1, p0=0.5):
+def epsilon(hmu0, hmu1, p0=0.5):
     p1 = 1-p0
-    hmu0 = hat_mu(m0)
-    hmu1 = hat_mu(m1)
     an = get_an(hmu0, hmu1)
     bn = get_bn(hmu0, hmu1)
     epsilon0 = st.norm.cdf((an*hmu0.T + bn)/LA.norm(an))
@@ -114,12 +112,15 @@ class GaussianDataGen:
         return np.identity(self.d) * self.s
     
     def sample(self):
-        return  np.matrix(np.random.multivariate_normal(self.mu, self.cov, self.n))
+        hmuV = np.zeros(self.d)
+        for i in range(0,self.d):
+            hmuV[i] = np.mean(np.random.normal(self.mu[0], self.s, self.n))
+        return np.matrix(hmuV)
 
 def cal_eps(dg0, dg1, p0=0.5):
-    m0 = dg0.sample()
-    m1 = dg1.sample()
-    return epsilon(m0, m1, p0=0.5)
+    hmuV0 = dg0.sample()
+    hmuV1 = dg1.sample()
+    return epsilon(hmuV0, hmuV1, p0=0.5)
 cal_eps_func = np.vectorize(cal_eps)
 
 def exp_try_nd(n, d, s=1,M=1000):
@@ -129,8 +130,8 @@ def exp_try_nd(n, d, s=1,M=1000):
     return np.mean(eps)
 exp_try_nd_func = np.vectorize(exp_try_nd)
 
-M = 100
-ns = np.arange(20,110, 70)
+M = 1000
+ns = np.arange(20,80, 10)
 s = 1
 dres = {2:[],5:[],8:[]}
 
