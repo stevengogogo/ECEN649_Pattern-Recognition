@@ -1,0 +1,29 @@
+---
+title: "Chapter 4: Parametric Classification"
+author: "Shao-Ting Chiu"
+date: "2022-10-01"
+---
+
+## Outline
+
+- Gaussian discriminant 
+    - Linear Discriminant analysis
+    - Quadratic discriminant analysis
+- Logistic classification
+- Regularized discriminant analysis
+- Bayesian parametric classification
+
+## Parametric Plug-in Rules
+
+- Feature-label distribution is coded into pdf
+    - $\{p(x|\theta)|\theta\in \Theta \subseteq R^m\}$
+    - $\theta_{0,n}$ and $\theta_{1,n}$ be estimators of $\theta^{*}_{0}$ and $\theta^{*}_{1}$ based on sample data $S_n = \{(X_1, Y_1),\dots, (X_n,Y_n)\}$.
+- Sample space discriminant
+    - $D_n(x) = \ln\frac{p(x|\theta_{1,n})}{p(x|\theta_{0,n})}$
+
+### Strategy for the knowledge about the prior
+
+
+Let $c_0=P(Y=0)$ and $c_1 = P(Y=1)$,
+
+|Knowledge about prior||

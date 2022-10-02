@@ -158,11 +158,34 @@ ax.legend();
 
 > Formulate a multiclass version of parametric plug-in classification using the one-vs-one approach.
 
+Let $\psi^{*}_{i,j}$ be a one-one classifiers that $i\neq j$, and $\{(i,j)| i\in [1,k], j \in [1,k], i\neq j\}$. For $K$ classes, there are $K(K-1)$ classifiers; for each classifier $\psi^{*}_{i,j}$ and $x\in R^d$,
+
+\begin{equation}
+    \psi^{*}_{ij,n} = 
+    \begin{cases}
+        1, & D_{ij, n}(x) > k_{ij,n}\\ 
+        0, & \text{otherwise}
+    \end{cases}
+\end{equation}
+
+where
+
+- $D_{ij,n}(x) = \ln \frac{p(x|\theta_{i,n})}{p(x|\theta_{j,n})}$
+- $k_{ij,n} = \ln\frac{P(Y=j)}{P(Y=i)}$
+- Noted that feature-label distribution is expressed via a familty of PDF $\{p(x|\theta_i) | \theta \in \Theta \subseteq R^m\}$, for $i=1,\dots,K$.
+
+Let $\psi^{*}_{i,n} = \sum_{j\neq i} I_{\psi^{*}_{ij,n}=1}$, and the one-vs-one classifier is 
+
+$$\psi^{*}_{n}(x) = \arg\max_{k=1,\dots,K} \psi^{*}_{k,n}$$
+
 ### (b) {#sec-42b}
 
 > Show that if the threshold $k_{ij,n}$ between classes $i$ and $j$ is given by $\frac{\ln\hat{c}_j}{\ln\hat{c}_i}$, then the one-vs-one parametric classification rule is equivalent to the simple decision.
 > $$\psi_{n}(x) = \arg\max_{k=1,...,K} \hat{c}_{k} p(x|\theta_{k,n}), x\in R^d$$
 > (For simplicity, you may ignore the possibility of ties.)
+
+
+
 
 ### (c)
 
@@ -233,10 +256,74 @@ ax.legend();
         1, &\|x\| > r^{*},\\
         0, &\text{ otherwise },
     \end{cases}
-    \quad where r^{*} = \sqrt{2\left(\frac{1}{\sigma_{0}^{2}} - \frac{1}{\sigma_{1}^{2}}\right)^{-1}\ln\frac{\sigma^{2}_{1}}{\sigma^{2}_{0}}}
+    \quad \text{ where } r^{*} = \sqrt{2\left(\frac{1}{\sigma_{0}^{2}} - \frac{1}{\sigma_{1}^{2}}\right)^{-1}\ln\frac{\sigma^{2}_{1}}{\sigma^{2}_{0}}}
 > \end{equation}
 > In particular, the optimal decision boundary is a circle of radius $r^{*}$.
 
+The inverted $\Sigma_1$ and $\Sigma_2$ are[^invert]
+
+\begin{align}
+    \Sigma_0 &= \sigma_{0}^2 I_2 = \begin{bmatrix}
+        \sigma_{0}^2 & 0 \\
+        0 & \sigma_{0}^2
+    \end{bmatrix}\\ 
+    \Sigma_{0}^{-1} &= \frac{1}{\sigma_{0}^{4}} \begin{bmatrix}
+        \sigma_{0}^2 & 0 \\
+        0 & \sigma_{0}^2
+    \end{bmatrix} = \sigma_{0}^{-2}\begin{bmatrix}
+            1 & 0\\
+            0 & 1
+        \end{bmatrix} = \sigma^{-2}_{0}I_2\\
+    \Sigma^{-1}_{1} &= \sigma^{-2}_{1}I_2
+\end{align}
+
+Use the derivation in @braga2020fundamentals [pp. 74],
+
+\begin{equation}
+    A_n = \begin{bmatrix}
+        a_{11} & a_{12}\\ 
+        a_{12} & a_{22}
+    \end{bmatrix} = \frac{-1}{2} \Sigma_{1}^{-1} - \Sigma_{0}^{-1} = \frac{-1}{2}(\sigma_{1}^{-2} - \sigma_{0}^{-2}) \begin{bmatrix}
+        1 & 0\\ 
+        0 & 1
+    \end{bmatrix}
+\end{equation}
+
+\begin{align}
+    b_n &= \begin{bmatrix}
+        b_{n,1}\\ 
+        b_{n,2}
+    \end{bmatrix}
+    = \Sigma_{1}^{-1}\underbrace{\mu_1}_{=0} - \Sigma_{0}^{-1}\underbrace{\mu_{0}}_{=0}\\
+        &= \begin{bmatrix}
+            0\\ 
+            0
+        \end{bmatrix}
+\end{align}
+
+$$c = -\frac{1}{2}\ln\frac{|\Sigma_1|}{|\Sigma_0|} = \frac{-1}{2}\ln\frac{\sigma_{1}^{4}}{\sigma_{0}^{4}} = -\ln \frac{\sigma_{1}^2}{\sigma_{0}^2}$$
+
+According to @braga2020fundamentals [Eq. 4.26], the 2-dimensional QDA decision boundary is 
+
+
+\begin{align}
+    a_{11}x^{2}_1 + 2 a_{12}x_1x_2 + a_{22}x^{2}_{2} + b_1 x_1 + b_2 x_2 + c &= 0\\
+    a_{11}(x_{1}^{2} + x_{2}^{2}) &= \ln \frac{\sigma_{1}^2}{\sigma_{0}^2}\\
+    x^{2}_{1} + x^{2}_{2} &= 2(\frac{1}{\sigma^{2}_{0}} - \frac{1}{\sigma^{2}_{1}})^{-1}\ln\frac{\sigma_{1}^2}{\sigma_{0}^2}\\
+    r^{*} = \sqrt{x^{2}_{1} + x^{2}_{2}} &= \sqrt{2(\frac{1}{\sigma^{2}_{0}} - \frac{1}{\sigma^{2}_{1}})^{-1}\ln\frac{\sigma_{1}^2}{\sigma_{0}^2}}
+
+\end{align}
+
+
+
+[^invert]: \begin{equation}\begin{bmatrix}
+    a & b\\ 
+    c & d
+\end{bmatrix}^{-1} = \frac{1}{ad-bc}\begin{bmatrix}
+    d & -b\\ 
+    -c & a
+\end{bmatrix}
+\end{equation}
 
 ### (b)
 
@@ -280,3 +367,19 @@ ax.legend();
 ## References
 
 :::
+
+
+## Appendix
+
+### Question about Probelm 4.2b
+
+```
+[Question][Problem 4.2(b)]
+The treshold `k_{ij,n}` is given by `\frac{\ln \hat{c}_j}{\hat{c}_i}`. However, this setting is different from the text book (P. 68), that is `k=\ln \frac{c_0}{c_1}`. 
+
+Is this a typo or intenionally assigned?
+
+```
+|Textbook p.68|Problem 4.2 (b)|
+|---|---|
+|$k^{*}=\ln\frac{c_0}{c_1}$|$k_{ij,n}=\frac{\ln\hat{c_j}}{\ln \hat{c}_i}$|
