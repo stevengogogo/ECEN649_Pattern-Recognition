@@ -186,7 +186,6 @@ $$\psi^{*}_{n}(x) = \arg\max_{k=1,\dots,K} \psi^{*}_{k,n}$$
 
 
 
-
 ### (c)
 
 > Applying the approach in items [(a)](#sec-42a) and [(b)](#sec-42b), formulate a multiclass version of Gaussian discriminant analysis. In the case of multiclass NMC, with all thresholds equal to zero, how does the decision boundary look like?
@@ -242,6 +241,8 @@ $$\psi^{*}_{n}(x) = \arg\max_{k=1,\dots,K} \psi^{*}_{k,n}$$
     \end{bmatrix}
 > \end{equation*}
 > Which classifier does the best?
+
+
 
 ## Problem 4.4
 
@@ -307,14 +308,16 @@ According to @braga2020fundamentals [Eq. 4.26], the 2-dimensional QDA decision b
 
 
 \begin{align}
-    a_{11}x^{2}_1 + 2 a_{12}x_1x_2 + a_{22}x^{2}_{2} + b_1 x_1 + b_2 x_2 + c &= 0\\
+    D(x) = a_{11}x^{2}_1 + 2 a_{12}x_1x_2 + a_{22}x^{2}_{2} + b_1 x_1 + b_2 x_2 + c &= 0\\
     a_{11}(x_{1}^{2} + x_{2}^{2}) &= \ln \frac{\sigma_{1}^2}{\sigma_{0}^2}\\
     x^{2}_{1} + x^{2}_{2} &= 2(\frac{1}{\sigma^{2}_{0}} - \frac{1}{\sigma^{2}_{1}})^{-1}\ln\frac{\sigma_{1}^2}{\sigma_{0}^2}\\
     r^{*} = \sqrt{x^{2}_{1} + x^{2}_{2}} &= \sqrt{2(\frac{1}{\sigma^{2}_{0}} - \frac{1}{\sigma^{2}_{1}})^{-1}\ln\frac{\sigma_{1}^2}{\sigma_{0}^2}}
 
 \end{align}
 
+Noted that $\left(\frac{1}{\sigma^{2}_{0}} - \frac{1}{\sigma^{2}_{1}}\right) >  0$ because $\sigma_0 < \sigma_1$
 
+For any point $\|x_j\| > r^{*}$, the discriminant ($D$) is larger than $0$, and $\psi^{*}(x_j) = 1$. 
 
 [^invert]: \begin{equation}\begin{bmatrix}
     a & b\\ 
@@ -333,6 +336,28 @@ According to @braga2020fundamentals [Eq. 4.26], the 2-dimensional QDA decision b
 >
 > Hint: use polar coordinates to solve the required integrals analytically.
 
+\begin{align}
+    \epsilon^{0}[\psi^{*}] 
+    &= P(D^{*}(X)>k^{*}|Y=0)\\ 
+    &= P(\|x\|>r^{*} | Y=0)
+
+\end{align}
+
+
+
+\begin{align}
+    \epsilon^{0}[\psi^{*}] 
+    &= P(D^{*}(X)\leq k^{*}|Y=1)\\ 
+    &= P(\|x\|\leq r^{*} | Y=1)
+
+\end{align}
+
+
+::: {.callout-note}
+- WIP
+-  https://ardianumam.wordpress.com/2017/10/19/deriving-gaussian-distribution/
+- Integrate the area outside the circle with (Y=0) and Integrate the area inside the circle with (Y=1)
+:::
 
 ### (c)
 
