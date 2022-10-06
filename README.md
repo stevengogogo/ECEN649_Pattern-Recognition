@@ -4,6 +4,9 @@ A template for Quarto Book for course notes, reports and assignments
 ## Quarto installation
 
 - https://quarto.org/docs/get-started/
+- Tectonic
+- Python3
+- R
 
 ## Generate a book
 

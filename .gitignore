@@ -5,3 +5,5 @@ _book/
 *.html
 *_freeze
 *.DS_Store
+*_extensions
+*.log
