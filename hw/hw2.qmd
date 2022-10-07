@@ -377,26 +377,37 @@ $$p(r,\theta) = \frac{1}{2\pi \sigma^2}\exp(-\frac{r^2}{2\sigma^2})$$
 
 \begin{align}
     \epsilon^{0}[\psi^{*}]%
-    &= \int_{\theta=0}^{\theta=2\pi}\int_{r=r^{*}}^{\infty}   \frac{1}{2\pi \sigma_{0}^2}\exp(-\frac{r^2}{2\sigma_{0}^2})drd\theta\\
-    &= \frac{1}{2\pi \sigma_{0}^2}\int_{\theta=0}^{\theta=2\pi}\int_{r=r^{*}}^{\infty}   \exp(-\frac{r^2}{2\sigma_{0}^2})drd\theta\\
-    &= \frac{1}{2\pi \sigma_{0}^2}\int_{\theta=0}^{\theta=2\pi}\sqrt{\frac{\pi}{2}}\sigma_{0}(1-erf(\frac{r^*}{\sqrt{2}\sigma_{0}}))d\theta\\
-    &= \frac{1-erf\left(\frac{r^*}{\sqrt{2}\sigma_{0}}\right)}{2\sqrt{2\pi}\sigma_{0}}\int^{2\pi}_{\theta=0} d\theta\\ 
-    &= \frac{1-erf\left(\frac{r^*}{\sqrt{2}\sigma_{0}}\right)}{2\sqrt{2\pi}\sigma_{0}}2\pi\\ 
-    &= \frac{1-erf\left(\frac{r^*}{\sqrt{2}\sigma_{0}}\right)}{2\sqrt{2\pi}\sigma_{0}}2\pi\\ 
-    &= \sqrt{\pi}\frac{1-erf\left(\frac{r^*}{\sqrt{2}\sigma_{0}}\right)}{\sqrt{2}\sigma_{0}}\\ 
-    &= \sqrt{\frac{\pi}{2\sigma_{0}^2}}\left(1-erf(\frac{r^*}{\sqrt{2}\sigma_{0}})\right)
+    &= \int_{\theta=0}^{\theta=2\pi}\int_{r=r^{*}}^{\infty}   \frac{1}{2\pi \sigma_{0}^2}\exp(-\frac{r^2}{2\sigma_{0}^2})rdrd\theta\\
+    &= \frac{1}{2\pi \sigma_{0}^2}\int_{\theta=0}^{\theta=2\pi}\int_{r=r^{*}}^{\infty}   \exp(-\frac{r^2}{2\sigma_{0}^2})rdrd\theta\\
+    &= \frac{1}{2\pi\sigma_{0}^2}\int_{\theta=0}^{\theta=2\pi} \sigma_{0}^{2}\exp(-\frac{r_{*}^{2}}{2\sigma_{0}^{2}})d\theta\\ 
+    &= \exp(-\frac{r_{*}^2}{2\sigma_{0}^{2}})\\ 
+    &= \exp\left(- \frac{1}{\sigma_{0}^{2}(\sigma_{0}^{-2} - \sigma_{1}^{-2})} \ln\frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right)\\
+    &= \exp\left(\frac{-1}{(1-\frac{\sigma_{0}^{2}}{\sigma_{1}^{2}})}\ln \frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right)\\ 
+    &= \exp\left(-(1-\frac{\sigma_{0}^{2}}{\sigma_{1}^{2}})^{-1}\ln \frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right)
 \end{align}
 
 
-```
-- WIP
+
+\begin{align}
+    \epsilon^{1}[\psi^*] &= \int^{\theta=2\pi}_{\theta=0}\int_{r=0}^{r=r^*}  \frac{1}{2\pi \sigma_{1}^2}\exp(-\frac{r^2}{2\sigma_{1}^2})rdrd\theta\\ 
+    &= 1 - \exp(- \frac{r_{*}^{2}}{2\sigma_{1}^{2}})\\ 
+    &= 1 - \exp\left(- \frac{1}{\sigma_{1}^{2}(\sigma_{0}^{-2} - \sigma_{1}^{-2})} \ln\frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right)\\
+    &= 1 - \exp\left(- \frac{1}{(\frac{\sigma_{1}^{2}}{\sigma_{0}^{2}} - 1)} \ln\frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right)\\
+    &= 1 - \exp\left(- \frac{\frac{\sigma_{0}^{2}}{\sigma_{1}^{2}}}{(1 - \frac{\sigma_{0}^{2}}{\sigma_{1}^{2}})} \ln\frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right)\\
+    &= 1 - \exp\left(- \frac{\sigma_{0}^{2}}{\sigma_{1}^{2}}(1 - \frac{\sigma_{0}^{2}}{\sigma_{1}^{2}})^{-1} \ln\frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right)
+\end{align}
+
+::: {.callout-caution}
+## Issue
+- Can not find the proper simplification.
 -  https://ardianumam.wordpress.com/2017/10/19/deriving-gaussian-distribution/
 - Integrate the area outside the circle with (Y=0) and Integrate the area inside the circle with (Y=1)
-```
+:::
 
 ### (c)
 
 > Compare the optimal classifier to the QDA classifier in Example 4.3. Compute the error of the QDA classifier and compare to the Bayes error.
+
 
 
 ## Problem 4.8 (Python Assignment)
