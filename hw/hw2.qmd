@@ -132,6 +132,7 @@ def exp_try_nd(n, d, s=1,M=1000):
     return np.mean(eps)
 exp_try_nd_func = np.vectorize(exp_try_nd)
 
+"""
 M = 1000
 ns = np.arange(20,80, 10)
 s = 1
@@ -148,7 +149,7 @@ for k in dres.keys():
 ax.set_xlabel("n")
 ax.set_ylabel("$E[\\epsilon_n]$")
 ax.legend();
-
+"""
 ```
 
 
@@ -337,6 +338,9 @@ For any point $\|x_j\| > r^{*}$, the discriminant ($D$) is larger than $0$, and 
 >
 > Hint: use polar coordinates to solve the required integrals analytically.
 
+
+**Part I: Definition of errors**
+
 \begin{align}
     \epsilon^{0}[\psi^{*}] 
     &= P(D^{*}(X)>k^{*}|Y=0)\\ 
@@ -346,9 +350,41 @@ For any point $\|x_j\| > r^{*}$, the discriminant ($D$) is larger than $0$, and 
 
 
 \begin{align}
-    \epsilon^{0}[\psi^{*}] 
+    \epsilon^{1}[\psi^{*}] 
     &= P(D^{*}(X)\leq k^{*}|Y=1)\\ 
     &= P(\|x\|\leq r^{*} | Y=1)
+\end{align}
+
+**Part II: PDF of 2D Gaussian**
+
+\begin{align}
+p(x = \begin{bmatrix}
+        x_1\\
+        x_2
+    \end{bmatrix}
+    )%
+    &= \frac{1}{\sqrt{(2\pi)^2 \sigma^4}} \exp(-\frac{1}{2}x^T \Sigma^{-1}x)\\
+    &= \frac{1}{\sqrt{(2\pi)^2 \sigma^4}} \exp(-\frac{1}{2}\frac{x_{1}^{2}+x_{2}^{2}}{\sigma^2})\\ 
+    &= \frac{1}{2\pi \sigma^2}\exp(-\frac{x_{1}^{2} + x_{2}^{2}}{2\sigma^2})\\ 
+\end{align}
+
+Use the polar coordination, $x_{1} = r\cos\theta$ and $x_{2} = r\sin\theta$. $x_{1}^{2} + x_{2}^{2} = r^2$. We can transform 2D gaussian into polar coordination:
+
+$$p(r,\theta) = \frac{1}{2\pi \sigma^2}\exp(-\frac{r^2}{2\sigma^2})$$
+
+
+**Part III: Integration**
+
+\begin{align}
+    \epsilon^{0}[\psi^{*}]%
+    &= \int_{\theta=0}^{\theta=2\pi}\int_{r=r^{*}}^{\infty}   \frac{1}{2\pi \sigma_{0}^2}\exp(-\frac{r^2}{2\sigma_{0}^2})drd\theta\\
+    &= \frac{1}{2\pi \sigma_{0}^2}\int_{\theta=0}^{\theta=2\pi}\int_{r=r^{*}}^{\infty}   \exp(-\frac{r^2}{2\sigma_{0}^2})drd\theta\\
+    &= \frac{1}{2\pi \sigma_{0}^2}\int_{\theta=0}^{\theta=2\pi}\sqrt{\frac{\pi}{2}}\sigma_{0}(1-erf(\frac{r^*}{\sqrt{2}\sigma_{0}}))d\theta\\
+    &= \frac{1-erf\left(\frac{r^*}{\sqrt{2}\sigma_{0}}\right)}{2\sqrt{2\pi}\sigma_{0}}\int^{2\pi}_{\theta=0} d\theta\\ 
+    &= \frac{1-erf\left(\frac{r^*}{\sqrt{2}\sigma_{0}}\right)}{2\sqrt{2\pi}\sigma_{0}}2\pi\\ 
+    &= \frac{1-erf\left(\frac{r^*}{\sqrt{2}\sigma_{0}}\right)}{2\sqrt{2\pi}\sigma_{0}}2\pi\\ 
+    &= \sqrt{\pi}\frac{1-erf\left(\frac{r^*}{\sqrt{2}\sigma_{0}}\right)}{\sqrt{2}\sigma_{0}}\\ 
+    &= \sqrt{\frac{\pi}{2\sigma_{0}^2}}\left(1-erf(\frac{r^*}{\sqrt{2}\sigma_{0}})\right)
 \end{align}
 
 
@@ -393,21 +429,3 @@ For any point $\|x_j\| > r^{*}$, the discriminant ($D$) is larger than $0$, and 
 :::
 
 
-## Appendix
-
-### Question about Probelm 4.2b
-
-```
-[Question][Problem 4.2(b)]
-The treshold `k_{ij,n}` is given by `\frac{\ln \hat{c}_j}{\hat{c}_i}`. However, this setting is different from the text book (P. 68), that is `k=\ln \frac{c_0}{c_1}`. 
-
-Is this a typo or intenionally assigned?
-
-```
-|Textbook p.68|Problem 4.2 (b)|
-|---|---|
-|$k^{*}=\ln\frac{c_0}{c_1}$|$k_{ij,n}=\frac{\ln\hat{c_j}}{\ln \hat{c}_i}$|
-
-::: {.callout-tip}
-dwf
-:::
