@@ -46,6 +46,8 @@ import matplotlib # plotting
 import scipy.stats as st # scientific computing
 import pandas as pd # data managing
 import numpy as np # numerical comuptation
+import numba
+import sklearn as sk
 from numpy import linalg as LA
 import scipy as sp
 import scipy.optimize as opt
@@ -54,6 +56,8 @@ import matplotlib.pyplot as plt
 from numpy.linalg import inv, det
 from numpy.random import multivariate_normal as mvn
 from numpy.random import binomial as binom
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA #problem 4.8
+from sklearn.model_selection import train_test_split
 # Matplotlib setting
 plt.rcParams['text.usetex'] = True
 matplotlib.rcParams['figure.dpi']= 300
@@ -66,6 +70,7 @@ print(matplotlib.__version__)
 print(sp.__version__)
 print(np.__version__)
 print(pd.__version__)
+print(sk.__version__)
 ```
 
 ---
@@ -76,9 +81,9 @@ print(pd.__version__)
 
 - The formula in @braga2020fundamentals [pp. 56, Eq. 3.13]
     - $\epsilon_n = \frac{1}{2}\left(\Phi\left(\frac{a_{n}^{T}\hat{\mu}_0 +  b_n}{\|a_n\|}\right)  + \Phi\left(-\frac{a_{n}^{T}\hat{\mu}_1 + b_n}{\|a_n\|}\right) \right)$
-        - $\mu_0 = (0,\dots, 0)$
+        - $\mu_0 = (0,\dots, 0)$;
             $\hat{\mu}_0 = \frac{1}{N_0}\sum^{n}_{i=1}X_i I_{Y_i=0}$
-        - $\mu_1 = (1,\dots,1)$
+        - $\mu_1 = (1,\dots,1)$;
             $\hat{\mu}_1 = \frac{1}{N_1}\sum^{n}_{i=1}X_i I_{Y_i=1}$
         - $a_n = \hat{\mu}_1 - \hat{\mu}_0$
         - $b_n = \frac{(\hat{\mu}_1 - \hat{\mu}_0)(\hat{\mu}_1 + \hat{\mu}_0)}{2}$
@@ -177,22 +182,68 @@ where
 - $k_{ij,n} = \ln\frac{P(Y=j)}{P(Y=i)}$
 - Noted that feature-label distribution is expressed via a familty of PDF $\{p(x|\theta_i) | \theta \in \Theta \subseteq R^m\}$, for $i=1,\dots,K$.
 
-Let $\psi^{*}_{i,n} = \sum_{j\neq i} I_{\psi^{*}_{ij,n}=1}$, and the one-vs-one classifier is 
+Let $\psi^{*}_{i,n} = \prod_{j\neq i} I_{\psi^{*}_{ij,n}}$, and the one-vs-one classifier is 
 
-$$\psi^{*}_{n}(x) = \arg\max_{k=1,\dots,K} \psi^{*}_{k,n}$$
+$$\psi^{*}_{n}(x) = \arg\max_{k=1,\dots,K} \psi^{*}_{k,n}$$ {#eq-psi-max}
 
 ### (b) {#sec-42b}
 
-> Show that if the threshold $k_{ij,n}$ between classes $i$ and $j$ is given by $\frac{\ln\hat{c}_j}{\ln\hat{c}_i}$, then the one-vs-one parametric classification rule is equivalent to the simple decision.
+> Show that if the threshold $k_{ij,n}$ between classes $i$ and $j$ is given by $\ln\frac{\hat{c}_j}{\hat{c}_i}$, then the one-vs-one parametric classification rule is equivalent to the simple decision.
 > $$\psi_{n}(x) = \arg\max_{k=1,...,K} \hat{c}_{k} p(x|\theta_{k,n}), x\in R^d$$
 > (For simplicity, you may ignore the possibility of ties.)
 
+\begin{align}
+    \ln \frac{ p(x|\theta_{i,n})}{p(x|\theta_{j,n})} &> k_{ij,n} = \ln\frac{\hat{c_j}}{\hat{c_i}}\\ 
+    \ln p(x|\theta_{i,n}) - \ln p(x|\theta_{j,n}) &> \ln \hat{c}_j - \ln \hat{c}_{i}\\ 
+    \hat{c}_i p(x|\theta_{i,n}) &> \hat{c}_j p(x|\theta_{j,n})
+\end{align}
 
+\begin{align}
+    \psi^{*}_{ij, n} &= \begin{cases}
+        1, & \hat{c}_i p(x|\theta_{i,n}) > \hat{c}_j p(x|\theta_{j,n})\\ 
+        0, & otherwise
+    \end{cases}\\ 
+\end{align}
+
+
+
+Continue @eq-psi-max. For given $i\in [1,k]$, let $j_a$, $a\in [1,k-1]$ be the order sequence of $1,\dots, k$ exclude $i$. 
+
+$\psi^{*}_{i,n} = 1$ iff, $\hat{c}_{i}p(x|\theta_{i,n}) > \hat{c}_{j_{1}}p(x|\theta_{j_{1},n}) \geq \hat{c}_{j_{2}}p(x|\theta_{j_{2},n}) \geq \hat{c}_{j_{k-1}}p(x|\theta_{j_{k-1},n})$
+
+Therefore, 
+
+\begin{align}
+    \psi^{*}_{1,n} &= \begin{cases}
+        1, & \max_{k=1,\dots,K} \hat{c}_k p(x|\theta_{k,n}) = \hat{c}_1 p(x|\theta_{1}, n)\\ 
+        0, & otherwise
+    \end{cases}\\
+    &\vdots\\
+    \psi^{*}_{K,n} &= \begin{cases}
+        1, & \max_{k=1,\dots,K} \hat{c}_K p(x|\theta_{k,n}) = \hat{c}_K p(x|\theta_{K}, n)\\ 
+        0, & otherwise
+    \end{cases}\\
+\end{align}
+
+We can conclude that 
+
+\begin{align}
+    \psi^{*}_{n}(x)%
+    &= \arg\max_{k=1,\dots,K} \psi^{*}_{k,n}\\ 
+    &= \arg\max_{k=1,\dots,K} \hat{c}_k p(x|\theta_{k}, n)
+\end{align}
 
 ### (c)
 
 > Applying the approach in items [(a)](#sec-42a) and [(b)](#sec-42b), formulate a multiclass version of Gaussian discriminant analysis. In the case of multiclass NMC, with all thresholds equal to zero, how does the decision boundary look like?
 
+::: {.callout-tip}
+- Think about 3-classes, 2-dimension
+- Write the $D$ of each classifier
+
+$$D^{*}(x) = \frac{1}{2}(x-\mu_0)^{T}\Sigma^{-1}_{0}(x-\mu_0)-\frac{1}{2}(x-\mu_1)^{T}\Sigma^{-1}_{1}(x-\mu_1) + \frac{1}{2}\ln\frac{\det(\Sigma_0)}{\det(\Sigma_1)}$$
+- replace $\mu_{0} \rightarrow \hat{\mu}_{0}$; $\Sigma_{0} \rightarrow \hat{\Sigma}_{0}$
+:::
 
 ## Problem 4.3
 
@@ -397,16 +448,27 @@ $$p(r,\theta) = \frac{1}{2\pi \sigma^2}\exp(-\frac{r^2}{2\sigma^2})$$
     &= 1 - \exp\left(- \frac{\sigma_{0}^{2}}{\sigma_{1}^{2}}(1 - \frac{\sigma_{0}^{2}}{\sigma_{1}^{2}})^{-1} \ln\frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right)
 \end{align}
 
-::: {.callout-caution}
-## Issue
-- Can not find the proper simplification.
--  https://ardianumam.wordpress.com/2017/10/19/deriving-gaussian-distribution/
-- Integrate the area outside the circle with (Y=0) and Integrate the area inside the circle with (Y=1)
-:::
+**Part IV: Combining together**
+
+
+\begin{align}
+    \epsilon^{*}%
+    &= P(Y=0)\epsilon^{0}[\psi^{*}] + P(Y=1)\epsilon^{1}[\psi^{*}]\\
+    &= \frac{1}{2}\epsilon^{0} + \frac{1}{2}\epsilon^{1}\\ 
+    &= \frac{1}{2} \exp\left(-(1-\frac{\sigma_{0}^{2}}{\sigma_{1}^{2}})^{-1}\ln \frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right) + \frac{1}{2} - \frac{1}{2} \exp\left(- \frac{\sigma_{0}^{2}}{\sigma_{1}^{2}}(1 - \frac{\sigma_{0}^{2}}{\sigma_{1}^{2}})^{-1} \ln\frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right)\\
+    &= \frac{1}{2} \exp\left(-(1-\frac{\sigma_{0}^{2}}{\sigma_{1}^{2}})^{-1}\ln \frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right) + \frac{1}{2}\\ 
+    &- \frac{1}{2} \exp\left(- (\frac{\sigma_{0}^{2}}{\sigma_{1}^{2}}-1)(1 - \frac{\sigma_{0}^{2}}{\sigma_{1}^{2}})^{-1} \ln\frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right)  \exp\left(-(1-\frac{\sigma_{0}^{2}}{\sigma_{1}^{2}})^{-1}\ln \frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right)\\ 
+    &= \frac{1}{2} + \frac{1}{2}\left[ 1 - \exp\left(- \underbrace{(\frac{\sigma_{0}^{2}}{\sigma_{1}^{2}}-1)(1 - \frac{\sigma_{0}^{2}}{\sigma_{1}^{2}})^{-1})}_{=-1} \ln\frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right) \right] \exp\left(-(1-\frac{\sigma_{0}^{2}}{\sigma_{1}^{2}})^{-1}\ln \frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right)\\
+    &= \frac{1}{2} + \frac{1}{2}\left[ 1 - \exp\left(\ln\frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right) \right] \exp\left(-(1-\frac{\sigma_{0}^{2}}{\sigma_{1}^{2}})^{-1}\ln \frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right)\\
+    &= \frac{1}{2} + \frac{1}{2}\left[ 1 - \frac{\sigma^{2}_{1}}{\sigma^{2}_{0}} \right] \exp\left(-(1-\frac{\sigma_{0}^{2}}{\sigma_{1}^{2}})^{-1}\ln \frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right)\\
+    &= \frac{1}{2} - \frac{1}{2}\left( \frac{\sigma^{2}_{1}}{\sigma^{2}_{0}} -1 \right) \exp\left(-(1-\frac{\sigma_{0}^{2}}{\sigma_{1}^{2}})^{-1}\ln \frac{\sigma_{1}^{2}}{\sigma_{0}^{2}}\right)\\
+\end{align}
+
+
 
 ### (c)
 
-> Compare the optimal classifier to the QDA classifier in Example 4.3. Compute the error of the QDA classifier and compare to the Bayes error.
+> Compare the optimal classifier to the QDA classifier in Example 4.3. [@braga2020fundamentals, pp. 74] Compute the error of the QDA classifier and compare to the Bayes error.
 
 
 
@@ -417,21 +479,168 @@ $$p(r,\theta) = \frac{1}{2\pi \sigma^2}\exp(-\frac{r^2}{2\sigma^2})$$
 
 ### (a)
 
-> Apply the preprocessing steps in `c01_matex.py` to obtain a data matrix of dimensions $123 (\text{number of sample points}) \times 7 (\text{number of features})$, as described in @braga2020fundamentals [sec. 1.8.2]. Define low (SFE $\leq 35$) and high (SFE $\geq 45$) labels for the data. Pick the first $20\%$ of the sampe point s to be the training data and the remaining $80\%$ to be test data.
+> Apply the preprocessing steps in [`c01_matex.py`](https://drive.google.com/file/d/1n0XLsXCa8qDZxxOPh6e6f2n4OGf2pPpz/view) to obtain a data matrix of dimensions $123 (\text{number of sample points}) \times 7 (\text{number of features})$, as described in @braga2020fundamentals [sec. 1.8.2]. Define low (SFE $\leq 35$) and high (SFE $\geq 45$) labels for the data. Pick the first $20\%$ of the sampe point s to be the training data and the remaining $80\%$ to be test data.
 
+``` {python}
+# Setting
+def get_SFE_low(df):
+    df_ = df[df["SFE"]<=35]
+    return df_.loc[:, df_.columns!='SFE']
+def get_SFE_high(df):
+    df_ = df[df["SFE"]>=45]
+    return df_.loc[:, df_.columns!='SFE']
+# Load data
+SFE_data = pd.read_table("data/Stacking_Fault_Energy_Dataset.txt")
+# pre-process the data
+f_org = SFE_data.columns[:-1]                # original features
+n_org = SFE_data.shape[0]                    # original number of training points
+p_org = np.sum(SFE_data.iloc[:,:-1]>0)/n_org # fraction of nonzero components for each feature
+f_drp = f_org[p_org<0.6]		                 # features with less than 60% nonzero components
+SFE1  = SFE_data.drop(f_drp,axis=1)          # drop those features
+s_min = SFE1.min(axis=1)                     
+SFE2  = SFE1[s_min!=0]                       # drop sample points with any zero values  
+SFE   = SFE2[(SFE2.SFE<35)|(SFE2.SFE>45)]    # drop sample points with middle responses
+train, test = train_test_split(SFE, test_size=0.8, shuffle=False)
+```
+
+``` {python}
+#| label: tbl-total
+#| tbl-cap: Filtered data
+
+print(SFE.shape)
+SFE.head(4)
+```
+```{python}
+#| label: tbl-train
+#| tbl-cap: Train data
+
+print(train.shape)
+train.head(4)
+```
+```{python}
+#| label: tbl-test
+#| tbl-cap: Test data
+
+print(test.shape)
+test.head(4)
+```
+ 
 ### (b)
 
 > Using the function `ttest_ind` from the `scipy.stats` module, apply Welch's two-sample t-test on the training data, and produce a table with the predictors, *T* statistic, and *p*-value, ordered with largest absolute *T* statistics at the top.
 
+``` {python}
+df_low = get_SFE_low(train)
+df_high = get_SFE_high(train)
+
+ttest = st.ttest_ind(df_low, df_high)
+
+tdf = pd.DataFrame({
+    "Features": df_low.keys(),
+    "T-statistics": ttest.statistic,
+    "P-Values": ttest.pvalue
+})
+
+tdf = tdf.sort_values(["T-statistics"], ascending=[0])
+tdf 
+```
 
 ### (c)
 
 > Pick the top two predictors and design an LDA classifier. (This is an example of *filter feature selection*, to be discussed in Chapter 9.). Plot the training data with the superimposed LDA decision boundary. Plot the testing data with the superimposed previously-obtained LDA decision boundary. Estimate the classification error rate on the training and test data. What do you observe?
 
+The classifier is well fit with the train data (@fig-48-train), but the error is comparatively high for test data (@fig-48-test). This indicates that the train data doesn't represent the distribution. On the other hand, the test data (@fig-48-test) implies that these two classes are inseparable with single boundary.
+
+``` {python}
+features = list(tdf["Features"][0:2])
+var1, var2 = features
+```
+
+``` {python}
+def get_data_with_features(data, features):
+    X = data[features].values
+    Y = data.SFE > 45
+    return X, Y
+
+def get_loss(X, Y, clf):
+    loss = sk.metrics.zero_one_loss(Y, clf.predict(X))
+    return loss
+
+X, Y = get_data_with_features(train, features)
+X_test, Y_test = get_data_with_features(test, features)
+
+clf = LDA(priors=(0.5,0.5))
+clf.fit(X,Y.astype(int))
+a = clf.coef_[0]
+b = clf.intercept_[0];
+
+# Error
+err_train = get_loss(X,Y, clf)
+err_test = get_loss(X_test, Y_test, clf)
+```
+
+
+``` {python}
+#| label: fig-48-train
+#| fig-cap: Train data with LDA
+
+def plot_swe_predict(ax, X, Y, clf, title=""):
+    ax.scatter(X[~Y,0],X[~Y,1],c='blue',s=32,label='Low SFE')
+    ax.scatter(X[Y,0],X[Y,1],c='orange',s=32,label='High SFE')
+    left,right = ax.get_xlim()
+    bottom,top = ax.get_ylim()
+    ax.plot([left,right],[-left*a[0]/a[1]-b/a[1],-right*a[0]/a[1]-b/a[1]],'k',linewidth=2)
+    ax.set_title(title)
+    ax.set_xlim(left,right)
+    ax.set_ylim(bottom,top)
+    ax.set_xlabel(var1)
+    ax.set_ylabel(var2)
+    ax.legend();
+
+fig43tr, ax43tr = plt.subplots()
+ax43tr = plot_swe_predict(ax43tr, X, Y, clf, title="Train error {}".format(err_train));
+```
+
+``` {python}
+#| label: fig-48-test
+#| fig-cap: Test data with LDA
+
+fig43t, ax43t = plt.subplots()
+ax43t = plot_swe_predict(ax43t, X_test, Y_test, clf, title="Test error {}".format(err_test))
+```
+
+
 ### (d)
 
 > Repeat for the top three, and five predictors. Estimate the errors on the training and testing data (there is no need to plot the classifiers). What can you observe?
 
+As shown in @tbl-48-survey, $5$ features are enough to lower the testing error. That means we need at least $5$ informative features to separate two classes.
+
+``` {python}
+#| label: tbl-48-survey
+#| tbl-cap: Surveying different number of features
+
+n_features = [2,3,5]
+err_trains = np.zeros(len(n_features))
+err_tests = np.zeros(len(n_features))
+for (j,i) in enumerate(n_features):
+    fs = list(tdf["Features"][0:i])
+    X, Y = get_data_with_features(train, fs)
+    X_test, Y_test = get_data_with_features(test, fs)
+
+    clf = LDA(priors=(0.5,0.5))
+    clf.fit(X,Y.astype(int))
+
+    # Error
+    err_trains[j] = get_loss(X,Y, clf)
+    err_tests[j] = get_loss(X_test, Y_test, clf)
+
+pd.DataFrame({
+    "Number of Features": n_features,
+    "Training Error Rate": err_trains,
+    "Testing Error Rate": err_tests
+})
+```
 
 ::: {.content-hidden when-format="html"}
 
