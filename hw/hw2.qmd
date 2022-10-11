@@ -61,7 +61,6 @@ from sklearn.model_selection import train_test_split
 # Matplotlib setting
 plt.rcParams['text.usetex'] = True
 matplotlib.rcParams['figure.dpi']= 300
-np.random.rand(20221010)
 ```
 
 ### Version
@@ -138,7 +137,7 @@ def exp_try_nd(n, d, s=1,M=1000):
     return np.mean(eps)
 exp_try_nd_func = np.vectorize(exp_try_nd)
 
-"""
+
 M = 1000
 ns = np.arange(20,80, 10)
 s = 1
@@ -155,7 +154,7 @@ for k in dres.keys():
 ax.set_xlabel("n")
 ax.set_ylabel("$E[\\epsilon_n]$")
 ax.legend();
-"""
+
 ```
 
 
