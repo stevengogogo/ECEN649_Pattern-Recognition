@@ -61,6 +61,7 @@ from sklearn.model_selection import train_test_split
 # Matplotlib setting
 plt.rcParams['text.usetex'] = True
 matplotlib.rcParams['figure.dpi']= 300
+np.random.rand(20221010)
 ```
 
 ### Version
@@ -320,7 +321,7 @@ Combining together,
         2\\ 
         3
     \end{bmatrix},
-    \mu1 =
+    \mu_1 =
     \begin{bmatrix}
         6\\ 
         5
@@ -522,7 +523,7 @@ $$p(r,\theta) = \frac{1}{2\pi \sigma^2}\exp(-\frac{r^2}{2\sigma^2})$$
 
 ### (a)
 
-> Apply the preprocessing steps in [`c01_matex.py`](https://drive.google.com/file/d/1n0XLsXCa8qDZxxOPh6e6f2n4OGf2pPpz/view) to obtain a data matrix of dimensions $123 (\text{number of sample points}) \times 7 (\text{number of features})$, as described in @braga2020fundamentals [sec. 1.8.2]. Define low (SFE $\leq 35$) and high (SFE $\geq 45$) labels for the data. Pick the first $20\%$ of the sampe point s to be the training data and the remaining $80\%$ to be test data.
+> Apply the preprocessing steps in [`c01_matex.py`](https://drive.google.com/file/d/1n0XLsXCa8qDZxxOPh6e6f2n4OGf2pPpz/view) to obtain a data matrix of dimensions $123 (\text{number of sample points}) \times 7 (\text{number of features})$, as described in @braga2020fundamentals [sec. 1.8.2]. Define low (SFE $\leq 35$) and high (SFE $\geq 45$) labels for the data. Pick the first $50\%$ of the sampe point s to be the training data and the remaining $50\%$ to be test data[^r48].
 
 ``` {python}
 # Setting
@@ -543,7 +544,7 @@ SFE1  = SFE_data.drop(f_drp,axis=1)          # drop those features
 s_min = SFE1.min(axis=1)                     
 SFE2  = SFE1[s_min!=0]                       # drop sample points with any zero values  
 SFE   = SFE2[(SFE2.SFE<35)|(SFE2.SFE>45)]    # drop sample points with middle responses
-train, test = train_test_split(SFE, test_size=0.8, shuffle=False)
+train, test = train_test_split(SFE, test_size=0.5, shuffle=False)
 ```
 
 ``` {python}
@@ -567,7 +568,9 @@ train.head(4)
 print(test.shape)
 test.head(4)
 ```
- 
+
+[^r48]: > All, for the last problem, please make sure you are dividing the data 50% - 50% for training and testing, the values in the book are incorrect. --- Ulisses [[link to the Slack dialogue](https://ecen649patter-mrc1007.slack.com/archives/C03V4NZAEHJ/p1665417767039559)]
+
 ### (b)
 
 > Using the function `ttest_ind` from the `scipy.stats` module, apply Welch's two-sample t-test on the training data, and produce a table with the predictors, *T* statistic, and *p*-value, ordered with largest absolute *T* statistics at the top.
@@ -592,7 +595,7 @@ tdf
 
 > Pick the top two predictors and design an LDA classifier. (This is an example of *filter feature selection*, to be discussed in Chapter 9.). Plot the training data with the superimposed LDA decision boundary. Plot the testing data with the superimposed previously-obtained LDA decision boundary. Estimate the classification error rate on the training and test data. What do you observe?
 
-The classifier is well fit with the train data (@fig-48-train), but the error is comparatively high for test data (@fig-48-test). This indicates that the train data doesn't represent the distribution. On the other hand, the test data (@fig-48-test) implies that these two classes are inseparable with single boundary.
+Both train and test data has higher error rate compared to the result in @tbl-48-survey. Because the train data (@fig-48-train) is inseparable with single boundary. This implies that we need extra informative feature to make this two classes separatable.
 
 ``` {python}
 features = list(tdf["Features"][0:2])
@@ -657,13 +660,13 @@ ax43t = plot_swe_predict(ax43t, X_test, Y_test, clf, title="Test error {}".forma
 
 > Repeat for the top three, and five predictors. Estimate the errors on the training and testing data (there is no need to plot the classifiers). What can you observe?
 
-As shown in @tbl-48-survey, $5$ features are enough to lower the testing error. That means we need at least $5$ informative features to separate two classes.
+As shown in @tbl-48-survey, $3$ features can get the lowest testing error because the approach gathers those informative features. For $4$ and $5$ features, the test error rate increases due to their t-values close to $0$.
 
 ``` {python}
 #| label: tbl-48-survey
 #| tbl-cap: Surveying different number of features
 
-n_features = [2,3,5]
+n_features = [2,3,4,5]
 err_trains = np.zeros(len(n_features))
 err_tests = np.zeros(len(n_features))
 for (j,i) in enumerate(n_features):
