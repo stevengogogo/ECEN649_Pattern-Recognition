@@ -297,8 +297,8 @@ Similarly,
 \begin{align}
     \epsilon^{1}(\psi^{*})%
     &= P(a_{n}^{T}x+b_n < 0 | Y=1)\\ 
-    &= \Phi\left(\frac{0 - (a^{T}_{n}\mu_1 + b_n)}{\sqrt{a^{T}_{n}\Sigma_0 a_n}}\right)\\ 
-    &= \Phi\left(-\frac{a^{T}_{n}\mu_1 + b_n}{\sqrt{a^{T}_{n}\Sigma_0 a_n}}\right)
+    &= \Phi\left(\frac{0 - (a^{T}_{n}\mu_1 + b_n)}{\sqrt{a^{T}_{n}\Sigma_1 a_n}}\right)\\ 
+    &= \Phi\left(-\frac{a^{T}_{n}\mu_1 + b_n}{\sqrt{a^{T}_{n}\Sigma_1 a_n}}\right)
 \end{align}
 
 Combining together,
@@ -307,7 +307,7 @@ Combining together,
     \epsilon^{*}%
      &= \underbrace{P(Y=0)}_{=1-c}\epsilon^{0}[\psi^*] + \underbrace{P(Y=1)}_{=c}\epsilon^{1}[\psi^*]\\ 
      &= (1-c)\epsilon^{0}[\psi^*] + c\epsilon^{1}[\psi^*]\\ 
-     &= (1-c)\Phi\left(\frac{a^{T}_{n}\mu_0 + b_n}{\sqrt{a^{T}_{n}\Sigma_{0}a_{n}}}\right) + c\Phi\left(-\frac{a^{T}_{n}\mu_1 + b_n}{\sqrt{a^{T}_{n}\Sigma_0 a_n}}\right)
+     &= (1-c)\Phi\left(\frac{a^{T}_{n}\mu_0 + b_n}{\sqrt{a^{T}_{n}\Sigma_{0}a_{n}}}\right) + c\Phi\left(-\frac{a^{T}_{n}\mu_1 + b_n}{\sqrt{a^{T}_{n}\Sigma_1 a_n}}\right)
 \end{align}
 
 [^g4]: Any affine transformation $f(x)=AX+B$ of a Gaussian is a Guassian. That is, $A$ is a nongingular matrix, and B is a vector. If $X\sim N(\mu, \Sigma)$, $a^T X+b \sim N(A^T \mu + b, A^T \Sigma A)$. [@ardianumam2017]
@@ -341,6 +341,55 @@ Combining together,
 > Which classifier does the best?
 
 
+As shown in @tbl-43b, NMC has the lowest Bayes error.
+
+``` {python}
+#| label: tbl-43b
+#| tbl-cap: Bayes Errors of NMC, LDA and DLDA
+
+def epsilon_general(an, bn, c, mu0, mu1, sig0, sig1):
+
+    e0 = st.norm.cdf(\
+        float(an.T @ mu0 + bn)/\
+        np.sqrt(float(an.T @ sig0 @ an)))
+    e1 = st.norm.cdf(\
+        -float(an.T @ mu1 + bn)/\
+        np.sqrt(float(an.T @ sig1 @an)) )
+
+    return (1-c)*e0 + c*e1
+
+truth = {
+    "c": 0.5,
+    "mu0": np.matrix([[2],[3]]),
+    "mu1": np.matrix([[6],[5]]),
+    "sig0": np.matrix([[1,1],[1,2]]),
+    "sig1": np.matrix([[4,0],[0,1]]),
+}
+
+meth = {
+    "NMC":{
+        "an": np.matrix([[4],[2]]),
+        "bn": -24
+    },
+    "LDA":{
+        "an": 3/7*np.matrix([[5], [3]]),
+        "bn": -96/7
+    },
+    "DLDA":{
+        "an": 2/5*np.matrix([[6],[5]]),
+        "bn": -88/5
+    }
+}
+
+berrors = np.zeros(len(meth.keys()))
+
+for (i,k) in enumerate(meth.keys()):
+    berrors[i] = epsilon_general(**meth[k], **truth)
+
+pd.DataFrame({"Method": list(meth.keys()),\
+    "Bayes Error": berrors}).sort_values(\
+    ["Bayes Error"], ascending=[1])
+```
 
 ## Problem 4.4
 
