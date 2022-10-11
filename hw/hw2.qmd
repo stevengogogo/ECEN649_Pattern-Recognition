@@ -268,6 +268,49 @@ $$D^{*}(x) = \frac{1}{2}(x-\mu_0)^{T}\Sigma^{-1}_{0}(x-\mu_0)-\frac{1}{2}(x-\mu_
 >
 > Hint: the discriminant $a^{T}_{n}x+b_n$ has a simple Gaussian distribution in each class.
 
+From @braga2020fundamentals [Eq. 2.34],
+
+$$\epsilon^{*} = \underbrace{P(Y=0)}_{=1-c}\epsilon^{0}[\psi^*] + \underbrace{P(Y=1)}_{=c}\epsilon^{1}[\psi^*]$$
+
+\begin{align}
+\epsilon^{0}[\psi^{*}]%
+&= P(a_{n}^{T}x+b_n > 0 | Y=0)\\
+\end{align}
+
+Use the affine property of Gaussian distribution described in @braga2020fundamentals [pp. 307. G4][^g4]. 
+
+
+- $a^{T}_{n}x+b_n | Y=0 \sim N(a^{T}_{n}\mu_0+b_n, \underbrace{a^{T}_{n}\Sigma_{0}a_{n}}_{\sigma^2})$
+
+
+\begin{align}
+\epsilon^{0}[\psi^{*}]%
+&= 1 - P(a^{T}_{n}x+b_n \leq 0 | Y=0)\\ 
+&= 1 - \Phi\left(\frac{0 - (a^{T}_{n}\mu_0 + b_n)}{\sqrt{a^{T}_{n}\Sigma_{0}a_{n}}}\right)\\ 
+&= 1 - \Phi\left(-\frac{a^{T}_{n}\mu_0 + b_n}{\sqrt{a^{T}_{n}\Sigma_{0}a_{n}}}\right)\\ 
+&= \Phi\left(\frac{a^{T}_{n}\mu_0 + b_n}{\sqrt{a^{T}_{n}\Sigma_{0}a_{n}}}\right)
+\end{align}
+
+Similarly,
+
+\begin{align}
+    \epsilon^{1}(\psi^{*})%
+    &= P(a_{n}^{T}x+b_n < 0 | Y=1)\\ 
+    &= \Phi\left(\frac{0 - (a^{T}_{n}\mu_1 + b_n)}{\sqrt{a^{T}_{n}\Sigma_0 a_n}}\right)\\ 
+    &= \Phi\left(-\frac{a^{T}_{n}\mu_1 + b_n}{\sqrt{a^{T}_{n}\Sigma_0 a_n}}\right)
+\end{align}
+
+Combining together,
+
+\begin{align}
+    \epsilon^{*}%
+     &= \underbrace{P(Y=0)}_{=1-c}\epsilon^{0}[\psi^*] + \underbrace{P(Y=1)}_{=c}\epsilon^{1}[\psi^*]\\ 
+     &= (1-c)\epsilon^{0}[\psi^*] + c\epsilon^{1}[\psi^*]\\ 
+     &= (1-c)\Phi\left(\frac{a^{T}_{n}\mu_0 + b_n}{\sqrt{a^{T}_{n}\Sigma_{0}a_{n}}}\right) + c\Phi\left(-\frac{a^{T}_{n}\mu_1 + b_n}{\sqrt{a^{T}_{n}\Sigma_0 a_n}}\right)
+\end{align}
+
+[^g4]: Any affine transformation $f(x)=AX+B$ of a Gaussian is a Guassian. That is, $A$ is a nongingular matrix, and B is a vector. If $X\sim N(\mu, \Sigma)$, $a^T X+b \sim N(A^T \mu + b, A^T \Sigma A)$. [@ardianumam2017]
+
 ### (b)
 
 > Compute the errors of the NMC, LDA, and DLDA classifiers in Example 4.2 if $c=1/2$, 
