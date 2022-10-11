@@ -137,7 +137,7 @@ def exp_try_nd(n, d, s=1,M=1000):
     return np.mean(eps)
 exp_try_nd_func = np.vectorize(exp_try_nd)
 
-
+"""
 M = 1000
 ns = np.arange(20,80, 10)
 s = 1
@@ -154,7 +154,7 @@ for k in dres.keys():
 ax.set_xlabel("n")
 ax.set_ylabel("$E[\\epsilon_n]$")
 ax.legend();
-
+"""
 ```
 
 
@@ -473,7 +473,7 @@ For any point $\|x_j\| > r^{*}$, the discriminant ($D$) is larger than $0$, and 
 \end{bmatrix}
 \end{equation}
 
-### (b)
+### (b) {#sec-44b}
 
 > Show that the corresponding Bayes error is given by
 > $$\epsilon^{*} = \frac{1}{2} - \frac{1}{2}(\frac{\sigma^{2}_{1}}{\sigma^{2}_{0}} - 1)e^{-(1-\frac{\sigma^{2}_{0}}{\sigma^{2}_{1}})^{-1}\ln \frac{\sigma^{2}_{1}}{\sigma^{2}_{0}}}$$
@@ -558,11 +558,62 @@ $$p(r,\theta) = \frac{1}{2\pi \sigma^2}\exp(-\frac{r^2}{2\sigma^2})$$
 
 
 
-### (c)
+### (c) 
 
-> Compare the optimal classifier to the QDA classifier in Example 4.3. [@braga2020fundamentals, pp. 74] Compute the error of the QDA classifier and compare to the Bayes error.
+> Compare the optimal classifier to the QDA classifier in @braga2020fundamentals [Example 4.3]. Compute the error of the QDA classifier and compare to the Bayes error. (Given $\sigma_{0}^{2}=2$ and $\sigma_{1}^{2} = 8$)[^r44c]
 
 
+**Part I: Optimal Error of Example 4.3**
+
+``` {python}
+def berror_two(sig0, sig1):
+    assert sig1 > sig0 
+    rat = sig1/sig0
+    return 0.5 - 0.5*(rat-1)*np.exp(-((1-rat**-1)**-1)*np.log(rat))
+
+
+pd.DataFrame({"Optimal Error": [berror_two(2, 8)]})
+```
+
+**Part II: QDA Error**
+
+Use the result in [Problem 4.4 (b)](#sec-44b) and let $\hat{r}$ be the boundary of the QDA in @braga2020fundamentals [Example 4.3]:
+
+- $\epsilon^0$ is [^wolf-44c1]
+
+\begin{align}
+    \epsilon^{0}%
+    &= \int_{\theta=0}^{\theta=2\pi}\int_{r=\hat{r}}^{\infty}   \frac{1}{2\pi \hat{\sigma}_{0}^2}\exp(-\frac{r^2}{2\hat{\sigma}_{0}^2})rdrd\theta\\
+    &= \exp(-\frac{\hat{r}^{2}}{2\hat{\sigma}^{2}_{0}})\\ 
+    &= \exp\left(-\frac{\frac{32}{9}\ln2}{2\cdot \frac{2}{3}}\right)\\
+    &\approx 0.157
+\end{align}
+
+- $\epsilon^1$ is [^wolf-44c2]
+\begin{align}
+    \epsilon^{1}%
+    &= 1 - \exp\left(-\frac{\hat{r}^2}{2\hat{\sigma}^2_{1}}\right)\\ 
+    &= 1 - \exp\left(- \frac{\frac{32}{9}\ln2}{2\cdot \frac{8}{3}}\right)\\ 
+    &\approx 0.370
+\end{align}
+
+Since $k_n =0$ is assumed, the error of LDA is[^wofl-44c3]
+
+\begin{align}
+\epsilon_{LDA}%
+&= \frac{1}{2}(\epsilon_{LDA}^{0} + \epsilon_{LDA}^{1})\\
+&= \frac{1}{2}(0.157 + 0.370)\\ 
+&= \underline{0.264}
+\end{align}
+
+**Conclusion**
+
+The QDA error is larger than the optimal error. 
+
+[^wolf-44c1]: Via [WolframAlpha](https://www.wolframalpha.com/input?i=exp%28-+%2832%2F9*log%282%29%29%2F%282*2%2F3%29%29)
+[^wolf-44c2]: Via [WolframAlpha](https://www.wolframalpha.com/input?i=1+-+exp%28-+%2832%2F9*log%282%29%29%2F%282*8%2F3%29%29)
+[^wolf-44c3]: Via [WolframAlpha](https://www.wolframalpha.com/input?i=0.5*%280.157+%2B+0.370%29)
+[^r44c]: > For Problem 4.3(c), please assume sigma_0^2 = 2 and sigma_1^2 = 8. --- [Ulisses (TAMU Slack)](https://ecen649patter-mrc1007.slack.com/archives/C03V4NZAEHJ/p1665440901330769)
 
 ## Problem 4.8 (Python Assignment)
 
@@ -617,13 +668,16 @@ print(test.shape)
 test.head(4)
 ```
 
-[^r48]: > All, for the last problem, please make sure you are dividing the data 50% - 50% for training and testing, the values in the book are incorrect. --- Ulisses [[link to the Slack dialogue](https://ecen649patter-mrc1007.slack.com/archives/C03V4NZAEHJ/p1665417767039559)]
+[^r48]: > All, for the last problem, please make sure you are dividing the data 50% - 50% for training and testing, the values in the book are incorrect. --- [Ulisses (TAMU Slack)](https://ecen649patter-mrc1007.slack.com/archives/C03V4NZAEHJ/p1665417767039559)
 
 ### (b)
 
 > Using the function `ttest_ind` from the `scipy.stats` module, apply Welch's two-sample t-test on the training data, and produce a table with the predictors, *T* statistic, and *p*-value, ordered with largest absolute *T* statistics at the top.
 
 ``` {python}
+#| label: tbl-48b
+#| tbl-cap: Results of T-test analysis
+
 df_low = get_SFE_low(train)
 df_high = get_SFE_high(train)
 
