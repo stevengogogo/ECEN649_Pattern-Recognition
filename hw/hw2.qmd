@@ -61,6 +61,7 @@ from sklearn.model_selection import train_test_split
 # Matplotlib setting
 plt.rcParams['text.usetex'] = True
 matplotlib.rcParams['figure.dpi']= 300
+np.random.seed(20221011)
 ```
 
 ### Version
@@ -80,38 +81,45 @@ print(sk.__version__)
 > Using the synthetic data model in Section A8.1 for the homoskedastic case with $\mu_0 = (0,\dots,0)$, $\mu_1=(1,\dots,1)$, $P(Y=0)=P(Y=1)$, and $k=d$ (independent features), generate a large number (e.g., $M=1000$) of training data sets for each sample size $n=20$ to $n=100$, in steps of $10$, with $d=2,5,8$, and $\sigma=1$. Obtain an approximation of the expected classification error $E[\epsilon_n]$ of the nearest centroid classifier in each case by averaging $\epsilon_n$, computed using the exact formula (3.13), over the $M$ synthetic training data sets. Plot $E[\epsilon_n]$ as a function of the sample size, for $d=2,5,8$ (join the individual points with lines to obtain a smooth curve). Explain what you see.
 
 - The formula in @braga2020fundamentals [pp. 56, Eq. 3.13]
-    - $\epsilon_n = \frac{1}{2}\left(\Phi\left(\frac{a_{n}^{T}\hat{\mu}_0 +  b_n}{\|a_n\|}\right)  + \Phi\left(-\frac{a_{n}^{T}\hat{\mu}_1 + b_n}{\|a_n\|}\right) \right)$
-        - $\mu_0 = (0,\dots, 0)$;
-            $\hat{\mu}_0 = \frac{1}{N_0}\sum^{n}_{i=1}X_i I_{Y_i=0}$
-        - $\mu_1 = (1,\dots,1)$;
-            $\hat{\mu}_1 = \frac{1}{N_1}\sum^{n}_{i=1}X_i I_{Y_i=1}$
-        - $a_n = \hat{\mu}_1 - \hat{\mu}_0$
-        - $b_n = \frac{(\hat{\mu}_1 - \hat{\mu}_0)(\hat{\mu}_1 + \hat{\mu}_0)}{2}$
+- $\epsilon_n = \frac{1}{2}\left(\Phi\left(\frac{a_{n}^{T}\hat{\mu}_0 +  b_n}{\|a_n\|}\right)  + \Phi\left(-\frac{a_{n}^{T}\hat{\mu}_1 + b_n}{\|a_n\|}\right) \right)$
+    - $\mu_0 = (0,\dots, 0)$;
+        $\hat{\mu}_0 = \frac{1}{N_0}\sum^{n}_{i=1}X_i I_{Y_i=0}$
+    - $\mu_1 = (1,\dots,1)$;
+        $\hat{\mu}_1 = \frac{1}{N_1}\sum^{n}_{i=1}X_i I_{Y_i=1}$
+    - $a_n = \hat{\mu}_1 - \hat{\mu}_0$
+    - $b_n = -\frac{(\hat{\mu}_1 - \hat{\mu}_0)^{T}(\hat{\mu}_1 + \hat{\mu}_0)}{2}$[^r36a]
+
+
+
+
+- As shown in @fig-p36, the error rate converges to optimal error as the sample size increases.
 
 ``` {python}
+#| label: fig-p36
+#| fig-cap: Error of En
 
-def hat_mu(m):
-    return np.mean(m, axis=0)
+def norml(v):
+    return LA.norm(v, 2)
 
 def get_an(hm0,hm1):
     return hm1 - hm0
 
 def get_bn(hm0,hm1):
-    return (hm1 - hm0)*(hm1+hm0).T/2
+    return -float((hm1 - hm0).T @ (hm1+hm0))/2
 
-def epsilon(hmu0, hmu1, p0=0.5):
+def epsilon(hmu0, hmu1, mu0, mu1,p0=0.5):
     p1 = 1-p0
     an = get_an(hmu0, hmu1)
     bn = get_bn(hmu0, hmu1)
-    epsilon0 = st.norm.cdf((an*hmu0.T + bn)/LA.norm(an))
-    epsilon1 = st.norm.cdf(-(an*hmu1.T+ bn)/LA.norm(an))
-    return (p0*epsilon0 + p1*epsilon1)[0][0]
+    epsilon0 = st.norm.cdf( (float(an.T* mu0) + bn)/norml(an))
+    epsilon1 = st.norm.cdf(- (float(an.T*mu1)+ bn)/norml(an))
+    return p0*epsilon0 + p1*epsilon1
 
 class GaussianDataGen:
     def __init__(self, n, d, s=1, mu=0):
         self.n = n
         self.d = d
-        self.mu = np.ones(d) * mu
+        self.mu = np.matrix(np.ones(d) * mu).T
         self.s = s
         self.cov = self.get_cov()
 
@@ -119,43 +127,53 @@ class GaussianDataGen:
         return np.identity(self.d) * self.s
     
     def sample(self):
-        hmuV = np.zeros(self.d)
-        for i in range(0,self.d):
-            hmuV[i] = np.mean(np.random.normal(self.mu[0], self.s, self.n))
-        return np.matrix(hmuV)
+        data = np.random.normal(self.mu[0][0], self.s, size= (self.d, self.n))
+        hmuV = np.mean(data, axis=1)
+        return np.matrix(hmuV).T
 
 def cal_eps(dg0, dg1, p0=0.5):
     hmuV0 = dg0.sample()
     hmuV1 = dg1.sample()
-    return epsilon(hmuV0, hmuV1, p0=0.5)
+    mu0 = np.matrix(np.zeros(dg0.d)).T
+    mu1 = np.matrix(np.ones(dg1.d)).T
+    return epsilon(hmuV0, hmuV1, mu0, mu1,p0=0.5)
 cal_eps_func = np.vectorize(cal_eps)
 
 def exp_try_nd(n, d, s=1,M=1000):
     gX0 = GaussianDataGen(n=n, d=d, s= s,mu=0)
     gX1 = GaussianDataGen(n=n, d=d, s= s, mu=1)
-    eps = cal_eps_func([gX0 for i in range(0,M)], gX1)
+    #eps = cal_eps_func([gX0]*M, gX1)
+    eps = [cal_eps_func(gX0, gX1) for i in range(0,M)]
     return np.mean(eps)
 exp_try_nd_func = np.vectorize(exp_try_nd)
 
+def bayes_ncc(mu0, mu1):
+    return st.norm.cdf(- norml(mu1-mu0)/2)
+
 
 M = 1000
-ns = np.arange(20,80, 10)
+ns = np.arange(20,100, 10)
 s = 1
 dres = {2:[],5:[],8:[]}
 
-
 for k in dres.keys():
-    dres[k] = exp_try_nd_func(ns,k,M)
+    dres[k]= exp_try_nd_func(ns,k)
 
+# Optimal error
+opts = [bayes_ncc(np.zeros(k), np.ones(k)) for k in dres.keys()]
 
 fig, ax = plt.subplots()
-for k in dres.keys():
+sts = ["-", "--", ":"]
+for (i, k) in enumerate(dres.keys()):
     ax.plot(ns, dres[k], 'o',label="d={}".format(k))
+    ax.axhline(y= opts[i], label="Optimal d = {}".format(k), color='k', linestyle=sts[i])
+
 ax.set_xlabel("n")
 ax.set_ylabel("$E[\\epsilon_n]$")
 ax.legend();
-
 ```
+
+[^r36a]: > All, in Example 3.4 there is a negative sign missing. The value of bn is -(m1-m0)^T(m1+m0)/2. --- [Ulisses on Slack](https://ecen649patter-mrc1007.slack.com/archives/C03V4NZAEHJ/p1665447468891869)
 
 
 ## Problem 4.2
@@ -622,7 +640,7 @@ Use the result in [Problem 4.4 (b)](#sec-44b) and let $\hat{r}$ be the boundary 
     &\approx 0.370
 \end{align}
 
-Since $k_n =0$ is assumed, the error of LDA is[^wofl-44c3]
+Since $k_n =0$ is assumed, the error of LDA is[^wolf-44c3]
 
 \begin{align}
 \epsilon_{LDA}%
