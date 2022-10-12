@@ -150,7 +150,6 @@ exp_try_nd_func = np.vectorize(exp_try_nd)
 def bayes_ncc(mu0, mu1):
     return st.norm.cdf(- norml(mu1-mu0)/2)
 
-
 M = 1000
 ns = np.arange(20,100, 10)
 s = 1
@@ -671,10 +670,10 @@ The QDA error is larger than the optimal error.
 # Setting
 def get_SFE_low(df):
     df_ = df[df["SFE"]<=35]
-    return df_.loc[:, df_.columns!='SFE']
+    return df_.drop("SFE", axis=1)
 def get_SFE_high(df):
     df_ = df[df["SFE"]>=45]
-    return df_.loc[:, df_.columns!='SFE']
+    return df_.drop("SFE", axis=1)
 # Load data
 SFE_data = pd.read_table("data/Stacking_Fault_Energy_Dataset.txt")
 # pre-process the data
@@ -686,7 +685,8 @@ SFE1  = SFE_data.drop(f_drp,axis=1)          # drop those features
 s_min = SFE1.min(axis=1)                     
 SFE2  = SFE1[s_min!=0]                       # drop sample points with any zero values  
 SFE   = SFE2[(SFE2.SFE<35)|(SFE2.SFE>45)]    # drop sample points with middle responses
-train, test = train_test_split(SFE, test_size=0.5, shuffle=False)
+Y = SFE > 40
+train, test, ytrain, ytest  = train_test_split(SFE, Y, test_size=0.5, shuffle=False)
 ```
 
 ``` {python}
@@ -715,7 +715,11 @@ test.head(4)
 
 ### (b)
 
-> Using the function `ttest_ind` from the `scipy.stats` module, apply Welch's two-sample t-test on the training data, and produce a table with the predictors, *T* statistic, and *p*-value, ordered with largest absolute *T* statistics at the top.
+> Using the function `ttest_ind` from the `scipy.stats` module, apply Welch's two-sample t-test on the training data, and produce a table with the predictors, *T* statistic, and *p*-value, ordered with **largest absolute** *T* statistics at the top.
+
+- For calculate independent t-test, we need to use `equal_var=False` for two different sample sizes[^ttest].
+
+[^ttest]: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ttest_ind.html#r3566833beaa2-1
 
 ``` {python}
 #| label: tbl-48b
@@ -724,7 +728,7 @@ test.head(4)
 df_low = get_SFE_low(train)
 df_high = get_SFE_high(train)
 
-ttest = st.ttest_ind(df_low, df_high)
+ttest = st.ttest_ind(df_low, df_high, equal_var=False)
 
 tdf = pd.DataFrame({
     "Features": df_low.keys(),
@@ -732,7 +736,7 @@ tdf = pd.DataFrame({
     "P-Values": ttest.pvalue
 })
 
-tdf = tdf.sort_values(["T-statistics"], ascending=[0])
+tdf = tdf.sort_values(["T-statistics"], ascending=[0], key=abs)
 tdf 
 ```
 
@@ -740,7 +744,9 @@ tdf
 
 > Pick the top two predictors and design an LDA classifier. (This is an example of *filter feature selection*, to be discussed in Chapter 9.). Plot the training data with the superimposed LDA decision boundary. Plot the testing data with the superimposed previously-obtained LDA decision boundary. Estimate the classification error rate on the training and test data. What do you observe?
 
-Both train and test data has higher error rate compared to the result in @tbl-48-survey. Because the train data (@fig-48-train) is inseparable with single boundary. This implies that we need extra informative feature to make this two classes separatable.
+
+
+Both train and test data has higher error rate compared to the result in @tbl-48-survey. Because the train data (@fig-48-train, @fig-48-test) is inseparable with single boundary. This implies that we need extra informative feature to make this two classes separatable.
 
 ``` {python}
 features = list(tdf["Features"][0:2])
@@ -750,7 +756,7 @@ var1, var2 = features
 ``` {python}
 def get_data_with_features(data, features):
     X = data[features].values
-    Y = data.SFE > 45
+    Y = data.SFE > 40
     return X, Y
 
 def get_loss(X, Y, clf):
@@ -805,7 +811,8 @@ ax43t = plot_swe_predict(ax43t, X_test, Y_test, clf, title="Test error {}".forma
 
 > Repeat for the top three, and five predictors. Estimate the errors on the training and testing data (there is no need to plot the classifiers). What can you observe?
 
-As shown in @tbl-48-survey, $3$ features can get the lowest testing error because the approach gathers those informative features. For $4$ and $5$ features, the test error rate increases due to their t-values close to $0$.
+As shown in @tbl-48-survey, the error rate does not decrease as more features get involved. This is because the sign of t-statistics are mixing together, and deviate the boundary to the optimal solution (see @tbl-48b). The LDA approach may not appropriate for features with inversing T-statistics.
+
 
 ``` {python}
 #| label: tbl-48-survey
