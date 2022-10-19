@@ -1,0 +1,82 @@
+---
+title: Homework 3
+author: Shao-Ting Chiu (UIN:433002162)
+date: today
+bibliography: ../ref.bib  
+format:
+    pdf:
+        pdf-engine: tectonic
+        code-line-numbers: true
+        table-of-contents: true 
+        
+    html: 
+        table-of-contents: true
+jupyter: python3  
+execute: 
+    echo: true
+    freeze: auto 
+---
+
+## Homework Description
+ 
+> - Course: ECEN649, Fall2022
+> 
+> Problems from the book:
+> 
+> 5.1
+> 
+> 5.2
+> 
+> 5.6 (a,b)
+> 
+> 5.10 (a,b,c)
+> 
+> Challenge (not graded):
+> 
+> 5.4
+> 
+> 5.6 (c,d)
+> 
+
+- Deadline: `Oct. 26th, 11:59 pm`
+
+
+## Computational Enviromnent Setup
+
+### Third-party libraries
+``` {python}
+%matplotlib inline
+import sys # system information
+import matplotlib # plotting
+import scipy.stats as st # scientific computing
+import pandas as pd # data managing
+import numpy as np # numerical comuptation
+import numba
+import sklearn as sk
+from numpy import linalg as LA
+import scipy as sp
+import scipy.optimize as opt
+import sympy as sp
+import matplotlib.pyplot as plt
+from numpy.linalg import inv, det
+from numpy.random import multivariate_normal as mvn
+from numpy.random import binomial as binom
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA #problem 4.8
+from sklearn.model_selection import train_test_split
+# Matplotlib setting
+plt.rcParams['text.usetex'] = True
+matplotlib.rcParams['figure.dpi']= 300
+np.random.seed(20221011)
+```
+
+### Version
+``` {python}
+print(sys.version)
+print(matplotlib.__version__)
+print(sp.__version__)
+print(np.__version__)
+print(pd.__version__)
+print(sk.__version__)
+```
+
+---
