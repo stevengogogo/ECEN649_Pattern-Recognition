@@ -61,8 +61,6 @@ import matplotlib.pyplot as plt
 from numpy.linalg import inv, det
 from numpy.random import multivariate_normal as mvn
 from numpy.random import binomial as binom
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA #problem 4.8
-from sklearn.model_selection import train_test_split
 # Matplotlib setting
 plt.rcParams['text.usetex'] = True
 matplotlib.rcParams['figure.dpi']= 300
@@ -80,3 +78,45 @@ print(sk.__version__)
 ```
 
 ---
+
+## Problem 5.1
+
+> Consider that an experimenter wants to use A 2-D cubic histogram classification rule, with square cells with side length $h_n$, and achieve consistency as the sample size $n$ increases, for any possible distribution of the data. If the experimenter lets $h_n$ decrease as $h_n = \frac{1}{\sqrt{n}}$, would they be guaranteed to achieve consistency and why? If not, how would they need to modify the rate of decrease of $h_n$ to achieve consistency?
+
+## Problem 5.2
+
+> Consider that an experimenter wants to use the kNN classification rule and achieve consistency as the sample size $n$ increases. In each of the following alternatives, answer whether the experimenter is successful and why.
+
+### (a)
+> The experimenter does not know the distribution of $(X,Y)$ and lets $k$ increase as $k=\sqrt{n}$.
+
+
+### (b)
+> The experimenter does not know the distribution but knows that $\epsilon^{*} = 0$ and keeps $k$ fixed, $k=3$.
+
+
+## Problem 5.6
+> Assume that the feature $X$ in a classification problem is a real number in the interval $[0,1]$. Assume that the classes are equally likely, with $p(x|Y=0) = 2xI_{\{0\leq x\leq 1\}}$ and $p(x|Y=1)= 2(1-x)I_{\{0\leq x\leq 1\}}$.
+
+### (a)
+> Find the Bayes error $\epsilon^*$.
+
+### (b)
+> Find the asymptotic error rate $\epsilon_{NN}$ for the NN classification rule.
+
+## Problem 5.10 (Python Assignment)
+
+### (a)
+
+> Modify the code in `c05_kernel.py` to obtain plots for $h = 1, 3, 5, 7, 9, 11$[^slack-5-10-a] and $n = 50, 100, 250, 500$ per class. Plot the classifiers over the range $[-3, 9] \times [-3, 9] in order to visualize the entire data and reduce the marker size from 12 to 8 to facilitate visualization. Which classifiers are closest to the optimal classifier? How do you explain this in terms of underfitting/overfitting? See the coding hint in part (a) of Problem 5.8.
+
+
+[^slack-5-10-a]: In Problem 5.10, please replace “k=1,3,5,7,9,11” by “h=0.1,0.3,0.5,1,2,5" --- [Ulisses on Slack](https://ecen649patter-mrc1007.slack.com/archives/C03V4NZAEHJ/p1666138179595139)
+
+### (b)
+
+> Compute test set errors for each classifier in part (a), using the same procedure as in part (b) of Problem 5.8. Generate a table containing each classifier plot in part (a) with its test set error rate. Which combinations of sample size and kernel bandwidth produce the top 5 smallest error rates?
+
+### (c)
+
+> Compute expected error rates for the Gaussian kernel classification rule in part (a), using the same procedure as in part (c) of Problem 5.8. Since error computation is faster here, a larger value $R = 200$ can be used, for better estimation of the expected error rates. Which kernel bandwidth should be used for each sample size?
