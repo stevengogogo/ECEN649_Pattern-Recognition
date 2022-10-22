@@ -46,25 +46,21 @@ execute:
 ### Third-party libraries
 ``` {python}
 %matplotlib inline
-import sys # system information
-import matplotlib # plotting
-import scipy.stats as st # scientific computing
-import pandas as pd # data managing
-import numpy as np # numerical comuptation
-import numba
-import sklearn as sk
-from numpy import linalg as LA
+import sys
+import matplotlib
+import numpy as np
 import scipy as sp
-import scipy.optimize as opt
-import sympy as sp
+import pandas as pd
+import sklearn as sk
 import matplotlib.pyplot as plt
-from numpy.linalg import inv, det
-from numpy.random import multivariate_normal as mvn
-from numpy.random import binomial as binom
+from scipy.stats import multivariate_normal as mvn
+from sklearn.neighbors import KernelDensity as KD
+from matplotlib.colors import ListedColormap
+# Fix random state for reproducibility
+np.random.seed(1978081)
 # Matplotlib setting
 plt.rcParams['text.usetex'] = True
 matplotlib.rcParams['figure.dpi']= 300
-np.random.seed(20221011)
 ```
 
 ### Version
@@ -125,18 +121,118 @@ Because $k$ is fiexed and independent of $n$, the approach is not universally co
 ## Problem 5.6
 > Assume that the feature $X$ in a classification problem is a real number in the interval $[0,1]$. Assume that the classes are equally likely, with $p(x|Y=0) = 2xI_{\{0\leq x\leq 1\}}$ and $p(x|Y=1)= 2(1-x)I_{\{0\leq x\leq 1\}}$.
 
-### (a)
+### (a) {#sec-56a}
 > Find the Bayes error $\epsilon^*$.
+
+Becase the two classes are equally likely, $p(Y=0)=p(Y=1)=0.5$.
+$$\epsilon^{*}=E[\min(\eta(x), 1-\eta(x))]$$
+
+
+
+\begin{align}
+    \eta(x) &= p(Y=1|x)\\
+            &= \frac{p(x|Y=1)p(Y=1)}{p(x)}\\ 
+            &= \frac{p(x|Y=1)p(Y=1)}{p(x|Y=0)p(Y=0)+p(x|Y=1)p(Y=1)}\\ 
+            &= \frac{2(1-x)\cdot 0.5}{2x\cdot 0.5 + 2(1-x)\cdot 0.5}\\ 
+            &= \frac{2(1-x)}{2x + 2-2x}\\ 
+            &= 1 - x\\ 
+1 - \eta(x) &= x
+\end{align}
+
+$p(x) =  p(x|Y=0)p(Y=0)+p(x|Y=1)p(Y=1) = 2x\cdot 0.5 + 2(1-x)\cdot 0.5 = 1$
+
+\begin{align}
+    \epsilon^{*} &=E[\min(\eta(x), 1-\eta(x))]\\ 
+                 &= E[\min(1-x, x)]\\ 
+                 &= \int_{0}^{1}\min(\eta(x), 1-\eta(x))p(x)dx\\
+                 &= \int_{0}^{1}\min(\eta(x), 1-\eta(x))dx\\
+                 &= \begin{cases}
+                    \int^{1}_{0} \eta(x) dx &= |x-\frac{1}{2}x^2|^{1}_{0} = 0.5, \eta(x)<1-\eta(x)\\ 
+                    \int^{1}_{0} (1-\eta(x)) dx &= \frac{1}{2}x|^{1}_{0} = 0.5, \text{otherwiese}\\ 
+                \end{cases}\\ 
+                &= 0.5
+\end{align}
 
 ### (b)
 > Find the asymptotic error rate $\epsilon_{NN}$ for the NN classification rule.
+
+Use Cover-Hart Theorem [@braga2020fundamentals, Theorem 5.1].
+
+$$\epsilon_{NN} = \lim_{n\to \infty} E[\epsilon_n] = E[2\eta(X)(1-\eta(X))]$$
+
+Use the result from [Problem 5.6(a)](#sec-56a).
+
+\begin{align}
+    \eta(x) &= 1-x\\ 
+    1-\eta(x) &= x
+\end{align}
+
+\begin{align}
+    \epsilon_{NN} = \lim_{n\to \infty} E[\epsilon_n] &= E[2\eta(X)(1-\eta(X))]\\ 
+    &= E[2(1-x)x]\\ 
+    &= 2E[x - x^2]\\ 
+    &= 2\left( \int^{1}_{0}xp(x)dx - \int^{1}_{0}x^{2}p(x)dx \right)\\ 
+    &= 2\left(\int^{1}_{0}xdx - \int^{1}_{0}x^{2}dx \right)\\ 
+    &= 2\left((\frac{1}{2}x^2)^{2}_{1} - (\frac{1}{3}x^2)^{1}_{0} \right)\\ 
+    &= 2(\frac{1}{2} - \frac{1}{3})\\ 
+    &= 2(\frac{3 - 2}{6})\\ 
+    &= \frac{1}{3}
+\end{align}
 
 ## Problem 5.10 (Python Assignment)
 
 ### (a)
 
-> Modify the code in `c05_kernel.py` to obtain plots for $h = 1, 3, 5, 7, 9, 11$[^slack-5-10-a] and $n = 50, 100, 250, 500$ per class. Plot the classifiers over the range $[-3, 9] \times [-3, 9] in order to visualize the entire data and reduce the marker size from 12 to 8 to facilitate visualization. Which classifiers are closest to the optimal classifier? How do you explain this in terms of underfitting/overfitting? See the coding hint in part (a) of Problem 5.8.
+> Modify the code in `c05_kernel.py` (modified in [appendix](#sec-revise)) to obtain plots for $h = 0.1, 0.3, 0.5, 1, 2, 5$[^slack-5-10-a] and $n = 50, 100, 250, 500$ per class. Plot the classifiers over the range $[-3, 9] \times [-3, 9]$ in order to visualize the entire data and reduce the marker size from 12 to 8 to facilitate visualization. Which classifiers are closest to the optimal classifier? How do you explain this in terms of underfitting/overfitting? See the coding hint in part (a) of Problem 5.8.
 
+
+```python
+mm0 = np.array([2,2])
+mm1= np.array([4,4])
+Sig0 = 4*np.identity(2)
+Sig1 = 4*np.identity(2)
+for N in [50, 100, 250, 500]:
+    X0 = mvn.rvs(mm0,Sig0,N)
+    x0,y0 = np.split(X0,2,1)
+    X1 = mvn.rvs(mm1,Sig1,N)
+    x1,y1 = np.split(X1,2,1)
+    X = np.concatenate((X0,X1),axis=0)
+    y = np.concatenate((np.zeros(N),np.ones(N)))
+    cmap_light = ListedColormap(["#FFE0C0","#B7FAFF"])
+    s = .01  # mesh step size
+    x_min,x_max = (-3,9)
+    y_min,y_max = (-3,9)
+    for h in [0.1,0.3,0.5,1, 2, 5]:
+        clf0 = KD(bandwidth=h)
+        clf0.fit(X0)
+        clf1 = KD(bandwidth=h)
+        clf1.fit(X1)
+        xx,yy = np.meshgrid(np.arange(x_min,x_max,s),np.arange(y_min,y_max,s))
+        Z0 = clf0.score_samples(np.c_[xx.ravel(), yy.ravel()])
+        Z1 = clf1.score_samples(np.c_[xx.ravel(), yy.ravel()])
+        Z = Z0<=Z1
+        Z = Z.reshape(xx.shape)
+        fig,ax=plt.subplots(figsize=(8,8),dpi=150)
+        plt.rc("xtick",labelsize=16)
+        plt.rc("ytick",labelsize=16)
+        plt.plot(x0,y0,".r",markersize=8) # class 0
+        plt.plot(x1,y1,".b",markersize=8) # class 1
+        plt.title("N={},h={}".format(N,h))
+        plt.xlim([-3,9])
+        plt.ylim([-3,9])
+        plt.pcolormesh(xx,yy,Z,cmap=cmap_light)
+        ax.contour(xx,yy,Z,colors="black",linewidths=0.5)
+        plt.show()
+        fig.savefig("img/c05_kernel"+"_h_"+str(int(10*h))+"_N_"+str(int(N))+".png",bbox_inches="tight",facecolor="white")
+```
+|h\N|N=50|N=100|N=250|N=500|
+|:---:|:---:|:---:|:---:|:---:|
+|h=1|![](img/c05_kernel_h_1_N_50.png)|![](img/c05_kernel_h_1_N_100.png)|![](img/c05_kernel_h_1_N_250.png)|![](img/c05_kernel_h_1_N_500.png)|
+|h=3|![](img/c05_kernel_h_3_N_50.png)|![](img/c05_kernel_h_3_N_100.png)|![](img/c05_kernel_h_3_N_250.png)|![](img/c05_kernel_h_3_N_500.png)|
+|h=5|![](img/c05_kernel_h_5_N_50.png)|![](img/c05_kernel_h_5_N_100.png)|![](img/c05_kernel_h_5_N_250.png)|![](img/c05_kernel_h_5_N_500.png)|
+|h=10|![](img/c05_kernel_h_10_N_50.png)|![](img/c05_kernel_h_10_N_100.png)|![](img/c05_kernel_h_10_N_250.png)|![](img/c05_kernel_h_10_N_500.png)|
+|h=20|![](img/c05_kernel_h_20_N_50.png)|![](img/c05_kernel_h_20_N_100.png)|![](img/c05_kernel_h_20_N_250.png)|![](img/c05_kernel_h_20_N_500.png)|
+|h=50|![](img/c05_kernel_h_50_N_50.png)|![](img/c05_kernel_h_50_N_100.png)|![](img/c05_kernel_h_50_N_250.png)|![](img/c05_kernel_h_50_N_500.png)|
 
 [^slack-5-10-a]: In Problem 5.10, please replace “k=1,3,5,7,9,11” by “h=0.1,0.3,0.5,1,2,5" --- [Ulisses on Slack](https://ecen649patter-mrc1007.slack.com/archives/C03V4NZAEHJ/p1666138179595139)
 
@@ -144,6 +240,75 @@ Because $k$ is fiexed and independent of $n$, the approach is not universally co
 
 > Compute test set errors for each classifier in part (a), using the same procedure as in part (b) of Problem 5.8. Generate a table containing each classifier plot in part (a) with its test set error rate. Which combinations of sample size and kernel bandwidth produce the top 5 smallest error rates?
 
+``` {python}
+a = 1
+```
+
 ### (c)
 
 > Compute expected error rates for the Gaussian kernel classification rule in part (a), using the same procedure as in part (c) of Problem 5.8. Since error computation is faster here, a larger value $R = 200$ can be used, for better estimation of the expected error rates. Which kernel bandwidth should be used for each sample size?
+
+
+## Appendix
+
+### Revised `c05_kernel.py`[^c05] {#sec-revise}
+
+```python
+"""
+Foundations of Pattern Recognition and Machine Learning
+Chapter 5 Figure 5.5
+Author: Ulisses Braga-Neto
+Plot kernel classifiers
+"""
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.stats import multivariate_normal as mvn
+from sklearn.neighbors import KernelDensity as KD
+from matplotlib.colors import ListedColormap
+# Fix random state for reproducibility
+np.random.seed(1978081)
+mm0 = np.array([2,2])
+mm1= np.array([4,4])
+Sig0 = 4*np.identity(2)
+Sig1 = 4*np.identity(2)
+N = 50 # number of points in each class
+X0 = mvn.rvs(mm0,Sig0,N)
+x0,y0 = np.split(X0,2,1)
+X1 = mvn.rvs(mm1,Sig1,N)
+x1,y1 = np.split(X1,2,1)
+X = np.concatenate((X0,X1),axis=0)
+y = np.concatenate((np.zeros(N),np.ones(N)))
+cmap_light = ListedColormap(["#FFE0C0","#B7FAFF"])
+s = .01  # mesh step size
+x_min,x_max = (-0.5,6.5)
+y_min,y_max = (-0.5,6.5)
+for h in [0.1,0.3,0.5,1]:
+    clf0 = KD(bandwidth=h)
+    clf0.fit(X0)
+    clf1 = KD(bandwidth=h)
+    clf1.fit(X1)
+    xx,yy = np.meshgrid(np.arange(x_min,x_max,s),np.arange(y_min,y_max,s))
+    Z0 = clf0.score_samples(np.c_[xx.ravel(), yy.ravel()])
+    Z1 = clf1.score_samples(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z0<=Z1
+    Z = Z.reshape(xx.shape)
+    fig,ax=plt.subplots(figsize=(8,8),dpi=150)
+    plt.rc("xtick",labelsize=16)
+    plt.rc("ytick",labelsize=16)
+    plt.plot(x0,y0,".r",markersize=16) # class 0
+    plt.plot(x1,y1,".b",markersize=16) # class 1
+    plt.xlim([-0.18,6.18])
+    plt.ylim([-0.18,6.18])
+    plt.pcolormesh(xx,yy,Z,cmap=cmap_light)
+    ax.contour(xx,yy,Z,colors="black",linewidths=0.5)
+    plt.show()
+    fig.savefig("c05_kernel"+str(int(10*h))+".png",bbox_inches="tight",facecolor="white")
+```
+
+[^c05]: All, be careful with script `c05_kernel.py`. If you replace the variable `b` to `h` in the script, it will shock with the grid step size parameter, which is also called `h`, and you will get erroneous results. --- [Ulisses on Slack](https://ecen649patter-mrc1007.slack.com/archives/C03V4NZAEHJ/p1666222492308139)
+
+::: {.content-hidden when-format="html"}
+
+## References
+
+:::
