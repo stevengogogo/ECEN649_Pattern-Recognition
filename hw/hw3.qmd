@@ -83,9 +83,28 @@ print(sk.__version__)
 
 > Consider that an experimenter wants to use A 2-D cubic histogram classification rule, with square cells with side length $h_n$, and achieve consistency as the sample size $n$ increases, for any possible distribution of the data. If the experimenter lets $h_n$ decrease as $h_n = \frac{1}{\sqrt{n}}$, would they be guaranteed to achieve consistency and why? If not, how would they need to modify the rate of decrease of $h_n$ to achieve consistency?
 
+Use @braga2020fundamentals [Theorem 5.6].
+
+**Test of consistency**
+
+- $d = 2$
+- $V_n = h_{n}^{2} = \frac{1}{n}$
+- $h_n \rightarrow 0$, $V_n \rightarrow 0$
+- $nV_n = 1$ is not approaching to infinity as $n\rightarrow \infty$
+- Thus, the consistency is not guranteed
+
+**Modification**
+
+- Let $h_n = \frac{1}{n}$
+- $V_n = \frac{1}{n^2}$
+- $nV_n = \frac{1}{n}$, $\lim_{n\to \infty} nV_n = 0$
+- The universal consistence of the cubic histogram rule is guaranteed.
+
+
 ## Problem 5.2
 
 > Consider that an experimenter wants to use the kNN classification rule and achieve consistency as the sample size $n$ increases. In each of the following alternatives, answer whether the experimenter is successful and why.
+
 
 ### (a)
 > The experimenter does not know the distribution of $(X,Y)$ and lets $k$ increase as $k=\sqrt{n}$.
