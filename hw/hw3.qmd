@@ -91,7 +91,7 @@ Use @braga2020fundamentals [Theorem 5.6].
 - $V_n = h_{n}^{2} = \frac{1}{n}$
 - $h_n \rightarrow 0$, $V_n \rightarrow 0$
 - $nV_n = 1$ is not approaching to infinity as $n\rightarrow \infty$
-- Thus, the consistency is not guranteed
+- Thus, the consistency is not guranteed.
 
 **Modification**
 
@@ -109,9 +109,17 @@ Use @braga2020fundamentals [Theorem 5.6].
 ### (a)
 > The experimenter does not know the distribution of $(X,Y)$ and lets $k$ increase as $k=\sqrt{n}$.
 
+Use @braga2020fundamentals [Theorem 5.7]
+
+- $k=\sqrt{n}$
+- $\lim_{n\to \infty} k = \infty$
+- $\lim_{n\to\infty} \frac{k}{n} = \lim_{n\to\infty}\frac{1}{\sqrt{n}} = 0$
+- The kNN rule is universally consistent.
 
 ### (b)
 > The experimenter does not know the distribution but knows that $\epsilon^{*} = 0$ and keeps $k$ fixed, $k=3$.
+
+Because $k$ is fiexed and independent of $n$, the approach is not universally consistent. However, since $\epsilon^{*}=0$, this approach is consistent.
 
 
 ## Problem 5.6
