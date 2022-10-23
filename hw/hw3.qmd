@@ -52,6 +52,7 @@ import numpy as np
 import scipy as sp
 import pandas as pd
 import sklearn as sk
+import scipy.stats as st
 import matplotlib.pyplot as plt
 from scipy.stats import multivariate_normal as mvn
 from sklearn.neighbors import KernelDensity as KD
@@ -185,54 +186,68 @@ Use the result from [Problem 5.6(a)](#sec-56a).
 
 > Modify the code in `c05_kernel.py` (modified in [appendix](#sec-revise)) to obtain plots for $h = 0.1, 0.3, 0.5, 1, 2, 5$[^slack-5-10-a] and $n = 50, 100, 250, 500$ per class. Plot the classifiers over the range $[-3, 9] \times [-3, 9]$ in order to visualize the entire data and reduce the marker size from 12 to 8 to facilitate visualization. Which classifiers are closest to the optimal classifier? How do you explain this in terms of underfitting/overfitting? See the coding hint in part (a) of Problem 5.8.
 
+Since the optimal boundary is a straight line between two centroids. Those classifiers close to optimal decision tend to have large sample size. 
 
-```python
+The bandwidth (`h`) can have influences on the underfitting/overfitting. Small `h` may get overfitting; on the other hand, large `h` may get underfitting.
+
+``` {python}
+def plot_kd(ax, x0, y0, x1, y1, Z):
+    cmap_light = ListedColormap(["#FFE0C0","#B7FAFF"])
+    plt.rc("xtick",labelsize=16)
+    plt.rc("ytick",labelsize=16)
+    ax.plot(x0,y0,".r",markersize=8) # class 0
+    ax.plot(x1,y1,".b",markersize=8) # class 1
+    ax.set_xlim([-3,9])
+    ax.set_ylim([-3,9])
+    ax.pcolormesh(xx,yy,Z,cmap=cmap_light, shading="nearest")
+    ax.contour(xx,yy,Z,colors="black",linewidths=0.5)
+    plt.close()
+    return ax
+
+
 mm0 = np.array([2,2])
-mm1= np.array([4,4])
+mm1 = np.array([4,4])
 Sig0 = 4*np.identity(2)
 Sig1 = 4*np.identity(2)
-for N in [50, 100, 250, 500]:
-    X0 = mvn.rvs(mm0,Sig0,N)
-    x0,y0 = np.split(X0,2,1)
-    X1 = mvn.rvs(mm1,Sig1,N)
-    x1,y1 = np.split(X1,2,1)
-    X = np.concatenate((X0,X1),axis=0)
-    y = np.concatenate((np.zeros(N),np.ones(N)))
-    cmap_light = ListedColormap(["#FFE0C0","#B7FAFF"])
-    s = .01  # mesh step size
-    x_min,x_max = (-3,9)
-    y_min,y_max = (-3,9)
-    for h in [0.1,0.3,0.5,1, 2, 5]:
-        clf0 = KD(bandwidth=h)
-        clf0.fit(X0)
-        clf1 = KD(bandwidth=h)
-        clf1.fit(X1)
-        xx,yy = np.meshgrid(np.arange(x_min,x_max,s),np.arange(y_min,y_max,s))
-        Z0 = clf0.score_samples(np.c_[xx.ravel(), yy.ravel()])
-        Z1 = clf1.score_samples(np.c_[xx.ravel(), yy.ravel()])
+Ns = np.array([50, 100, 250, 500])
+#Ns = [50]
+hs = np.array([0.1,0.3,0.5,1, 2, 5])
+#hs = [0.1]
+Xs = [[mvn.rvs(mm0, Sig0, n), mvn.rvs(mm1,Sig1,n)] for n in Ns]
+
+clf0s = [[KD() for i in range(0, len(hs))] for j in range(0, len(Ns))]
+clf1s = [[KD() for i in range(0, len(hs))] for j in range(0, len(Ns))]
+
+# plotting
+x_min,x_max = (-3,9)
+y_min,y_max = (-3,9)
+s = .1 #0.01 # mesh step size
+xx,yy = np.meshgrid(np.arange(x_min,x_max,s),np.arange(y_min,y_max,s))
+fig, axs = plt.subplots(len(Ns), len(hs), figsize=(30,20), dpi=150)
+
+for (i, X) in enumerate(Xs):
+    x0,y0 = np.split(X[0],2,1)
+    x1,y1 = np.split(X[1],2,1)
+    y = np.concatenate((np.zeros(Ns[i]),np.ones(Ns[i])))
+    for (j, h) in enumerate(hs):
+        clf0s[i][j] = KD(bandwidth=h)
+        clf0s[i][j].fit(X[0])
+        clf1s[i][j] = KD(bandwidth=h)
+        clf1s[i][j].fit(X[1])
+        
+        Z0 = clf0s[i][j].score_samples(np.c_[xx.ravel(), yy.ravel()])
+        Z1 = clf1s[i][j].score_samples(np.c_[xx.ravel(), yy.ravel()])
         Z = Z0<=Z1
         Z = Z.reshape(xx.shape)
-        fig,ax=plt.subplots(figsize=(8,8),dpi=150)
-        plt.rc("xtick",labelsize=16)
-        plt.rc("ytick",labelsize=16)
-        plt.plot(x0,y0,".r",markersize=8) # class 0
-        plt.plot(x1,y1,".b",markersize=8) # class 1
-        plt.title("N={},h={}".format(N,h))
-        plt.xlim([-3,9])
-        plt.ylim([-3,9])
-        plt.pcolormesh(xx,yy,Z,cmap=cmap_light)
-        ax.contour(xx,yy,Z,colors="black",linewidths=0.5)
-        plt.show()
-        fig.savefig("img/c05_kernel"+"_h_"+str(int(10*h))+"_N_"+str(int(N))+".png",bbox_inches="tight",facecolor="white")
+        plot_kd(axs[i][j], x0, y0, x1, y1, Z);
+        axs[i][j].set_title("N={},h={}".format(Ns[i],h))
+        plt.close()
+fig.savefig("img/c05_kernel.png",bbox_inches="tight",facecolor="white");
 ```
-|h\N|N=50|N=100|N=250|N=500|
-|:---:|:---:|:---:|:---:|:---:|
-|h=1|![](img/c05_kernel_h_1_N_50.png)|![](img/c05_kernel_h_1_N_100.png)|![](img/c05_kernel_h_1_N_250.png)|![](img/c05_kernel_h_1_N_500.png)|
-|h=3|![](img/c05_kernel_h_3_N_50.png)|![](img/c05_kernel_h_3_N_100.png)|![](img/c05_kernel_h_3_N_250.png)|![](img/c05_kernel_h_3_N_500.png)|
-|h=5|![](img/c05_kernel_h_5_N_50.png)|![](img/c05_kernel_h_5_N_100.png)|![](img/c05_kernel_h_5_N_250.png)|![](img/c05_kernel_h_5_N_500.png)|
-|h=10|![](img/c05_kernel_h_10_N_50.png)|![](img/c05_kernel_h_10_N_100.png)|![](img/c05_kernel_h_10_N_250.png)|![](img/c05_kernel_h_10_N_500.png)|
-|h=20|![](img/c05_kernel_h_20_N_50.png)|![](img/c05_kernel_h_20_N_100.png)|![](img/c05_kernel_h_20_N_250.png)|![](img/c05_kernel_h_20_N_500.png)|
-|h=50|![](img/c05_kernel_h_50_N_50.png)|![](img/c05_kernel_h_50_N_100.png)|![](img/c05_kernel_h_50_N_250.png)|![](img/c05_kernel_h_50_N_500.png)|
+
+![](img/c05_kernel.png)
+
+
 
 [^slack-5-10-a]: In Problem 5.10, please replace “k=1,3,5,7,9,11” by “h=0.1,0.3,0.5,1,2,5" --- [Ulisses on Slack](https://ecen649patter-mrc1007.slack.com/archives/C03V4NZAEHJ/p1666138179595139)
 
@@ -240,13 +255,100 @@ for N in [50, 100, 250, 500]:
 
 > Compute test set errors for each classifier in part (a), using the same procedure as in part (b) of Problem 5.8. Generate a table containing each classifier plot in part (a) with its test set error rate. Which combinations of sample size and kernel bandwidth produce the top 5 smallest error rates?
 
+**Bayes error**
+
+\begin{align}
+\delta &= \sqrt{(\mu_1 - \mu_0)^T \Sigma^{-1} (\mu_1-\mu_0)}
+\end{align}
+
+$$\epsilon = \Phi(-\frac{\delta}{2}) \approx 0.23975$$
+
 ``` {python}
-a = 1
+mu1 = np.matrix([[4],[4]])
+mu0 = np.matrix([[2,],[2]])
+sig = np.matrix([[4,0], [0,4]])
+delta = np.sqrt( (mu1-mu0).T @ np.linalg.inv(sig) @ (mu1-mu0))[0][0]
+error = st.norm.cdf(-delta/2)
+
+pd.DataFrame({"Bayes Error":[error]})
 ```
+
+**Best Five**
+
+1. 0.269 (1,4) `N=50, h=1`
+2. 0.271 (1,6) `N=50, h=5`
+3. 0.273 (1,5) `N=50, h=2`
+4. 0.274 (3,4) `N=250, h=1`
+5. 0.276 (3,6) `N=250, h=5`
+
+``` {python}
+def measure_test_error(clf0, clf1, xxs, yys, ys):
+    Z0 = clf0.score_samples(np.c_[xxs, yys])
+    Z1 = clf1.score_samples(np.c_[xxs, yys])
+    Z = Z0<=Z1
+    return np.count_nonzero(Z != ys.astype(bool)) / len(ys)
+
+nt = 500
+X_test = [mvn.rvs(mm0, Sig0, nt), mvn.rvs(mm1,Sig1,nt)] 
+x0,y0 = np.split(X_test[0],2,1)
+x1,y1 = np.split(X_test[1],2,1)
+ys = np.concatenate((np.zeros(nt),np.ones(nt)))
+errs = np.zeros((len(Ns), len(hs)))
+
+figt, axts = plt.subplots(len(Ns), len(hs), figsize=(30,20), dpi=150)
+
+for i in range(0, len(Ns)):
+    xxs = np.concatenate((x0, x1))
+    yys = np.concatenate((y0, y1))
+    for (j, h) in enumerate(hs):
+        errs[i][j]= measure_test_error(clf0s[i][j], clf1s[i][j], xxs, yys, ys)
+
+        axts[i][j].set_title(axs[i][j].get_title() + "Test Error: {}\n Bayes Error: {}".format(errs[i][j], 2))
+        plt.close()
+        
+        Z0 = clf0s[i][j].score_samples(np.c_[xx.ravel(), yy.ravel()])
+        Z1 = clf1s[i][j].score_samples(np.c_[xx.ravel(), yy.ravel()])
+        Z = Z0<=Z1
+        Z = Z.reshape(xx.shape)
+        plot_kd(axts[i][j], x0, y0, x1, y1, Z);
+
+print(errs)
+
+figt.savefig("img/c05_kernel_test.png",bbox_inches="tight",facecolor="white");
+```
+
+![](img/c05_kernel_test.png)
+
 
 ### (c)
 
 > Compute expected error rates for the Gaussian kernel classification rule in part (a), using the same procedure as in part (c) of Problem 5.8. Since error computation is faster here, a larger value $R = 200$ can be used, for better estimation of the expected error rates. Which kernel bandwidth should be used for each sample size?
+
+
+``` {python}
+
+errs = np.zeros((len(Ns), len(hs)))
+R = 200
+for jj in range(0, R):
+    nt = 500
+    X_test = [mvn.rvs(mm0, Sig0, nt), mvn.rvs(mm1,Sig1,nt)] 
+    x0,y0 = np.split(X_test[0],2,1)
+    x1,y1 = np.split(X_test[1],2,1)
+    ys = np.concatenate((np.zeros(nt),np.ones(nt)))
+
+    xxs = np.concatenate((x0, x1))
+    yys = np.concatenate((y0, y1))
+    for i in range(0, len(Ns)):
+        for (j, h) in enumerate(hs):
+            errs[i][j]+= measure_test_error(clf0s[i][j], clf1s[i][j], xxs, yys, ys)
+
+errs = errs/R
+best_hi = np.argmin(errs, axis=1)
+print(errs)
+print(best_hi)
+
+pd.DataFrame({"Sample Size": Ns, "Best H": hs[best_hi ]})
+```
 
 
 ## Appendix
