@@ -8,3 +8,5 @@ _book/
 *_extensions
 *.log
 *.ipynb_checkpoints
+
+/.luarc.json

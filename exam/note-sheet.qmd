@@ -1,0 +1,34 @@
+---
+format: 
+    pdf:
+        classoption: [a4paper, landscape]
+        margin-bottom: 0.1in
+        margin-left: 0.1in
+        margin-right: 0.1in
+        margin-top: 0.1in        
+        number-depth: 1
+        fontsize: 10pt
+        keep-tex: true
+        header-includes: |
+            \usepackage{setspace}
+            \setstretch{0.5}
+            \usepackage{lipsum} 
+            \usepackage{multicol}
+            \setlength\columnseprule{0.5pt}
+        include-before-body: src/prebody.tex
+        include-after-body: src/postbody.tex
+--- 
+
+## Chapter 1
+
+efafef
+efe
+
+fe
+
+**e**: fefef
+
+### Bayes Error
+
+
+\lipsum[2-16]
