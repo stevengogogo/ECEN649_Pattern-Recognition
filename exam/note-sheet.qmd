@@ -60,13 +60,18 @@ format:
 
 **Heter. Case**: $\psi^{*}_{Q}(x) = \begin{cases}1, & x^T A x + b^T x+c>0, \\ 0, & \text{otherwise}\end{cases}$
 
-- $A = \frac{1}{2}(\Sigma^{-1}_{0} - \Sigma^{-1}_{1}); b = \Sigma^{-1}_{1}\mu_1 - \Sigma^{-1}_{0}\mu_0; c = \frac{1}{2}(\mu_{0}^{T}\Sigma^{-1}_{0}\mu_0 - \mu_{1}^{T}\Sigma^{-1}_{1} \mu_1) + \frac{1}{2}\ln \frac{\det \Sigma_0}{\det \Sigma_1} + \ln\frac{P(Y=1)}{P(Y=0)}$
+- $A = \frac{1}{2}(\Sigma^{-1}_{0} - \Sigma^{-1}_{1})$
+- $b = \Sigma^{-1}_{1}\mu_1 - \Sigma^{-1}_{0}\mu_0$
+- $c = \frac{1}{2}(\mu_{0}^{T}\Sigma^{-1}_{0}\mu_0 - \mu_{1}^{T}\Sigma^{-1}_{1} \mu_1) + \frac{1}{2}\ln \frac{\det \Sigma_0}{\det \Sigma_1} + \ln\frac{P(Y=1)}{P(Y=0)}$
 
 ## Chapter 3: Sample-Based Classification
 
 - **No-Free-Lunch**: One can never know if their finite-sample performance will be satisfactory, no matter how large $n$ is.
 
 ## Chapter 4: Parametric Classification
+
+
+**LDA --- Homo. Gaussian Case**
 
 - **Linear Discriminant Analysis (LDA)**: $\hat{\Sigma}^{ML}_{0} = \frac{1}{N_0 - 1}\sum^{n}_{i=1} (X_i - \hat{\mu}_0)(X_i-\hat{\mu}_{0})^T I_{Y_i = 0}$, $\hat{\Sigma} = \frac{\hat{\Sigma}_{0} + \hat{\Sigma}_1}{2}$
     - Boundary: $a^{T}_{n}x+b_n = k_n$. 
@@ -76,6 +81,34 @@ format:
 - **Diagnoal LDA**: Make $\hat{\Sigma} \to \hat{\Sigma}_D = \begin{bmatrix}\Sigma_{1,1} & 0\\ 0 & \Sigma_{2,2}\end{bmatrix}$
 
 - **Nearest-Mean Class.(NMC)**: $\hat{\Sigma}_M = \begin{bmatrix} \hat{\sigma}_{ij}^{2} & 0 \\ 0 & \hat{\sigma}_{ij}^{2} \end{bmatrix}$. $\hat{\sigma}^2 = \sum^{d}_{k=1}(\hat{\Sigma})_{kk}$. Given $k_{n} = 0$, $a=\hat{\mu}_1 - \hat{\mu}_0$ $b = (\hat{\mu}_{0} - \hat{\mu}_1)^T \left(\frac{\hat{\mu}_0 + \hat{\mu}_1}{2}\right)$. Boundary is $\perp$ means
+
+- 2D: $a_{1}x_1 + a_2 x_2 + b_n = 0$
+
+- **Logistic Class.**: linear classification
+    - $logit(\eta(x|a,b)) = \ln(\frac{\eta(x|a,b)}{1-\eta(x|a,b)}) = a^T x + b$
+    - $L(a,b|S_n) = \ln\left(\prod_{i=1}^{n} P(Y=Y_i | X=X_i)\right) =\sum_{i=1}^{n} \ln(\eta(X_i |a,b)^{Y_i}(1-\eta(X_i|a,b))^{1-Y_i})$
+
+- LDA Classifier: $\psi_n(x)\begin{cases}1, & a_{n}^{T}+b_n>0\\ 0, & \text{otherwise}\end{cases}$    
+- $\epsilon_n = (1-c)\Phi\left( \frac{a_{n}^{T}\mu_0 + b_n}{\sqrt{a_{n}^{T}\Sigma_0 a_n}} \right) + c \Phi\left( -\frac{a^{T}_{n}\mu_1 + b_n}{\sqrt{a_{n}^{T}\Sigma_1 a_n}}\right)$
+
+
+
+
+
+---
+
+
+**QDA --- Heter. Gaussian Case**
+
+- **Boundry**: $x^{T}A_n x + b^{T}_{n}x + c+n = k_n$
+    - $A_n = -\frac{1}{2}(\hat{\Sigma}^{-1}_{1} - \hat{\Sigma}^{-1}_{0}) = \begin{bmatrix}a_{11} & a_{12} \\ a_{12} & a_{22}\end{bmatrix}$
+    - $b_n = \hat{\Sigma}^{-1}_{1} \hat{\mu}_1 - \hat{\Sigma}^{-1}_{0}\hat{\mu}_0 = \begin{bmatrix}b_1 \\ b_2 \end{bmatrix}$
+    - $c_n = -\frac{1}{2}(\hat{\mu}^{T}_{1}\hat{\Sigma}^{-1}_{1}\hat{\mu}_1 - \hat{\mu}^{T}_{0}\hat{\Sigma}^{-1}_{0}\hat{\mu}_{0}) - (\frac{1}{2}\ln\frac{|\hat{\Sigma}_1|}{|\hat{\Sigma}_0|}) = number$
+- 2D: $a_{11}x^{2}_1 + 2 a_{12}x_{1}x_{2} + a_{22} x^{2}_{2} + b_1x_1 + b_2 x_2 + c = 0$
+
+
+--- 
+
 
 
 ## Chapter 5: 
@@ -89,10 +122,28 @@ format:
 
 - **Thm. Cover-Hart**: $\epsilon_{NN} = E[2\eta(X)(1-\eta(x))]$
 
-### Bayes Error
+- **Thm. Asymptotic class. error of NN**: 
+$\epsilon_{NN} = \begin{cases}2\epsilon^{*}(1-\epsilon^*) \text{~iff~} \eta(X)\in\{\epsilon^{*},1-\epsilon^{*}*\}\\ \epsilon^{*} \text{~iff~} \eta(X)\in\{0,\frac{1}{2},1\}\end{cases}$
 
 
-\lipsum[2-7]
+---
+
+- **Stone's Thm**: The class. rule is universally consistent, if
+    1. $\sum^{n}_{i=1} W_{n,i}(X)I_{\|X_i-X\|>\delta} \to^{P} 0, \text{ as } n\to \infty, \text{ for all }\delta>0$
+    2. $\max_{i=1,\dots,n} W_{n,i}(X)\to^{p} 0, \text{ as } n\to \infty$
+    3. There ia a constant $c\geq 1$ such that , for every nonnegative $f:R^d \to R$, and all $n\geq 1$, $E[\sum^{n}_{i=1} W_{n,i}(X)f(X_i)]\leq cf(X)$
+
+- **Uni. Consist. of Histrogram Class.**: 
+    - $diam[A_n(X)] = \sup_{x,y\in A_n(X)}\|x-y\|\to 0$ in probability.
+    - $N_n(X)\to \infty$
+
+- **Uni. Consist. of Cubic Histogram**: Let $V_n = h_{n}^{d}$. If $h_n\to 0$,but $nV_n \to \infty$ as $n\to \infty$. Then $E[\epsilon_n] \to \epsilon^{*}$
+
+- **Uni. Consist. of kNN**: If $K\to \infty$ while $\frac{K}{n}\to 0$ as $n\to \infty$. Then $E[\epsilon_n]\to \epsilon^{*}$.
+
+- **Uni. Consist. of Kernel**: $h_n \to 0$ with $nh^{d}_{n}\to \infty$ as $n\to \infty$. (kernel $k$ is nonnegative, cont. integrable)
+
+
 
 
 ## Key points \& Definitions
@@ -130,4 +181,3 @@ sample answer
 - Bayes: $P(Y=0|X=x) = \frac{P(Y=0)P(x|Y=0)}{P(x)}$
 - $\det\begin{bmatrix}a & b\\ c & d\end{bmatrix} = ad-bc$ ;  $\begin{bmatrix}a & b\\ c & d\end{bmatrix}^{-1} = \frac{1}{ad-bc}\begin{bmatrix}d & -b \\ -c & a\end{bmatrix}$
 
-\lipsum[2-5]

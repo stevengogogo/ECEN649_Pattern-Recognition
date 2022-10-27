@@ -10,3 +10,4 @@ _book/
 *.ipynb_checkpoints
 
 /.luarc.json
+.vscode/settings.json
