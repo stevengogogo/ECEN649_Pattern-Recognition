@@ -1,13 +1,13 @@
 ---
 format: 
     pdf:
-        classoption: [a4paper, landscape]
-        margin-bottom: 0.08in
-        margin-left: 0.08in
-        margin-right: 0.08in
-        margin-top: 0.1in        
+        classoption: [letter, landscape]
+        margin-bottom: 3mm
+        margin-left: 3mm
+        margin-right: 3mm
+        margin-top: 3mm  
         number-depth: 1
-        fontsize: 10pt
+        fontsize: 8pt
         indent: 0m
         keep-tex: false
         header-includes: |
@@ -43,7 +43,9 @@ format:
 
 - $D^{*}(x) = \ln\frac{p(x|Y=1)}{p(x|Y=0)}$; $k^{*} = \ln \frac{P(Y=0)}{P(Y=1)}$
 
-**Gaussian Prob.**: $$p(x|Y=i) = \frac{1}{\sqrt{(2\pi)^{d}\det(\Sigma_i)}}\exp[\frac{1}{2}(x-\mu)^T \Sigma_{i}^{-1} (x-\mu_i)]$$
+---
+
+**Gaussian Prob.**: $p(x|Y=i) = \frac{1}{\sqrt{(2\pi)^{d}\det(\Sigma_i)}}\exp[\frac{1}{2}(x-\mu)^T \Sigma_{i}^{-1} (x-\mu_i)]$
 
 - $D^{*}(x) = \frac{1}{2}(x-\mu_0)^T \Sigma^{-1}_0 (x-\mu_0) - \frac{1}{2}(x-\mu_1)^T\Sigma_{1}^{-1}(x-\mu_1) + \frac{1}{2}\ln \frac{\det(\Sigma_0)}{\det(\Sigma_1)}$
 
@@ -62,9 +64,19 @@ format:
 
 ## Chapter 3: Sample-Based Classification
 
+- **No-Free-Lunch**: One can never know if their finite-sample performance will be satisfactory, no matter how large $n$ is.
 
-## Chapter 4: 
-ffff
+## Chapter 4: Parametric Classification
+
+- **Linear Discriminant Analysis (LDA)**: $\hat{\Sigma}^{ML}_{0} = \frac{1}{N_0 - 1}\sum^{n}_{i=1} (X_i - \hat{\mu}_0)(X_i-\hat{\mu}_{0})^T I_{Y_i = 0}$, $\hat{\Sigma} = \frac{\hat{\Sigma}_{0} + \hat{\Sigma}_1}{2}$
+    - Boundary: $a^{T}_{n}x+b_n = k_n$. 
+        - $a_{n} = \hat{\Sigma}^{-1}(\hat{\mu}_1 - \hat{\mu}_0) = \begin{bmatrix}a_1 \\ a_2\end{bmatrix}$
+        - $b_n = (\hat{\mu}_{0} - \hat{\mu}_{1})^{T} \hat{\Sigma}^{-1} (\frac{\hat{\mu}_0 + \hat{\mu}_1}{2}) = number$
+
+- **Diagnoal LDA**: Make $\hat{\Sigma} \to \hat{\Sigma}_D = \begin{bmatrix}\Sigma_{1,1} & 0\\ 0 & \Sigma_{2,2}\end{bmatrix}$
+
+- **Nearest-Mean Class.(NMC)**: $\hat{\Sigma}_M = \begin{bmatrix} \hat{\sigma}_{ij}^{2} & 0 \\ 0 & \hat{\sigma}_{ij}^{2} \end{bmatrix}$. $\hat{\sigma}^2 = \sum^{d}_{k=1}(\hat{\Sigma})_{kk}$. Given $k_{n} = 0$, $a=\hat{\mu}_1 - \hat{\mu}_0$ $b = (\hat{\mu}_{0} - \hat{\mu}_1)^T \left(\frac{\hat{\mu}_0 + \hat{\mu}_1}{2}\right)$. Boundary is $\perp$ means
+
 
 ## Chapter 5: 
 
@@ -117,3 +129,5 @@ sample answer
 
 - Bayes: $P(Y=0|X=x) = \frac{P(Y=0)P(x|Y=0)}{P(x)}$
 - $\det\begin{bmatrix}a & b\\ c & d\end{bmatrix} = ad-bc$ ;  $\begin{bmatrix}a & b\\ c & d\end{bmatrix}^{-1} = \frac{1}{ad-bc}\begin{bmatrix}d & -b \\ -c & a\end{bmatrix}$
+
+\lipsum[2-5]
