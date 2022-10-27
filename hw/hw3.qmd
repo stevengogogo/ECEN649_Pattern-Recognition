@@ -5,9 +5,9 @@ date: today
 bibliography: ../ref.bib  
 format:
     pdf:
-        pdf-engine: tectonic
         code-line-numbers: true
         table-of-contents: true 
+        keep-tex: false
         
     html: 
         table-of-contents: true
@@ -92,9 +92,10 @@ Use @braga2020fundamentals [Theorem 5.6].
 
 **Modification**
 
-- Let $h_n = \frac{1}{n}$
-- $V_n = \frac{1}{n^2}$
-- $nV_n = \frac{1}{n}$, $\lim_{n\to \infty} nV_n = 0$
+- Let $h_n = \frac{1}{n^{a}}$
+- $V_n = \frac{1}{n^{2p}}$, let $p>0$
+- $nV_n = \frac{1}{n^{2p-1}}$, $\lim_{n\to \infty} nV_n \to \infty$. $2p-1<0$
+    - $0<p<\frac{1}{2}$
 - The universal consistence of the cubic histogram rule is guaranteed.
 
 
@@ -147,11 +148,8 @@ $p(x) =  p(x|Y=0)p(Y=0)+p(x|Y=1)p(Y=1) = 2x\cdot 0.5 + 2(1-x)\cdot 0.5 = 1$
                  &= E[\min(1-x, x)]\\ 
                  &= \int_{0}^{1}\min(\eta(x), 1-\eta(x))p(x)dx\\
                  &= \int_{0}^{1}\min(\eta(x), 1-\eta(x))dx\\
-                 &= \begin{cases}
-                    \int^{1}_{0} \eta(x) dx &= |x-\frac{1}{2}x^2|^{1}_{0} = 0.5, \eta(x)<1-\eta(x)\\ 
-                    \int^{1}_{0} (1-\eta(x)) dx &= \frac{1}{2}x|^{1}_{0} = 0.5, \text{otherwiese}\\ 
-                \end{cases}\\ 
-                &= 0.5
+                 &= \int_{0}^{\frac{1}{2}} x dx + \int_{\frac{1}{2}}^{1} (1-x)dx\\
+                 &= 0.25
 \end{align}
 
 ### (b)
@@ -221,7 +219,7 @@ clf1s = [[KD() for i in range(0, len(hs))] for j in range(0, len(Ns))]
 # plotting
 x_min,x_max = (-3,9)
 y_min,y_max = (-3,9)
-s = .1 #0.01 # mesh step size
+s = 0.1 #0.01 # mesh step size
 xx,yy = np.meshgrid(np.arange(x_min,x_max,s),np.arange(y_min,y_max,s))
 fig, axs = plt.subplots(len(Ns), len(hs), figsize=(30,20), dpi=150)
 
