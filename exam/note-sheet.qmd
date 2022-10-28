@@ -23,8 +23,6 @@ format:
         include-after-body: src/postbody.tex
 --- 
 
-## Chapter 1: 
-
 ## Chapter 2: Optimal Classification
 
 - **Error of classifier**.: $\epsilon[\psi(x)] = P(\psi(X)\neq Y) = \underbrace{p(\psi(X)=1|Y=0)}_{\epsilon^{0}=\int_{\{x|\psi(x)=1\}} p(x|Y=0)dx}P(Y=0)+\underbrace{p(\psi(X)=0|Y=1)}_{\epsilon^{1}=\int_{\{x|\psi(x)=0\}} p(x|Y=1)dx}P(Y=1)$
@@ -113,14 +111,18 @@ format:
 
 ## Chapter 5: 
 
-- Histogram Classification: \begin{equation}
-    W_{n,h}(x,X_i) = \begin{cases}
-        \frac{1}{N_h(x)}, & X_i \in A_h(x)\\
-        0, & \text{otherwise}
-    \end{cases}
-\end{equation}
+- $\eta_{n,h}(x) = \sum^{n}_{i=1}W_{n,h}(x,X_i)I_{Y_i =1}$. 
+- **Weights**: $W_{n,h}(x,X_i)\geq 0$; $\sum_{i=1}^{n} W_{n,h}(x,X_i)=1$
+- **Plug-in classifier**: $\psi_{n}(x)=\begin{cases}1,& \sum^{n}_{i=1}W_{n,h}(x,X_i)I_{Y_i=1} > \\&\sum^{n}_{i=1}W_{n,h}(x,X_i)I_{Y_i=0}\\0, & \text{otherwise}\end{cases}$
+
+- **Histogram Class.**: $W_{n,h}(x,X_i) = \begin{cases}\frac{1}{N_h(x)}, & X_i \in A_h(x)\\0, & \text{otherwise}\end{cases}$
+
+- **Kernel Class.**: $W_{n,h}(x,X_j) = \frac{k(\frac{x-X_j}{h})}{\sum^{n}_{i= d1}k(\frac{x-X_i}{h})}$. $h$ is the kernel bandwidth (smoothing parameter). Small $h\to$ overfitting
 
 - **Thm. Cover-Hart**: $\epsilon_{NN} = E[2\eta(X)(1-\eta(x))]$
+- $\epsilon_{kNN} = E[\alpha_k(\eta(X))]$. 
+- $\alpha_k (p) = \sum_{i=1}^{(k-1)/2}{k\choose i}p^{i+1}(1-p)^{k-1} + \sum^{k}_{i=(k+1)/2}{k\choose i}p^{i}(1-p)^{k+1-i}$
+- Find $p_0$ s.t. $a_k = \alpha_{k}^{'}(p_0) = \frac{\alpha_k(p_0)}{p_0}$. $a_k >1$, $p\in [0,\frac{1}{2}]$
 
 - **Thm. Asymptotic class. error of NN**: 
 $\epsilon_{NN} = \begin{cases}2\epsilon^{*}(1-\epsilon^*) \text{~iff~} \eta(X)\in\{\epsilon^{*},1-\epsilon^{*}*\}\\ \epsilon^{*} \text{~iff~} \eta(X)\in\{0,\frac{1}{2},1\}\end{cases}$
@@ -149,35 +151,47 @@ $\epsilon_{NN} = \begin{cases}2\epsilon^{*}(1-\epsilon^*) \text{~iff~} \eta(X)\i
 ## Key points \& Definitions
 
 
-- The \underline{posterior probability function} is needed to define the Bayes classifier.
-- \underline{Bayes error} is optimal error
-- \underline{LDA} is parameteric
+- The \underline{posterior probability function} is needed to define the Bayes classifier.; \underline{Bayes error} is optimal error; \underline{LDA} is parameteric.
 
 
 
-1. What are the minimum and the maximal values the Bayes error can take on in binary classification? Explain what each case means.
+1. *minimum and the maximal of the Bayes error of binary classification*: $\epsilon^{*} = E[\min\{\eta(X), 1-\eta(X)\}]$.
 
-sample answer
+2. *expected classification error $\mu = E[\text{error}_n]$ not a function of the training data?*: $\mu_n$ is data-independent, it is a function only of the classifiction rule.
 
-2. Why is the expected classification error $\mu = E[\text{error}_n]$ not a function of the training data.
+3. *meaning of an error estimator is optimistically biased?*: Be significantly smaller on average than the true error, due to overfitting. When the bias < 0, and left shifted.
 
-3. What does it mean to say that an error estimator is optimistically biased?
-
-
-4. Is a consistent classification rule always better than a non-consistent one and why?
+4. *Is a consistent classification rule always better than a non-consistent one and why?*: No. non-consist. is better when $n$ is small because consist. class. tned to be complex.
 
 
-5. If a classifier is overfitted, will its apparent error (i.e., the error on the training data) tend to be smaller, larger, or the same as the true error? Explain why.
+5. *If a classifier is overfitted, will its apparent error (training error) tend to be smaller, larger, or the same as the true error? Explain why.*: Apparent error is smaller due to small sample size.
 
 
-7. Describe the basic difference between filter and wrapper feature selection.
+9. *The penalty term in an SVM?*: Small C includes outlier (soft margin and less overfitting); big C ignores outliers (hard margin and more overfitting).
 
-9. What is the penalty term in an SVM and what is it used for?
+10. *How many points does the minimal nonlinearly-separable problem in 2 dimensions have?*:  4, XOR data set.
 
-10. How many points does the minimal nonlinearly-separable problem in 2 dimensions have? Give an example.
+11. *Cover-Hart Thm.*: The expected error of the NN classification rule satisfies $\epsilon_{NN} = \lim_{n\to \infty} E[\epsilon_n] = E[2\eta(X)(1-\eta(X))]$. $\epsilon_{NN} \leq 2\epsilon^{*}(1-\epsilon^{*})\leq 2\epsilon^{*}$. "The error of the nearest-neighbot classifier with a large sample size cannot be worse than two times the Bayes error." $\epsilon_{NN}\geq \epsilon_{3NN}\geq \epsilon^{*}$
+
+---
+
+
+- **Ch. 1**: *Curse of dimen. (peaking phen.)*: With fixed sample size, class. error improve with more features, then decreases.
+- *Scissors Effect*: Simpler classification rules can perform
+better under small sample sizes. On the contray in big data.
+
+
+- **Ch. 3**: *Classification rule vs. classifier*: output classifiers ; class lables
+
+
+- **Ch. 5**: Nonparametric class. has no assumption about the shape of the distributions. use smoothing. Selecting right amount of smoothing given $n$ and complexity of dist.
+- *Weights*: adding the influences of each data point $(X_i, Y_i)$
+- 3/5NN rule are better than 1NN under small sample size
 
 ## Math facts
 
 - Bayes: $P(Y=0|X=x) = \frac{P(Y=0)P(x|Y=0)}{P(x)}$
 - $\det\begin{bmatrix}a & b\\ c & d\end{bmatrix} = ad-bc$ ;  $\begin{bmatrix}a & b\\ c & d\end{bmatrix}^{-1} = \frac{1}{ad-bc}\begin{bmatrix}d & -b \\ -c & a\end{bmatrix}$
-
+- Affine trans. $f(x)=AX+B$. If $X\sim N(\mu, \Sigma)$, $a^T X+ b\sim N(A^T \mu + b, A^T \Sigma A)$.
+- *Convergence in prob.*: $X_n\to^{P} X$. $\lim_{n\to\infty} P(|X_n-X|>\tau) = 0, \text{ for all } \tau > 0$. Implies that $f(X_n)\to^{P} f(X)$
+- *Gauss. CDF*: $1-\Phi(-a) = \Phi(a)$
