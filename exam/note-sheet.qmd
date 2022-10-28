@@ -64,7 +64,7 @@ format:
 
 ## Chapter 3: Sample-Based Classification
 
-- **No-Free-Lunch**: One can never know if their finite-sample performance will be satisfactory, no matter how large $n$ is.
+- **No-Free-Lunch**: One can never know if their finite-sample performance will be satisfactory, no matter how large $n$ is. $E[\epsilon_n] \geq \frac{1}{2} - \tau$
 
 ## Chapter 4: Parametric Classification
 
@@ -155,25 +155,24 @@ $\epsilon_{NN} = \begin{cases}2\epsilon^{*}(1-\epsilon^*) \text{~iff~} \eta(X)\i
 
 
 
-1. *minimum and the maximal of the Bayes error of binary classification*: $\epsilon^{*} = E[\min\{\eta(X), 1-\eta(X)\}]$.
+- *minimum and the maximal of the Bayes error of binary classification*: $\epsilon^{*} = E[\min\{\eta(X), 1-\eta(X)\}]$.
 
-2. *expected classification error $\mu = E[\text{error}_n]$ not a function of the training data?*: $\mu_n$ is data-independent, it is a function only of the classifiction rule.
+- *expected classification error $\mu = E[\text{error}_n]$ not a function of the training data?*: $\mu_n$ is data-independent, it is a function only of the classifiction rule.
 
-3. *meaning of an error estimator is optimistically biased?*: Be significantly smaller on average than the true error, due to overfitting. When the bias < 0, and left shifted.
+- *meaning of an error estimator is optimistically biased?*: Be significantly smaller on average than the true error, due to overfitting. When the bias < 0, and left shifted.
 
-4. *Is a consistent classification rule always better than a non-consistent one and why?*: No. non-consist. is better when $n$ is small because consist. class. tned to be complex.
-
-
-5. *If a classifier is overfitted, will its apparent error (training error) tend to be smaller, larger, or the same as the true error? Explain why.*: Apparent error is smaller due to small sample size.
+- *Is a consistent classification rule always better than a non-consistent one and why?*: No. non-consist. is better when $n$ is small because consist. class. tned to be complex.
 
 
-9. *The penalty term in an SVM?*: Small C includes outlier (soft margin and less overfitting); big C ignores outliers (hard margin and more overfitting).
+- *If a classifier is overfitted, will its apparent error?*: Apparent error is smaller due to small sample size.
 
-10. *How many points does the minimal nonlinearly-separable problem in 2 dimensions have?*:  4, XOR data set.
 
-11. *Cover-Hart Thm.*: The expected error of the NN classification rule satisfies $\epsilon_{NN} = \lim_{n\to \infty} E[\epsilon_n] = E[2\eta(X)(1-\eta(X))]$. $\epsilon_{NN} \leq 2\epsilon^{*}(1-\epsilon^{*})\leq 2\epsilon^{*}$. "The error of the nearest-neighbot classifier with a large sample size cannot be worse than two times the Bayes error." $\epsilon_{NN}\geq \epsilon_{3NN}\geq \epsilon^{*}$
+- *The penalty term in an SVM?*: Small C includes outlier (soft margin and less overfitting)
 
----
+
+- *Cover-Hart Thm.*: The expected error of the NN classification rule satisfies $\epsilon_{NN} = \lim_{n\to \infty} E[\epsilon_n] = E[2\eta(X)(1-\eta(X))]$. $\epsilon_{NN} \leq 2\epsilon^{*}(1-\epsilon^{*})\leq 2\epsilon^{*}$. "The error of the nearest-neighbot classifier with a large sample size cannot be worse than two times the Bayes error." $\epsilon_{NN}\geq \epsilon_{3NN}\geq \epsilon^{*}$
+
+
 
 
 - **Ch. 1**: *Curse of dimen. (peaking phen.)*: With fixed sample size, class. error improve with more features, then decreases.
@@ -181,12 +180,10 @@ $\epsilon_{NN} = \begin{cases}2\epsilon^{*}(1-\epsilon^*) \text{~iff~} \eta(X)\i
 better under small sample sizes. On the contray in big data.
 
 
-- **Ch. 3**: *Classification rule vs. classifier*: output classifiers ; class lables
+- **Ch. 3**: *Classification rule vs. classifier*: output classifiers ; class lables.  *Consistency*: As $n\to \infty$, $\epsilon_{n}\to \epsilon^{*}$
 
 
-- **Ch. 5**: Nonparametric class. has no assumption about the shape of the distributions. use smoothing. Selecting right amount of smoothing given $n$ and complexity of dist.
-- *Weights*: adding the influences of each data point $(X_i, Y_i)$
-- 3/5NN rule are better than 1NN under small sample size
+- **Ch. 5**: *Nonparametric class*. has no assumption about the shape of the distributions. use smoothing. Selecting right amount of smoothing given $n$ and complexity of dist. *Weights*: adding the influences of each data point $(X_i, Y_i)$. *3/5NN* rule are better than 1NN under small sample size
 
 ## Math facts
 
