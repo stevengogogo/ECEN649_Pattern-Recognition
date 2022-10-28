@@ -43,7 +43,7 @@ format:
 
 ---
 
-**Gaussian Prob.**: $p(x|Y=i) = \frac{1}{\sqrt{(2\pi)^{d}\det(\Sigma_i)}}\exp[\frac{1}{2}(x-\mu)^T \Sigma_{i}^{-1} (x-\mu_i)]$
+**Gaussian Prob.**: $p(x|Y=i) = \frac{1}{\sqrt{(2\pi)^{d}\det(\Sigma_i)}}\exp[\frac{1}{2}(x-\mu_i)^T \Sigma_{i}^{-1} (x-\mu_i)]$
 
 - $D^{*}(x) = \frac{1}{2}(x-\mu_0)^T \Sigma^{-1}_0 (x-\mu_0) - \frac{1}{2}(x-\mu_1)^T\Sigma_{1}^{-1}(x-\mu_1) + \frac{1}{2}\ln \frac{\det(\Sigma_0)}{\det(\Sigma_1)}$
 
@@ -53,7 +53,8 @@ format:
     &= \begin{cases}1,& \|x-\mu_1\|^{2}_{\Sigma}<\| x-\mu_0\|^{2}_{\Sigma} + 2 \ln\frac{P(Y=1)}{P(Y=0)}\\& = a^T x +b > 0\\ 0, &\text{otherwise}\end{cases}
     \end{align*}
 
-- $a = \Sigma^{-1}(\mu_1 - \mu_0)$ / $b= (\mu_0 - \mu_1)^T \Sigma^{-1}(\frac{}{2})$; $b=(\mu_0 - \mu_1)^T \Sigma^{-1}(\frac{\mu_0 + \mu_1}{2}) + \ln\frac{P(Y=1)}{P(Y=0)}$
+- $a = \Sigma^{-1}(\mu_1 - \mu_0)$
+- $b=(\mu_0 - \mu_1)^T \Sigma^{-1}(\frac{\mu_0 + \mu_1}{2}) + \ln\frac{P(Y=1)}{P(Y=0)}$
 - $\epsilon^{*}_{L} = c\Phi(\frac{k^{*}-\frac{1}{2}\delta^2}{\delta}) + (1-c)\Phi(\frac{-k^{*}-\frac{1}{2}\delta^2}{\delta}), \delta=\sqrt{(\mu_1 -\mu_0)^T \Sigma^{-1} (\mu_1 - \mu_0)}$
 
 **Heter. Case**: $\psi^{*}_{Q}(x) = \begin{cases}1, & x^T A x + b^T x+c>0, \\ 0, & \text{otherwise}\end{cases}$
