@@ -8,6 +8,6 @@ _book/
 *_extensions
 *.log
 *.ipynb_checkpoints
-
+hw/data/CMU-UHCS_Dataset/
 /.luarc.json
 .vscode/settings.json
