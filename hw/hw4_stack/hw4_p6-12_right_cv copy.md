@@ -1,0 +1,443 @@
+
+{{< include hw4.qmd >}}
+
+## Problem 6.12
+
+``` {python}
+import tensorflow as tf
+import numpy as np
+import PIL
+import cv2
+import os
+import sklearn
+import pandas as pd
+import pickle
+import platform
+from tqdm.notebook import tqdm
+from sklearn.multiclass import OneVsOneClassifier
+from sklearn import preprocessing
+from sklearn import svm
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from scipy import stats as st
+```
+
+### Computational Environment
+
+``` {python}
+physical_devices = tf.config.list_physical_devices('GPU')
+my_system = platform.uname()
+print(physical_devices)
+print(f"System: {my_system.system}")
+print(f"Node Name: {my_system.node}")
+print(f"Release: {my_system.release}")
+print(f"Version: {my_system.version}")
+print(f"Machine: {my_system.machine}")
+print(f"Processor: {my_system.processor}")
+```
+
+### Helper function
+
+``` {python}
+def load_image(path, width=484, preprocess_input=tf.keras.applications.vgg16.preprocess_input):
+    """
+    Load and Preprocessing image
+    """
+    img = tf.keras.utils.load_img(path)
+    x = tf.keras.utils.img_to_array(img)
+    x = x[0:width,:,:]
+    x = np.expand_dims(x, axis=0)
+    return tf.keras.applications.vgg16.preprocess_input(x)
+```
+
+### Data inspectation
+
+``` {python}
+dpath = os.path.join("data", "CMU-UHCS_Dataset")
+pic_path = os.path.join(dpath, "images")
+df_micro = pd.read_csv( os.path.join(dpath, "micrograph.csv"))
+df_micro = df_micro[["path", "primary_microconstituent"]]
+
+for i in range(0, len(df_micro)):
+    img_ph = os.path.join(pic_path,df_micro.iloc[i][0])
+    assert os.path.exists(img_ph)
+    df_micro.iloc[i][0] = img_ph
+df_micro2 = df_micro.copy()
+CLS_rm = ["pearlite+widmanstatten", "martensite", "pearlite+spheroidite"] #(type, sample size)
+```
+
+``` {python}
+for c in CLS_rm:
+    df_micro.drop(df_micro[df_micro["primary_microconstituent"] == c].index, inplace=True)
+```
+
+``` {python}
+# labels
+name_lbs = df_micro["primary_microconstituent"].unique()
+le = preprocessing.LabelEncoder()
+le.fit(name_lbs)
+list(le.classes_)
+```
+
+``` {python}
+dlabel = le.transform(df_micro["primary_microconstituent"])
+df_micro.insert(2, "label", dlabel)
+df_micro
+```
+
+### Data Processing
+
+``` {python}
+# Train-test split
+df_test = df_micro.copy()
+df_train = pd.DataFrame(columns = df_micro.keys())
+
+split_info = [("spheroidite", 100),\
+              ("network", 100),\
+              ("pearlite", 100),\
+              ("spheroidite+widmanstatten", 60)] #(type, sample size)
+
+
+
+for ln in split_info:
+    label, n = ln
+    id_train = df_micro[df_micro["primary_microconstituent"] == label][0:n].index
+    df_test.drop(id_train, axis=0, inplace=True)
+    df_train = pd.concat([df_train, df_micro.loc[id_train]])
+```
+
+``` {python}
+df_train
+```
+
+``` {python}
+df_test
+```
+
+### Feature Extraction
+
+``` {python}
+# VGG16
+
+base_model = tf.keras.applications.vgg16.VGG16(
+    include_top=False,
+    weights='imagenet',
+    input_tensor=None,
+    input_shape=None,
+    pooling=None,
+    classes=1000,
+    classifier_activation='softmax'
+)
+
+base_model.summary()
+```
+
+Use five layers
+
+``` {python}
+out_layer_ns = ["block{}_pool".format(i) for i in range(1,6)]
+out_layer_ns
+```
+
+``` {python}
+# Construct 5 models for feature extraction
+extmodel = dict(zip(out_layer_ns, [tf.keras.Model(
+    inputs= base_model.input,
+    outputs=base_model.get_layer(bk_name).output
+) for bk_name in out_layer_ns]))
+
+extmodel
+```
+
+``` {python}
+# Display output dimensions
+out_shapes = [extmodel[m].output_shape[-1] for m in extmodel.keys()]
+out_shapes
+```
+
+``` {python}
+# Initiate feature maps for testing and training
+fs_train = [np.zeros((df_train.shape[0], n_f)) for n_f in out_shapes]
+fs_test = [np.zeros((df_test.shape[0], n_f)) for n_f in out_shapes]
+
+features_train = dict(zip(out_layer_ns, fs_train))
+features_test = dict(zip(out_layer_ns, fs_test))
+
+features_train
+```
+
+``` {python}
+# Feature extraction with VGG16
+if os.path.exists(os.path.join(dpath, "feature_train.pkl")) == False:
+    for m in tqdm(extmodel.keys()):
+        for i, df in enumerate([df_train, df_test]):
+            for j, ph in tqdm(enumerate(df["path"])):
+                x = load_image(ph)
+                xb = extmodel[m].predict(x, verbose = 0) # silence output
+                F = np.mean(xb,axis=(0,1,2))
+                # Save features
+                if i ==0:
+                    features_train[m][j, :] = F
+                else:
+                    features_test[m][j, :] = F
+    #save file
+    paths =  dict(zip(["train", "test"],\
+        [os.path.join(dpath, "feature_{}.pkl".format(n))\
+         for n in ["train", "test"]]))
+    ## Create new files
+    f_train = open(paths["train"], "wb")
+    f_test = open(paths["test"], "wb")
+    ## Write
+    pickle.dump(features_train, f_train)
+    pickle.dump(features_test, f_test)
+    ## Close files
+    f_train.close()
+    f_test.close()
+```
+
+### SVM
+
+``` {python}
+# load data
+ftn = open(paths["train"], "rb")
+ftt = open(paths["test"], "rb")
+featn = pickle.load(ftn) # train feature
+featt = pickle.load(ftt) # test feature
+ftn.close()
+ftt.close()
+
+# label
+ltrain = df_train[["primary_microconstituent", "label"]].reset_index()
+ltest = df_test[["primary_microconstituent", "label"]].reset_index()
+```
+
+``` {python}
+ltrain
+```
+
+``` {python}
+ltest["label"].to_numpy()
+```
+
+``` {python}
+featn["block1_pool"].shape
+```
+
+``` {python}
+y = df_train["label"].to_numpy().astype(int)
+y.shape
+```
+
+``` {python}
+clf = svm.SVC(kernel="rbf", C=1., gamma="auto")
+clf.fit(featn["block1_pool"], y)
+```
+
+``` {python}
+clf.predict(featt["block1_pool"])
+```
+
+#### One-to-One SVM
+
+``` {python}
+class One2OneSVM:
+    def __init__(self, n_class=4):
+        self.n_class = n_class
+        self.clfs = [[svm.SVC(kernel="rbf", C=1., gamma="auto")\
+                     for i in range(0,self.n_class)]\
+                     for j in range(0,self.n_class)]
+        self.cv = np.zeros((self.n_class,self.n_class))
+    def train(self, ltrain, feature, fold=10):
+        # traversal all features
+        for i in range(0, self.n_class-1):
+            lis = ltrain[ltrain["label"] == i].index.to_numpy()
+            for j in range(i+1, self.n_class):
+                ljs = ltrain[ltrain["label"] == j].index.to_numpy()
+                # Data
+                X = np.concatenate(\
+                  (feature[lis,:],\
+                   feature[ljs,:]), axis=0)
+                Y = np.concatenate((np.ones(len(lis))*i,np.ones(len(ljs))*j))
+                # Train SVM
+                scores = sklearn.model_selection.cross_val_score(self.clfs[i][j], X, Y, cv=fold)
+                self.clfs[i][j].fit(X,Y)
+                self.cv[i][j] = np.max(scores)
+                
+    def test_1v1_error(self, ltest, feature):
+        # traversal all features
+        errM = np.zeros((self.n_class, self.n_class))
+        for i in range(0, self.n_class-1):
+            lis = ltest[ltest["label"] == i].index.to_numpy()
+            for j in range(i+1, self.n_class):
+                ljs = ltest[ltest["label"] == j].index.to_numpy()
+                # Data
+                X = np.concatenate(\
+                  (feature[lis,:],\
+                   feature[ljs,:]), axis=0)
+                Y = np.concatenate((np.ones(len(lis))*i,np.ones(len(ljs))*j))
+                # Train SVM
+                y_pred = self.clfs[i][j].predict(X)
+                errM[i,j] = error(Y, y_pred)
+        return errM
+        
+    def predict(self, feature):
+        predM = np.zeros(( int(self.n_class * (self.n_class -1)/2) , feature.shape[0]))
+        c = 0
+        for i in range(0, self.n_class-1):
+            for j in range(i+1, self.n_class):
+                predM[c,:] = self.clfs[i][j].predict(feature)
+                c += 1
+        return st.mode(predM, axis=0, keepdims=True).mode[0,:] #majority voting
+
+def error(ans, pred):
+    assert len(ans) == len(pred)
+    return (ans != pred).sum()/float(ans.size)
+```
+
+### (a)
+
+> The convolution layer used and the cross-validated error estimate for
+> each of the six pairwise two-label classifiers
+
+### (b)
+
+> Separate test error rates on the unused micrographs of each of the
+> four categories, for the pairwise two-label classifiers and the
+> multilabel one-vs-one voting classifier described previously. For the
+> pairwise classifiers use only the test micrographs with the two labels
+> used to train the classifier. For the multilabel classifier, use the
+> test micrographs with the corresponding four labels.
+
+``` {python}
+def df_cv(m, clf, info=""):
+    var1 = []
+    var2 = []
+    cvs = []
+    errs = []
+    for i in range(0, m.shape[0]-1):
+        for j in range(i+1, m.shape[0]):
+            var1.append(i)
+            var2.append(j)
+            cvs.append(clf.cv[i,j])
+            errs.append(m[i,j])
+    infos = [info] * len(errs)
+    return pd.DataFrame({"Info": infos, "Label 1": var1, "Label 2": var2, "Test error": errs,"Cross Validation Score": cvs})
+```
+
+#### Pair-wise classifier
+
+``` {python}
+df_errors = []
+for b in out_layer_ns:
+    clf1 = One2OneSVM()
+    clf1.train(ltrain, features_train[b])
+    errs = clf1.test_1v1_error(ltest, features_test[b])
+    df_errors.append(df_cv(errs, clf1, b))
+    
+res_error = pd.concat(df_errors)
+res_error
+```
+
+#### Multiple one-vs-one classifier
+
+``` {python}
+# Multiclass one-vs-one
+dfm_errors = []
+for b in out_layer_ns:
+    clf = OneVsOneClassifier(svm.SVC(kernel="rbf", C=1., gamma="auto").fit(features_train[b],\
+          ltrain["label"].to_numpy(int)))
+    clf.fit(features_train[b],\
+          ltrain["label"].to_numpy(int))
+    y_predm = clf.predict(features_test[b])
+    dfm_errors.append(1 - error(y_predm, ltest["label"].to_numpy()))
+
+# Display result
+res_multi1v1 = pd.DataFrame({"Info": out_layer_ns, "Score": dfm_errors})
+res_multi1v1
+```
+
+### (c)
+
+> For the mixed pearlite + spheroidite test micrographs, apply the
+> trained pairwise classifier for pearlite vs. spheroidite and the
+> multilabel voting classifier. Print the predicted labels by these two
+> classifiers side by side (one row for each test micrograph). Comment
+> your results
+
+``` {python}
+ltestm = ltest[(ltest["primary_microconstituent"] == "pearlite") |\
+      (ltest["primary_microconstituent"] == "spheroidite")]
+feature_m = features_test["block5_pool"][ltestm.index.to_numpy(), :]
+l = le.transform(["pearlite", "spheroidite"])
+
+pred_pairs = clf1.clfs[l[0]][l[1]].predict(feature_m)
+pred_multi = clf.predict(feature_m)
+
+res_ps = pd.DataFrame({"Test Label": le.inverse_transform(ltestm["label"]),\
+              "Pairwise (pearlite vs. spheroidite)": le.inverse_transform(pred_pairs.astype(int)),\
+              "Multi-OnevsOne": le.inverse_transform(pred_multi)})
+
+print(res_ps.to_string())
+```
+
+### (d)
+
+> Now apply the multilabel classifier on the pearlite + Widmanst¨atten
+> and martensite micrographs and print the predicted labels. Compare to
+> the results in part (c)
+
+``` {python}
+df_micro2 = df_micro2[(df_micro2["primary_microconstituent"] == "pearlite+widmanstatten") |\
+(df_micro2["primary_microconstituent"] == "martensite")]
+
+# Encode labels
+le2 = preprocessing.LabelEncoder()
+le2.fit(df_micro2["primary_microconstituent"].unique())
+list(le2.classes_)
+```
+
+``` {python}
+dlabel2 = le2.transform(df_micro2["primary_microconstituent"])
+df_micro2.insert(2, "label", dlabel2)
+```
+
+``` {python}
+df_micro2
+```
+
+``` {python}
+# Feature extraction with VGG16
+if os.path.exists(os.path.join(dpath, "feature_test2.pkl")) == False:
+    fs_test2 = np.zeros((df_micro2.shape[0], out_shapes[-1]))
+    m = "block5_pool"
+    for j, ph in tqdm(enumerate(df_micro2["path"])):
+        x = load_image(ph)
+        xb = extmodel[m].predict(x, verbose = 0) # silence output
+        F = np.mean(xb,axis=(0,1,2))
+        # Save features
+        fs_test2[j, :] = F
+
+    # Save data
+    ## Create new files
+    fs_test2_p = open(os.path.join(dpath, "feature_test2.pkl"), "wb")
+    ## Write
+    pickle.dump(fs_test2, fs_test2_p)
+    ## Close files
+    fs_test2_p.close()
+```
+
+``` {python}
+#load data
+fs_test2_p  = open(os.path.join(dpath, "feature_test2.pkl"), "rb")
+fs_test2 = pickle.load(fs_test2_p) # train feature
+fs_test2_p .close()
+```
+
+``` {python}
+pred_multi2 = clf.predict(fs_test2)
+
+res_ps2 = pd.DataFrame({"Test Label": le2.inverse_transform(df_micro2["label"]),\
+              "Multi-OnevsOne": le.inverse_transform(pred_multi2)})
+
+print(res_ps2.to_string())
+```
