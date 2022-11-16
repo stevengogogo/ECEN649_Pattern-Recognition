@@ -735,9 +735,9 @@ class One2OneSVM:
                    feature[ljs,:]), axis=0)
                 Y = np.concatenate((np.ones(len(lis))*i,np.ones(len(ljs))*j))
                 # Train SVM
-                scores = sklearn.model_selection.cross_val_score(self.clfs[i][j], X, Y, cv=fold)
                 self.clfs[i][j].fit(X,Y)
-                self.cv[i][j] = np.max(scores)
+                scores = sklearn.model_selection.cross_val_score(self.clfs[i][j], X, Y, cv=fold)
+                self.cv[i][j] = np.min(scores)
                 
     def test_1v1_error(self, ltest, feature):
         # traversal all features
@@ -785,7 +785,7 @@ def error(ans, pred):
 > test micrographs with the corresponding four labels.
 
 ``` {python}
-def df_cv(m, clf, info=""):
+def df_cv(m, cl, info=""):
     var1 = []
     var2 = []
     cvs = []
@@ -794,7 +794,7 @@ def df_cv(m, clf, info=""):
         for j in range(i+1, m.shape[0]):
             var1.append(i)
             var2.append(j)
-            cvs.append(clf.cv[i,j])
+            cvs.append(cl.cv[i,j])
             errs.append(m[i,j])
     infos = [info] * len(errs)
     return pd.DataFrame({"Info": infos, "Label 1": le.inverse_transform(var1), "Label 2": le.inverse_transform(var2), "Test error": errs,"Cross Validation Score": cvs})
@@ -840,7 +840,16 @@ print(res_multi1v1.to_string())
 > classifiers side by side (one row for each test micrograph). Comment
 > your results
 
+- Both classifiers fail to distinguish `pearlite`
+
 ``` {python}
+## Multiclassifier
+clf = OneVsOneClassifier(svm.SVC(kernel="rbf", C=1., gamma="auto").fit(features_train["block5_pool"],\
+          ltrain["label"].to_numpy(int)))
+clf.fit(features_train["block5_pool"],\
+          ltrain["label"].to_numpy(int))
+
+## Data
 ltestm = ltest[(ltest["primary_microconstituent"] == "pearlite") |\
       (ltest["primary_microconstituent"] == "spheroidite")]
 feature_m = features_test["block5_pool"][ltestm.index.to_numpy(), :]
@@ -861,6 +870,8 @@ print(res_ps.to_string())
 > Now apply the multilabel classifier on the pearlite + Widmanst¨atten
 > and martensite micrographs and print the predicted labels. Compare to
 > the results in part (c)
+
+- The multiclass one-to-one classifier only select `spheroidite` or `network` for unseen two categories.
 
 ``` {python}
 df_micro2 = df_micro2[(df_micro2["primary_microconstituent"] == "pearlite+widmanstatten") |\
