@@ -65,8 +65,7 @@ print(sys.executable)
 >
 > Hint: All neurons in the first hidden layer are perceptrons and the output of the layer is a binary vector.
 
-Let $\bar{O}$ be the $k$ output of first hidden layer, and there are $2^k$ types of binary vectors $[O_1, \dots, O_k]$.
-
+Let $\bar{O}$ be the $k$ output of first hidden layer, and there are $2^k$ types of binary vectors $[O_1, \dots, O_k]$. Therefore, before the next layer, the input is determinstic in $2^k$ combination in $R^k$ space.
 
 
 For each data point $x\in R^d$ where $d$ is the feature space. the output of first layer is 
