@@ -5,10 +5,14 @@ book:
   title: "ECEN649: Pattern Recognition"
   author: "Shao-Ting Chiu"
   date: "20221211"
-  repo-url: https://github.com/stevengogogo/ECEN649_Pattern-Recognition
   favicon: img/favicon.png
+  reader-mode: true
   navbar:
-      background: maroon
+    background: maroon
+    right:
+      - icon: github
+        href: https://github.com/stevengogogo/ECEN649_Pattern-Recognition
+        aria-label: GitHub
   chapters:
     - index.qmd
     - part: "**Lecture Notes**"
