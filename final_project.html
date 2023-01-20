@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Shao-Ting Chiu">
+<meta name="dcterms.date" content="2022-12-09">
 
-<title>ECEN649: Pattern Recognition - 1&nbsp; Introduction</title>
+<title>ECEN649: Pattern Recognition - 12&nbsp; Abstract</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,8 +32,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./ch1.html" rel="next">
-<link href="./index.html" rel="prev">
+<link href="./final_project/script/HMC_Copy_of_EXP_fit_time_window.html" rel="next">
+<link href="./hw/hw5.html" rel="prev">
 <link href="./img/favicon.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -73,7 +75,7 @@ ul.task-list li input[type="checkbox"] {
   <header id="quarto-header" class="headroom fixed-top">
   <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
     <div class="container-fluid d-flex justify-content-between">
-      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></h1>
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Abstract</span></h1>
       <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
         <i class="bi bi-chevron-right"></i>
       </button>
@@ -115,7 +117,7 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./intro.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></a>
+  <a href="./intro.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -190,7 +192,7 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./final_project.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Abstract</span></a>
+  <a href="./final_project.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Abstract</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -229,7 +231,8 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#website" id="toc-website" class="nav-link active" data-scroll-target="#website"><span class="toc-section-number">1.1</span>  Website</a></li>
+  <li><a href="#abstract" id="toc-abstract" class="nav-link active" data-scroll-target="#abstract"><span class="toc-section-number">12.1</span>  Abstract</a></li>
+  <li><a href="#reports" id="toc-reports" class="nav-link" data-scroll-target="#reports"><span class="toc-section-number">12.2</span>  Reports</a></li>
   </ul>
 </nav>
     </div>
@@ -238,14 +241,26 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title d-none d-lg-block"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></h1>
+<h1 class="title d-none d-lg-block"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Abstract</span></h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Shao-Ting Chiu </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 9, 2022</p>
+    </div>
+  </div>
   
     
   </div>
@@ -253,12 +268,17 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="website" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="website"><span class="header-section-number">1.1</span> Website</h2>
-<p>https://braganeto.engr.tamu.edu/book-website/</p>
-<blockquote class="blockquote">
-<p>All the learning materials is here.</p>
-</blockquote>
+<section id="abstract" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="abstract"><span class="header-section-number">12.1</span> Abstract</h2>
+<p>The randomness of the stock market challenge investments to be reliable. Many approaches have been introduced to find the hidden pattern behind the transitions. However, error estimation with the non-parametric method is in the early stage. In this project, we used a Bayesian neural network to predict discrete time-series data with Taken’s embedding theorem. In this project, The Unadjusted Langevin Monte Carlo, Metropolis-adjusted Langevin algorithm (MALA) and Hamiltonian Monte Carlo (HMC) are applied to measure the posterior distribution. We found that Langevin method performed best for the log likelihood optimization. The purpose of this project is to provide a model-free approach with uncertainty quantification that is essential to the investment strategy</p>
+</section>
+<section id="reports" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="reports"><span class="header-section-number">12.2</span> Reports</h2>
+<ul>
+<li>Proposal: <a href="https://github.com/stevengogogo/ECEN649_FinalProject/releases/download/latest/proposal.pdf">PDF</a></li>
+<li>Checkpoint: <a href="https://github.com/stevengogogo/ECEN649_FinalProject/releases/download/latest/checkpoint.pdf">PDF</a></li>
+<li>Final Report: <a href="https://github.com/stevengogogo/ECEN649_FinalProject/releases/download/latest/final-report.pdf">PDF</a></li>
+</ul>
 
 
 </section>
@@ -514,13 +534,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Preface</span>
+      <a href="./hw/hw5.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Homework 5</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./ch1.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Chapter 01</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./final_project/script/HMC_Copy_of_EXP_fit_time_window.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Predicting Stock Market with Bayesian Nerual Network</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
