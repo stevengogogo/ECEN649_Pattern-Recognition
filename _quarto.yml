@@ -2,20 +2,28 @@ project:
   type: book
 
 book:
-  title: "ECEN639: Pattern Recognition"
+  title: "ECEN649: Pattern Recognition"
   author: "Shao-Ting Chiu"
   date: today
   repo-url: https://github.com/stevengogogo/ECEN649_Pattern-Recognition
   favicon: img/favicon.png
   chapters:
     - index.qmd
-    - intro.qmd
-    - ch1.qmd
-    - ch2.qmd
-    - hw/hw1.qmd
-    - hw/hw2.qmd
-    - hw/hw3.qmd
-    - summary.qmd
+    - part: "**Lecture Notes**"
+      chapters:
+        - intro.qmd
+        - ch1.qmd
+        - ch2.qmd
+        - ch3.qmd
+        - ch4.qmd
+    - part: "**Assignments**"
+      chapters:
+        - hw/hw1.qmd
+        - hw/hw2.qmd
+        - hw/hw3.qmd
+        - hw/hw4.qmd
+        - hw/hw4_p6-12_right_cv.ipynb
+        - hw/hw5.ipynb
     - ref.qmd
 
 bibliography: ref.bib
