@@ -7,6 +7,8 @@ book:
   date: "20221211"
   repo-url: https://github.com/stevengogogo/ECEN649_Pattern-Recognition
   favicon: img/favicon.png
+  navbar:
+      background: maroon
   chapters:
     - index.qmd
     - part: "**Lecture Notes**"
