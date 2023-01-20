@@ -4,7 +4,7 @@ author: "Shao-Ting Chiu"
 date: "2022-12-09"
 ---
 
-## Abstract
+## Predicting Stock Market with Bayesian Neural Network
 
 The randomness of the stock market challenge investments to be reliable. Many
 approaches have been introduced to find the hidden pattern behind the transitions.
