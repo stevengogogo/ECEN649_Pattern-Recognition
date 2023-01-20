@@ -1,0 +1,24 @@
+---
+title: "Abstract"
+author: "Shao-Ting Chiu"
+date: "2022-12-09"
+---
+
+## Abstract
+
+The randomness of the stock market challenge investments to be reliable. Many
+approaches have been introduced to find the hidden pattern behind the transitions.
+However, error estimation with the non-parametric method is in the early stage.
+In this project, we used a Bayesian neural network to predict discrete time-series
+data with Taken’s embedding theorem. In this project, The Unadjusted Langevin
+Monte Carlo, Metropolis-adjusted Langevin algorithm (MALA) and Hamiltonian
+Monte Carlo (HMC) are applied to measure the posterior distribution. We found
+that Langevin method performed best for the log likelihood optimization. The
+purpose of this project is to provide a model-free approach with uncertainty quantification that is essential to the investment strategy
+
+
+## Reports
+
+- Proposal: [PDF](https://github.com/stevengogogo/ECEN649_FinalProject/releases/download/latest/proposal.pdf)
+- Checkpoint: [PDF](https://github.com/stevengogogo/ECEN649_FinalProject/releases/download/latest/checkpoint.pdf)
+- Final Report: [PDF](https://github.com/stevengogogo/ECEN649_FinalProject/releases/download/latest/final-report.pdf)

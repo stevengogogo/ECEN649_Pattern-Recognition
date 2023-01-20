@@ -24,6 +24,13 @@ book:
         - hw/hw4.qmd
         - hw/hw4_p6-12_right_cv.ipynb
         - hw/hw5.ipynb
+    - part: "**Final Project**"
+      chapters:
+        - final_project.qmd
+        - final_project/script/HMC_Copy_of_EXP_fit_time_window.ipynb
+        - final_project/script/EXP_data_visualization.ipynb
+        - final_project/script/jax_basic.ipynb
+        - final_project/script/jax_bnn.ipynb
     - ref.qmd
 
 bibliography: ref.bib
