@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.242">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Shao-Ting Chiu (UIN:433002162)">
+<meta name="dcterms.date" content="2023-01-20">
+
+<title>ECEN649: Pattern Recognition - 8&nbsp; Homework 3</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../hw/hw4.html" rel="next">
+<link href="../hw/hw2.html" rel="prev">
+<link href="../img/favicon.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+    <div class="container-fluid d-flex justify-content-between">
+      <h1 class="quarto-secondary-nav-title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Homework 3</span></h1>
+      <button type="button" class="quarto-btn-toggle btn" aria-label="Show secondary navigation">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">ECEN649: Pattern Recognition</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/stevengogogo/ECEN649_Pattern-Recognition" title="Source Code" class="sidebar-tool px-1"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle sidebar-tool" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+      <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">Preface</a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true"><strong>Lecture Notes</strong></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../intro.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ch1.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Chapter 01</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ch2.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Chapter 2: Optimal Classification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ch3.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Chapter 3: Sampled-Based classification</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ch4.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Chapter 4: Parametric Classification</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true"><strong>Assignments</strong></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../hw/hw1.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Homework 1</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../hw/hw2.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Homework 2</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../hw/hw3.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Homework 3</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../hw/hw4.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Homework 4</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../hw/hw4_p6-12_right_cv.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Homework4: Problem 6.12</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../hw/hw5.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Homework 5</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ref.html" class="sidebar-item-text sidebar-link">References</a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#homework-description" id="toc-homework-description" class="nav-link active" data-scroll-target="#homework-description"><span class="toc-section-number">8.1</span>  Homework Description</a></li>
+  <li><a href="#computational-enviromnent-setup" id="toc-computational-enviromnent-setup" class="nav-link" data-scroll-target="#computational-enviromnent-setup"><span class="toc-section-number">8.2</span>  Computational Enviromnent Setup</a>
+  <ul class="collapse">
+  <li><a href="#third-party-libraries" id="toc-third-party-libraries" class="nav-link" data-scroll-target="#third-party-libraries"><span class="toc-section-number">8.2.1</span>  Third-party libraries</a></li>
+  <li><a href="#version" id="toc-version" class="nav-link" data-scroll-target="#version"><span class="toc-section-number">8.2.2</span>  Version</a></li>
+  </ul></li>
+  <li><a href="#problem-5.1" id="toc-problem-5.1" class="nav-link" data-scroll-target="#problem-5.1"><span class="toc-section-number">8.3</span>  Problem 5.1</a></li>
+  <li><a href="#problem-5.2" id="toc-problem-5.2" class="nav-link" data-scroll-target="#problem-5.2"><span class="toc-section-number">8.4</span>  Problem 5.2</a>
+  <ul class="collapse">
+  <li><a href="#a" id="toc-a" class="nav-link" data-scroll-target="#a"><span class="toc-section-number">8.4.1</span>  (a)</a></li>
+  <li><a href="#b" id="toc-b" class="nav-link" data-scroll-target="#b"><span class="toc-section-number">8.4.2</span>  (b)</a></li>
+  </ul></li>
+  <li><a href="#problem-5.6" id="toc-problem-5.6" class="nav-link" data-scroll-target="#problem-5.6"><span class="toc-section-number">8.5</span>  Problem 5.6</a>
+  <ul class="collapse">
+  <li><a href="#sec-56a" id="toc-sec-56a" class="nav-link" data-scroll-target="#sec-56a"><span class="toc-section-number">8.5.1</span>  (a)</a></li>
+  <li><a href="#b-1" id="toc-b-1" class="nav-link" data-scroll-target="#b-1"><span class="toc-section-number">8.5.2</span>  (b)</a></li>
+  </ul></li>
+  <li><a href="#problem-5.10-python-assignment" id="toc-problem-5.10-python-assignment" class="nav-link" data-scroll-target="#problem-5.10-python-assignment"><span class="toc-section-number">8.6</span>  Problem 5.10 (Python Assignment)</a>
+  <ul class="collapse">
+  <li><a href="#a-1" id="toc-a-1" class="nav-link" data-scroll-target="#a-1"><span class="toc-section-number">8.6.1</span>  (a)</a></li>
+  <li><a href="#b-2" id="toc-b-2" class="nav-link" data-scroll-target="#b-2"><span class="toc-section-number">8.6.2</span>  (b)</a></li>
+  <li><a href="#c" id="toc-c" class="nav-link" data-scroll-target="#c"><span class="toc-section-number">8.6.3</span>  (c)</a></li>
+  </ul></li>
+  <li><a href="#appendix" id="toc-appendix" class="nav-link" data-scroll-target="#appendix"><span class="toc-section-number">8.7</span>  Appendix</a>
+  <ul class="collapse">
+  <li><a href="#sec-revise" id="toc-sec-revise" class="nav-link" data-scroll-target="#sec-revise"><span class="toc-section-number">8.7.1</span>  Revised <code>c05_kernel.py</code></a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title d-none d-lg-block"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Homework 3</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Shao-Ting Chiu (UIN:433002162) </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 20, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="homework-description" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="homework-description"><span class="header-section-number">8.1</span> Homework Description</h2>
+<blockquote class="blockquote">
+<ul>
+<li>Course: ECEN649, Fall2022</li>
+</ul>
+<p>Problems from the book:</p>
+<p>5.1</p>
+<p>5.2</p>
+<p>5.6 (a,b)</p>
+<p>5.10 (a,b,c)</p>
+<p>Challenge (not graded):</p>
+<p>5.4</p>
+<p>5.6 (c,d)</p>
+</blockquote>
+<ul>
+<li>Deadline: <code>Oct. 26th, 11:59 pm</code></li>
+</ul>
+</section>
+<section id="computational-enviromnent-setup" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="computational-enviromnent-setup"><span class="header-section-number">8.2</span> Computational Enviromnent Setup</h2>
+<section id="third-party-libraries" class="level3" data-number="8.2.1">
+<h3 data-number="8.2.1" class="anchored" data-anchor-id="third-party-libraries"><span class="header-section-number">8.2.1</span> Third-party libraries</h3>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy <span class="im">as</span> sp</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sklearn <span class="im">as</span> sk</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.stats <span class="im">as</span> st</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> multivariate_normal <span class="im">as</span> mvn</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neighbors <span class="im">import</span> KernelDensity <span class="im">as</span> KD</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.colors <span class="im">import</span> ListedColormap</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Fix random state for reproducibility</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1978081</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Matplotlib setting</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">'text.usetex'</span>] <span class="op">=</span> <span class="va">True</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>matplotlib.rcParams[<span class="st">'figure.dpi'</span>]<span class="op">=</span> <span class="dv">300</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="version" class="level3" data-number="8.2.2">
+<h3 data-number="8.2.2" class="anchored" data-anchor-id="version"><span class="header-section-number">8.2.2</span> Version</h3>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sys.version)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(matplotlib.__version__)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sp.__version__)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.__version__)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(pd.__version__)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(sk.__version__)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>3.8.14 (default, Sep  6 2022, 23:26:50) 
+[Clang 13.1.6 (clang-1316.0.21.2.5)]
+3.3.1
+1.5.2
+1.19.1
+1.1.1
+1.1.2</code></pre>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="problem-5.1" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="problem-5.1"><span class="header-section-number">8.3</span> Problem 5.1</h2>
+<blockquote class="blockquote">
+<p>Consider that an experimenter wants to use A 2-D cubic histogram classification rule, with square cells with side length <span class="math inline">\(h_n\)</span>, and achieve consistency as the sample size <span class="math inline">\(n\)</span> increases, for any possible distribution of the data. If the experimenter lets <span class="math inline">\(h_n\)</span> decrease as <span class="math inline">\(h_n = \frac{1}{\sqrt{n}}\)</span>, would they be guaranteed to achieve consistency and why? If not, how would they need to modify the rate of decrease of <span class="math inline">\(h_n\)</span> to achieve consistency?</p>
+</blockquote>
+<p>Use <span class="citation" data-cites="braga2020fundamentals">Braga-Neto (<a href="../ref.html#ref-braga2020fundamentals" role="doc-biblioref">2020</a>, Theorem 5.6)</span>.</p>
+<p><strong>Test of consistency</strong></p>
+<ul>
+<li><span class="math inline">\(d = 2\)</span></li>
+<li><span class="math inline">\(V_n = h_{n}^{2} = \frac{1}{n}\)</span></li>
+<li><span class="math inline">\(h_n \rightarrow 0\)</span>, <span class="math inline">\(V_n \rightarrow 0\)</span></li>
+<li><span class="math inline">\(nV_n = 1\)</span> is not approaching to infinity as <span class="math inline">\(n\rightarrow \infty\)</span></li>
+<li>Thus, the consistency is not guranteed.</li>
+</ul>
+<p><strong>Modification</strong></p>
+<ul>
+<li>Let <span class="math inline">\(h_n = \frac{1}{n^{a}}\)</span></li>
+<li><span class="math inline">\(V_n = \frac{1}{n^{2p}}\)</span>, let <span class="math inline">\(p&gt;0\)</span></li>
+<li><span class="math inline">\(nV_n = \frac{1}{n^{2p-1}}\)</span>, <span class="math inline">\(\lim_{n\to \infty} nV_n \to \infty\)</span>. <span class="math inline">\(2p-1&lt;0\)</span>
+<ul>
+<li><span class="math inline">\(0&lt;p&lt;\frac{1}{2}\)</span></li>
+</ul></li>
+<li>The universal consistence of the cubic histogram rule is guaranteed.</li>
+</ul>
+</section>
+<section id="problem-5.2" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="problem-5.2"><span class="header-section-number">8.4</span> Problem 5.2</h2>
+<blockquote class="blockquote">
+<p>Consider that an experimenter wants to use the kNN classification rule and achieve consistency as the sample size <span class="math inline">\(n\)</span> increases. In each of the following alternatives, answer whether the experimenter is successful and why.</p>
+</blockquote>
+<section id="a" class="level3" data-number="8.4.1">
+<h3 data-number="8.4.1" class="anchored" data-anchor-id="a"><span class="header-section-number">8.4.1</span> (a)</h3>
+<blockquote class="blockquote">
+<p>The experimenter does not know the distribution of <span class="math inline">\((X,Y)\)</span> and lets <span class="math inline">\(k\)</span> increase as <span class="math inline">\(k=\sqrt{n}\)</span>.</p>
+</blockquote>
+<p>Use <span class="citation" data-cites="braga2020fundamentals">Braga-Neto (<a href="../ref.html#ref-braga2020fundamentals" role="doc-biblioref">2020</a>, Theorem 5.7)</span></p>
+<ul>
+<li><span class="math inline">\(k=\sqrt{n}\)</span></li>
+<li><span class="math inline">\(\lim_{n\to \infty} k = \infty\)</span></li>
+<li><span class="math inline">\(\lim_{n\to\infty} \frac{k}{n} = \lim_{n\to\infty}\frac{1}{\sqrt{n}} = 0\)</span></li>
+<li>The kNN rule is universally consistent.</li>
+</ul>
+</section>
+<section id="b" class="level3" data-number="8.4.2">
+<h3 data-number="8.4.2" class="anchored" data-anchor-id="b"><span class="header-section-number">8.4.2</span> (b)</h3>
+<blockquote class="blockquote">
+<p>The experimenter does not know the distribution but knows that <span class="math inline">\(\epsilon^{*} = 0\)</span> and keeps <span class="math inline">\(k\)</span> fixed, <span class="math inline">\(k=3\)</span>.</p>
+</blockquote>
+<p>Because <span class="math inline">\(k\)</span> is fiexed and independent of <span class="math inline">\(n\)</span>, the approach is not universally consistent. However, since <span class="math inline">\(\epsilon^{*}=0\)</span>, this approach is consistent.</p>
+</section>
+</section>
+<section id="problem-5.6" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="problem-5.6"><span class="header-section-number">8.5</span> Problem 5.6</h2>
+<blockquote class="blockquote">
+<p>Assume that the feature <span class="math inline">\(X\)</span> in a classification problem is a real number in the interval <span class="math inline">\([0,1]\)</span>. Assume that the classes are equally likely, with <span class="math inline">\(p(x|Y=0) = 2xI_{\{0\leq x\leq 1\}}\)</span> and <span class="math inline">\(p(x|Y=1)= 2(1-x)I_{\{0\leq x\leq 1\}}\)</span>.</p>
+</blockquote>
+<section id="sec-56a" class="level3" data-number="8.5.1">
+<h3 data-number="8.5.1" class="anchored" data-anchor-id="sec-56a"><span class="header-section-number">8.5.1</span> (a)</h3>
+<blockquote class="blockquote">
+<p>Find the Bayes error <span class="math inline">\(\epsilon^*\)</span>.</p>
+</blockquote>
+<p>Becase the two classes are equally likely, <span class="math inline">\(p(Y=0)=p(Y=1)=0.5\)</span>. <span class="math display">\[\epsilon^{*}=E[\min(\eta(x), 1-\eta(x))]\]</span></p>
+<p><span class="math display">\[\begin{align}
+    \eta(x) &amp;= p(Y=1|x)\\
+            &amp;= \frac{p(x|Y=1)p(Y=1)}{p(x)}\\
+            &amp;= \frac{p(x|Y=1)p(Y=1)}{p(x|Y=0)p(Y=0)+p(x|Y=1)p(Y=1)}\\
+            &amp;= \frac{2(1-x)\cdot 0.5}{2x\cdot 0.5 + 2(1-x)\cdot 0.5}\\
+            &amp;= \frac{2(1-x)}{2x + 2-2x}\\
+            &amp;= 1 - x\\
+1 - \eta(x) &amp;= x
+\end{align}\]</span></p>
+<p><span class="math inline">\(p(x) = p(x|Y=0)p(Y=0)+p(x|Y=1)p(Y=1) = 2x\cdot 0.5 + 2(1-x)\cdot 0.5 = 1\)</span></p>
+<p><span class="math display">\[\begin{align}
+    \epsilon^{*} &amp;=E[\min(\eta(x), 1-\eta(x))]\\
+                 &amp;= E[\min(1-x, x)]\\
+                 &amp;= \int_{0}^{1}\min(\eta(x), 1-\eta(x))p(x)dx\\
+                 &amp;= \int_{0}^{1}\min(\eta(x), 1-\eta(x))dx\\
+                 &amp;= \int_{0}^{\frac{1}{2}} x dx + \int_{\frac{1}{2}}^{1} (1-x)dx\\
+                 &amp;= 0.25
+\end{align}\]</span></p>
+</section>
+<section id="b-1" class="level3" data-number="8.5.2">
+<h3 data-number="8.5.2" class="anchored" data-anchor-id="b-1"><span class="header-section-number">8.5.2</span> (b)</h3>
+<blockquote class="blockquote">
+<p>Find the asymptotic error rate <span class="math inline">\(\epsilon_{NN}\)</span> for the NN classification rule.</p>
+</blockquote>
+<p>Use Cover-Hart Theorem <span class="citation" data-cites="braga2020fundamentals">(<a href="../ref.html#ref-braga2020fundamentals" role="doc-biblioref">Braga-Neto 2020</a>, Theorem 5.1)</span>.</p>
+<p><span class="math display">\[\epsilon_{NN} = \lim_{n\to \infty} E[\epsilon_n] = E[2\eta(X)(1-\eta(X))]\]</span></p>
+<p>Use the result from <a href="#sec-56a">Problem 5.6(a)</a>.</p>
+<p><span class="math display">\[\begin{align}
+    \eta(x) &amp;= 1-x\\
+    1-\eta(x) &amp;= x
+\end{align}\]</span></p>
+<p><span class="math display">\[\begin{align}
+    \epsilon_{NN} = \lim_{n\to \infty} E[\epsilon_n] &amp;= E[2\eta(X)(1-\eta(X))]\\
+    &amp;= E[2(1-x)x]\\
+    &amp;= 2E[x - x^2]\\
+    &amp;= 2\left( \int^{1}_{0}xp(x)dx - \int^{1}_{0}x^{2}p(x)dx \right)\\
+    &amp;= 2\left(\int^{1}_{0}xdx - \int^{1}_{0}x^{2}dx \right)\\
+    &amp;= 2\left((\frac{1}{2}x^2)^{2}_{1} - (\frac{1}{3}x^2)^{1}_{0} \right)\\
+    &amp;= 2(\frac{1}{2} - \frac{1}{3})\\
+    &amp;= 2(\frac{3 - 2}{6})\\
+    &amp;= \frac{1}{3}
+\end{align}\]</span></p>
+</section>
+</section>
+<section id="problem-5.10-python-assignment" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="problem-5.10-python-assignment"><span class="header-section-number">8.6</span> Problem 5.10 (Python Assignment)</h2>
+<section id="a-1" class="level3" data-number="8.6.1">
+<h3 data-number="8.6.1" class="anchored" data-anchor-id="a-1"><span class="header-section-number">8.6.1</span> (a)</h3>
+<blockquote class="blockquote">
+<p>Modify the code in <code>c05_kernel.py</code> (modified in <a href="#sec-revise">appendix</a>) to obtain plots for <span class="math inline">\(h = 0.1, 0.3, 0.5, 1, 2, 5\)</span><a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> and <span class="math inline">\(n = 50, 100, 250, 500\)</span> per class. Plot the classifiers over the range <span class="math inline">\([-3, 9] \times [-3, 9]\)</span> in order to visualize the entire data and reduce the marker size from 12 to 8 to facilitate visualization. Which classifiers are closest to the optimal classifier? How do you explain this in terms of underfitting/overfitting? See the coding hint in part (a) of Problem 5.8.</p>
+</blockquote>
+<p>Since the optimal boundary is a straight line between two centroids. Those classifiers close to optimal decision tend to have large sample size.</p>
+<p>The bandwidth (<code>h</code>) can have influences on the underfitting/overfitting. Small <code>h</code> may get overfitting; on the other hand, large <code>h</code> may get underfitting.</p>
+<div class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_kd(ax, x0, y0, x1, y1, Z):</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    cmap_light <span class="op">=</span> ListedColormap([<span class="st">"#FFE0C0"</span>,<span class="st">"#B7FAFF"</span>])</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    plt.rc(<span class="st">"xtick"</span>,labelsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    plt.rc(<span class="st">"ytick"</span>,labelsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    ax.plot(x0,y0,<span class="st">".r"</span>,markersize<span class="op">=</span><span class="dv">8</span>) <span class="co"># class 0</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    ax.plot(x1,y1,<span class="st">".b"</span>,markersize<span class="op">=</span><span class="dv">8</span>) <span class="co"># class 1</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    ax.set_xlim([<span class="op">-</span><span class="dv">3</span>,<span class="dv">9</span>])</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    ax.set_ylim([<span class="op">-</span><span class="dv">3</span>,<span class="dv">9</span>])</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    ax.pcolormesh(xx,yy,Z,cmap<span class="op">=</span>cmap_light, shading<span class="op">=</span><span class="st">"nearest"</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    ax.contour(xx,yy,Z,colors<span class="op">=</span><span class="st">"black"</span>,linewidths<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    plt.close()</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ax</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>mm0 <span class="op">=</span> np.array([<span class="dv">2</span>,<span class="dv">2</span>])</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>mm1 <span class="op">=</span> np.array([<span class="dv">4</span>,<span class="dv">4</span>])</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>Sig0 <span class="op">=</span> <span class="dv">4</span><span class="op">*</span>np.identity(<span class="dv">2</span>)</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>Sig1 <span class="op">=</span> <span class="dv">4</span><span class="op">*</span>np.identity(<span class="dv">2</span>)</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>Ns <span class="op">=</span> np.array([<span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">250</span>, <span class="dv">500</span>])</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">#Ns = [50]</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>hs <span class="op">=</span> np.array([<span class="fl">0.1</span>,<span class="fl">0.3</span>,<span class="fl">0.5</span>,<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">5</span>])</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a><span class="co">#hs = [0.1]</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>Xs <span class="op">=</span> [[mvn.rvs(mm0, Sig0, n), mvn.rvs(mm1,Sig1,n)] <span class="cf">for</span> n <span class="kw">in</span> Ns]</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>clf0s <span class="op">=</span> [[KD() <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(hs))] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(Ns))]</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>clf1s <span class="op">=</span> [[KD() <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(hs))] <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(Ns))]</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="co"># plotting</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>x_min,x_max <span class="op">=</span> (<span class="op">-</span><span class="dv">3</span>,<span class="dv">9</span>)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>y_min,y_max <span class="op">=</span> (<span class="op">-</span><span class="dv">3</span>,<span class="dv">9</span>)</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> <span class="fl">0.1</span> <span class="co">#0.01 # mesh step size</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>xx,yy <span class="op">=</span> np.meshgrid(np.arange(x_min,x_max,s),np.arange(y_min,y_max,s))</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="bu">len</span>(Ns), <span class="bu">len</span>(hs), figsize<span class="op">=</span>(<span class="dv">30</span>,<span class="dv">20</span>), dpi<span class="op">=</span><span class="dv">150</span>)</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i, X) <span class="kw">in</span> <span class="bu">enumerate</span>(Xs):</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>    x0,y0 <span class="op">=</span> np.split(X[<span class="dv">0</span>],<span class="dv">2</span>,<span class="dv">1</span>)</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>    x1,y1 <span class="op">=</span> np.split(X[<span class="dv">1</span>],<span class="dv">2</span>,<span class="dv">1</span>)</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> np.concatenate((np.zeros(Ns[i]),np.ones(Ns[i])))</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (j, h) <span class="kw">in</span> <span class="bu">enumerate</span>(hs):</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>        clf0s[i][j] <span class="op">=</span> KD(bandwidth<span class="op">=</span>h)</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>        clf0s[i][j].fit(X[<span class="dv">0</span>])</span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>        clf1s[i][j] <span class="op">=</span> KD(bandwidth<span class="op">=</span>h)</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>        clf1s[i][j].fit(X[<span class="dv">1</span>])</span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>        Z0 <span class="op">=</span> clf0s[i][j].score_samples(np.c_[xx.ravel(), yy.ravel()])</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>        Z1 <span class="op">=</span> clf1s[i][j].score_samples(np.c_[xx.ravel(), yy.ravel()])</span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>        Z <span class="op">=</span> Z0<span class="op">&lt;=</span>Z1</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>        Z <span class="op">=</span> Z.reshape(xx.shape)</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>        plot_kd(axs[i][j], x0, y0, x1, y1, Z)<span class="op">;</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>        axs[i][j].set_title(<span class="st">"N=</span><span class="sc">{}</span><span class="st">,h=</span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(Ns[i],h))</span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>        plt.close()</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a>fig.savefig(<span class="st">"img/c05_kernel.png"</span>,bbox_inches<span class="op">=</span><span class="st">"tight"</span>,facecolor<span class="op">=</span><span class="st">"white"</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><img src="img/c05_kernel.png" class="img-fluid"></p>
+</section>
+<section id="b-2" class="level3" data-number="8.6.2">
+<h3 data-number="8.6.2" class="anchored" data-anchor-id="b-2"><span class="header-section-number">8.6.2</span> (b)</h3>
+<blockquote class="blockquote">
+<p>Compute test set errors for each classifier in part (a), using the same procedure as in part (b) of Problem 5.8. Generate a table containing each classifier plot in part (a) with its test set error rate. Which combinations of sample size and kernel bandwidth produce the top 5 smallest error rates?</p>
+</blockquote>
+<p><strong>Bayes error</strong></p>
+<p><span class="math display">\[\begin{align}
+\delta &amp;= \sqrt{(\mu_1 - \mu_0)^T \Sigma^{-1} (\mu_1-\mu_0)}
+\end{align}\]</span></p>
+<p><span class="math display">\[\epsilon = \Phi(-\frac{\delta}{2}) \approx 0.23975\]</span></p>
+<div class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>mu1 <span class="op">=</span> np.matrix([[<span class="dv">4</span>],[<span class="dv">4</span>]])</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>mu0 <span class="op">=</span> np.matrix([[<span class="dv">2</span>,],[<span class="dv">2</span>]])</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>sig <span class="op">=</span> np.matrix([[<span class="dv">4</span>,<span class="dv">0</span>], [<span class="dv">0</span>,<span class="dv">4</span>]])</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>delta <span class="op">=</span> np.sqrt( (mu1<span class="op">-</span>mu0).T <span class="op">@</span> np.linalg.inv(sig) <span class="op">@</span> (mu1<span class="op">-</span>mu0))[<span class="dv">0</span>][<span class="dv">0</span>]</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>error <span class="op">=</span> st.norm.cdf(<span class="op">-</span>delta<span class="op">/</span><span class="dv">2</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({<span class="st">"Bayes Error"</span>:[error]})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Bayes Error</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[[0.23975006109347669]]</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p><strong>Best Five</strong></p>
+<ol type="1">
+<li>0.269 (1,4) <code>N=50, h=1</code></li>
+<li>0.271 (1,6) <code>N=50, h=5</code></li>
+<li>0.273 (1,5) <code>N=50, h=2</code></li>
+<li>0.274 (3,4) <code>N=250, h=1</code></li>
+<li>0.276 (3,6) <code>N=250, h=5</code></li>
+</ol>
+<div class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> measure_test_error(clf0, clf1, xxs, yys, ys):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    Z0 <span class="op">=</span> clf0.score_samples(np.c_[xxs, yys])</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    Z1 <span class="op">=</span> clf1.score_samples(np.c_[xxs, yys])</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    Z <span class="op">=</span> Z0<span class="op">&lt;=</span>Z1</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.count_nonzero(Z <span class="op">!=</span> ys.astype(<span class="bu">bool</span>)) <span class="op">/</span> <span class="bu">len</span>(ys)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>nt <span class="op">=</span> <span class="dv">500</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> [mvn.rvs(mm0, Sig0, nt), mvn.rvs(mm1,Sig1,nt)] </span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>x0,y0 <span class="op">=</span> np.split(X_test[<span class="dv">0</span>],<span class="dv">2</span>,<span class="dv">1</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>x1,y1 <span class="op">=</span> np.split(X_test[<span class="dv">1</span>],<span class="dv">2</span>,<span class="dv">1</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>ys <span class="op">=</span> np.concatenate((np.zeros(nt),np.ones(nt)))</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>errs <span class="op">=</span> np.zeros((<span class="bu">len</span>(Ns), <span class="bu">len</span>(hs)))</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>figt, axts <span class="op">=</span> plt.subplots(<span class="bu">len</span>(Ns), <span class="bu">len</span>(hs), figsize<span class="op">=</span>(<span class="dv">30</span>,<span class="dv">20</span>), dpi<span class="op">=</span><span class="dv">150</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(Ns)):</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    xxs <span class="op">=</span> np.concatenate((x0, x1))</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    yys <span class="op">=</span> np.concatenate((y0, y1))</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (j, h) <span class="kw">in</span> <span class="bu">enumerate</span>(hs):</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>        errs[i][j]<span class="op">=</span> measure_test_error(clf0s[i][j], clf1s[i][j], xxs, yys, ys)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>        axts[i][j].set_title(axs[i][j].get_title() <span class="op">+</span> <span class="st">"Test Error: </span><span class="sc">{}</span><span class="ch">\n</span><span class="st"> Bayes Error: </span><span class="sc">{}</span><span class="st">"</span>.<span class="bu">format</span>(errs[i][j], <span class="dv">2</span>))</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>        plt.close()</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>        Z0 <span class="op">=</span> clf0s[i][j].score_samples(np.c_[xx.ravel(), yy.ravel()])</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>        Z1 <span class="op">=</span> clf1s[i][j].score_samples(np.c_[xx.ravel(), yy.ravel()])</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>        Z <span class="op">=</span> Z0<span class="op">&lt;=</span>Z1</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>        Z <span class="op">=</span> Z.reshape(xx.shape)</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>        plot_kd(axts[i][j], x0, y0, x1, y1, Z)<span class="op">;</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(errs)</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>figt.savefig(<span class="st">"img/c05_kernel_test.png"</span>,bbox_inches<span class="op">=</span><span class="st">"tight"</span>,facecolor<span class="op">=</span><span class="st">"white"</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[0.339 0.318 0.279 0.269 0.273 0.271]
+ [0.349 0.313 0.292 0.281 0.279 0.278]
+ [0.351 0.296 0.279 0.274 0.278 0.276]
+ [0.335 0.289 0.283 0.285 0.282 0.282]]</code></pre>
+</div>
+</div>
+<p><img src="img/c05_kernel_test.png" class="img-fluid"></p>
+</section>
+<section id="c" class="level3" data-number="8.6.3">
+<h3 data-number="8.6.3" class="anchored" data-anchor-id="c"><span class="header-section-number">8.6.3</span> (c)</h3>
+<blockquote class="blockquote">
+<p>Compute expected error rates for the Gaussian kernel classification rule in part (a), using the same procedure as in part (c) of Problem 5.8. Since error computation is faster here, a larger value <span class="math inline">\(R = 200\)</span> can be used, for better estimation of the expected error rates. Which kernel bandwidth should be used for each sample size?</p>
+</blockquote>
+<div class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>errs <span class="op">=</span> np.zeros((<span class="bu">len</span>(Ns), <span class="bu">len</span>(hs)))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>R <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> jj <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, R):</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    nt <span class="op">=</span> <span class="dv">500</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    X_test <span class="op">=</span> [mvn.rvs(mm0, Sig0, nt), mvn.rvs(mm1,Sig1,nt)] </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    x0,y0 <span class="op">=</span> np.split(X_test[<span class="dv">0</span>],<span class="dv">2</span>,<span class="dv">1</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    x1,y1 <span class="op">=</span> np.split(X_test[<span class="dv">1</span>],<span class="dv">2</span>,<span class="dv">1</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    ys <span class="op">=</span> np.concatenate((np.zeros(nt),np.ones(nt)))</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    xxs <span class="op">=</span> np.concatenate((x0, x1))</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    yys <span class="op">=</span> np.concatenate((y0, y1))</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, <span class="bu">len</span>(Ns)):</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> (j, h) <span class="kw">in</span> <span class="bu">enumerate</span>(hs):</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>            errs[i][j]<span class="op">+=</span> measure_test_error(clf0s[i][j], clf1s[i][j], xxs, yys, ys)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>errs <span class="op">=</span> errs<span class="op">/</span>R</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>best_hi <span class="op">=</span> np.argmin(errs, axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(errs)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(best_hi)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>pd.DataFrame({<span class="st">"Sample Size"</span>: Ns, <span class="st">"Best H"</span>: hs[best_hi ]})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[0.309245 0.29467  0.26515  0.250625 0.24554  0.24833 ]
+ [0.325025 0.2838   0.255735 0.2419   0.240805 0.240665]
+ [0.33395  0.276555 0.25415  0.245395 0.23972  0.23971 ]
+ [0.31032  0.25389  0.246315 0.240215 0.240195 0.239245]]
+[4 5 5 5]</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Sample Size</th>
+      <th>Best H</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>50</td>
+      <td>2.0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>100</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>250</td>
+      <td>5.0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>500</td>
+      <td>5.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="appendix" class="level2" data-number="8.7">
+<h2 data-number="8.7" class="anchored" data-anchor-id="appendix"><span class="header-section-number">8.7</span> Appendix</h2>
+<section id="sec-revise" class="level3" data-number="8.7.1">
+<h3 data-number="8.7.1" class="anchored" data-anchor-id="sec-revise"><span class="header-section-number">8.7.1</span> Revised <code>c05_kernel.py</code><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">Foundations of Pattern Recognition and Machine Learning</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co">Chapter 5 Figure 5.5</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co">Author: Ulisses Braga-Neto</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">Plot kernel classifiers</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co">"""</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.stats <span class="im">import</span> multivariate_normal <span class="im">as</span> mvn</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.neighbors <span class="im">import</span> KernelDensity <span class="im">as</span> KD</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib.colors <span class="im">import</span> ListedColormap</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Fix random state for reproducibility</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">1978081</span>)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>mm0 <span class="op">=</span> np.array([<span class="dv">2</span>,<span class="dv">2</span>])</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>mm1<span class="op">=</span> np.array([<span class="dv">4</span>,<span class="dv">4</span>])</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>Sig0 <span class="op">=</span> <span class="dv">4</span><span class="op">*</span>np.identity(<span class="dv">2</span>)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>Sig1 <span class="op">=</span> <span class="dv">4</span><span class="op">*</span>np.identity(<span class="dv">2</span>)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">50</span> <span class="co"># number of points in each class</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>X0 <span class="op">=</span> mvn.rvs(mm0,Sig0,N)</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>x0,y0 <span class="op">=</span> np.split(X0,<span class="dv">2</span>,<span class="dv">1</span>)</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>X1 <span class="op">=</span> mvn.rvs(mm1,Sig1,N)</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>x1,y1 <span class="op">=</span> np.split(X1,<span class="dv">2</span>,<span class="dv">1</span>)</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> np.concatenate((X0,X1),axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.concatenate((np.zeros(N),np.ones(N)))</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>cmap_light <span class="op">=</span> ListedColormap([<span class="st">"#FFE0C0"</span>,<span class="st">"#B7FAFF"</span>])</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> <span class="fl">.01</span>  <span class="co"># mesh step size</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>x_min,x_max <span class="op">=</span> (<span class="op">-</span><span class="fl">0.5</span>,<span class="fl">6.5</span>)</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>y_min,y_max <span class="op">=</span> (<span class="op">-</span><span class="fl">0.5</span>,<span class="fl">6.5</span>)</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> h <span class="kw">in</span> [<span class="fl">0.1</span>,<span class="fl">0.3</span>,<span class="fl">0.5</span>,<span class="dv">1</span>]:</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    clf0 <span class="op">=</span> KD(bandwidth<span class="op">=</span>h)</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>    clf0.fit(X0)</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>    clf1 <span class="op">=</span> KD(bandwidth<span class="op">=</span>h)</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>    clf1.fit(X1)</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>    xx,yy <span class="op">=</span> np.meshgrid(np.arange(x_min,x_max,s),np.arange(y_min,y_max,s))</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>    Z0 <span class="op">=</span> clf0.score_samples(np.c_[xx.ravel(), yy.ravel()])</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>    Z1 <span class="op">=</span> clf1.score_samples(np.c_[xx.ravel(), yy.ravel()])</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>    Z <span class="op">=</span> Z0<span class="op">&lt;=</span>Z1</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>    Z <span class="op">=</span> Z.reshape(xx.shape)</span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>    fig,ax<span class="op">=</span>plt.subplots(figsize<span class="op">=</span>(<span class="dv">8</span>,<span class="dv">8</span>),dpi<span class="op">=</span><span class="dv">150</span>)</span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>    plt.rc(<span class="st">"xtick"</span>,labelsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>    plt.rc(<span class="st">"ytick"</span>,labelsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>    plt.plot(x0,y0,<span class="st">".r"</span>,markersize<span class="op">=</span><span class="dv">16</span>) <span class="co"># class 0</span></span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>    plt.plot(x1,y1,<span class="st">".b"</span>,markersize<span class="op">=</span><span class="dv">16</span>) <span class="co"># class 1</span></span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>    plt.xlim([<span class="op">-</span><span class="fl">0.18</span>,<span class="fl">6.18</span>])</span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>    plt.ylim([<span class="op">-</span><span class="fl">0.18</span>,<span class="fl">6.18</span>])</span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>    plt.pcolormesh(xx,yy,Z,cmap<span class="op">=</span>cmap_light)</span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>    ax.contour(xx,yy,Z,colors<span class="op">=</span><span class="st">"black"</span>,linewidths<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>    fig.savefig(<span class="st">"c05_kernel"</span><span class="op">+</span><span class="bu">str</span>(<span class="bu">int</span>(<span class="dv">10</span><span class="op">*</span>h))<span class="op">+</span><span class="st">".png"</span>,bbox_inches<span class="op">=</span><span class="st">"tight"</span>,facecolor<span class="op">=</span><span class="st">"white"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
+<div id="ref-braga2020fundamentals" class="csl-entry" role="doc-biblioentry">
+Braga-Neto, Ulisses. 2020. <em>Fundamentals of Pattern Recognition and Machine Learning</em>. Springer.
+</div>
+</div>
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>In Problem 5.10, please replace “k=1,3,5,7,9,11” by “h=0.1,0.3,0.5,1,2,5” — <a href="https://ecen649patter-mrc1007.slack.com/archives/C03V4NZAEHJ/p1666138179595139">Ulisses on Slack</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>All, be careful with script <code>c05_kernel.py</code>. If you replace the variable <code>b</code> to <code>h</code> in the script, it will shock with the grid step size parameter, which is also called <code>h</code>, and you will get erroneous results. — <a href="https://ecen649patter-mrc1007.slack.com/archives/C03V4NZAEHJ/p1666222492308139">Ulisses on Slack</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="../hw/hw2.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Homework 2</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="../hw/hw4.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Homework 4</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>
